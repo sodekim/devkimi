@@ -1,0 +1,54 @@
+[package]
+name = "devkimi"
+version = "0.1.0"
+description = "A Tauri App"
+authors = ["you"]
+license = ""
+repository = ""
+edition = "2021"
+rust-version = "1.77.2"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.5.1", features = [] }
+
+[dependencies]
+base64 = "0.22"
+chrono = "0.4"
+cron = "0.15"
+flate2 = "1.1"
+image = "0.25"
+jsonpath-rust = "1.0"
+log = "0.4"
+markdown = "1.0"
+md-5 = "0.10"
+open = "5.3"
+qrcode = "0.14"
+quick-xml = "0.38"
+quircs = "0.10"
+rand = { version = "0.9" }
+regex = "1.12"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", features = ["preserve_order"] }
+serde_yaml = "0.9"
+sha1 = "0.10"
+sha2 = "0.10"
+sm3 = "0.4"
+sqlformat = "0.5.0"
+tauri = { version = "2.9.1", features = ["protocol-asset"] }
+tauri-plugin-clipboard-manager = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-log = "2"
+tauri-plugin-opener = "2"
+tempfile = "3.23"
+thiserror = "2.0"
+urlencoding = "2.1"
+uuid = { version = "1.18", features = ["v1", "v4", "v7"] }
+font-kit = "0.14"
+tauri-plugin-store = "2"
