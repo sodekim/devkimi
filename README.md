@@ -5,6 +5,10 @@
 
 devkimi 是一个基于 Tauri 和 SolidJS 构建的多功能开发者工具集，提供各种常用的开发辅助工具。项目灵感来自于 [DevToys](https://github.com/DevToys-app/DevToys.git)。
 
+## 界面截图
+
+![Screenshot](devkimi.png)
+
 ## 功能特性
 
 devkimi 包含以下五大功能模块：
