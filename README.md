@@ -49,6 +49,10 @@ devkimi 包含以下五大功能模块：
 - **语言**: TypeScript + Rust
 - **包管理器**: pnpm
 
+## 下载
+
+- [GitHub Releases](https://github.com/sodekim/devkimi/releases)
+
 ## 快速开始
 
 ### 环境要求
