@@ -31,8 +31,6 @@ const HASH_ALGORITHM_OPTIONS = [
   { value: "Sha512", label: "SHA-512" },
 ];
 
-type InputMode = "text" | "file";
-
 export default function HashGenerator() {
   const [text, setText] = createSignal("");
   const [file, setFile] = createSignal("");
