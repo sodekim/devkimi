@@ -13,4 +13,26 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   );
 }
 
+// 禁用快捷键
+document.addEventListener("keydown", (event) => {
+  const disabledShortcuts =
+    ["F5", "F7"].includes(event.key) ||
+    (event.altKey && ["ArrowLeft", "ArrowRight"].includes(event.key)) ||
+    ((event.ctrlKey || event.metaKey) &&
+      ["F", "G", "H", "J", "P", "Q", "R", "U"].includes(
+        event.key.toUpperCase(),
+      ));
+  console.log("Disabled shortcut:", disabledShortcuts);
+  if (disabledShortcuts) {
+    event.preventDefault();
+  }
+});
+
+// 禁用右键菜单
+document.addEventListener("contextmenu", (event) => {
+  const target = event.target;
+  console.log("Target:", target);
+  event.preventDefault();
+});
+
 render(() => <App />, root!);
