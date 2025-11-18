@@ -1,6 +1,6 @@
 import { MetaProvider, Title } from "@solidjs/meta";
 import { Route, Router } from "@solidjs/router";
-import { children, Suspense, type Component } from "solid-js";
+import { Suspense, type Component } from "solid-js";
 import Layout from "./component/Layout";
 import { RouteMeta, routeMetas } from "./routes";
 import { StoreProvider } from "./store";
