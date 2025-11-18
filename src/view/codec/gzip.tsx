@@ -61,7 +61,7 @@ export default function GZipCodec() {
           icon={() => <ArrowLeftRight size={16} />}
         >
           <Config.Switch
-            value={encode}
+            value={encode()}
             onChange={setEncode}
             on="压缩"
             off="解压"
@@ -76,9 +76,9 @@ export default function GZipCodec() {
             icon={() => <Blend size={16} />}
           >
             <Config.Select
-              value={() => `${level}`}
+              value={`${level()}`}
               options={COMPRESS_LEVEL_OPTIONS}
-              onChange={setLevel}
+              onChange={(value) => setLevel(parseInt(value))}
               class="w-30"
             />
           </Config.Option>
@@ -94,7 +94,7 @@ export default function GZipCodec() {
           </div>
         </div>
         <Editor
-          value={input}
+          value={input()}
           onChange={(value) => setInput(value)}
           language="base64"
         />
@@ -107,11 +107,11 @@ export default function GZipCodec() {
             输出
           </span>
           <div class="flex items-center justify-center gap-2">
-            <CopyButton value={output} />
-            <SaveButton value={output} />
+            <CopyButton value={output()} />
+            <SaveButton value={output()} />
           </div>
         </div>
-        <Editor value={output} language="base64" readOnly={true} />
+        <Editor value={output()} language="base64" readOnly={true} />
       </Container>
 
       <Container class="h-10 justify-center">

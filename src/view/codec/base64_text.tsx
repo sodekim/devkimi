@@ -57,7 +57,7 @@ export default function Base64TextCodec() {
           icon={() => <ArrowLeftRight size={16} />}
         >
           <ConfigSwitch
-            value={encode}
+            value={encode()}
             onChange={setEncode}
             on="编码"
             off="解码"
@@ -71,7 +71,7 @@ export default function Base64TextCodec() {
           icon={() => <Layers size={16} />}
         >
           <Config.Select
-            value={mode}
+            value={mode()}
             options={BASE_MODE_OPTIONS}
             onChange={setMode}
             class="w-35"
@@ -87,7 +87,7 @@ export default function Base64TextCodec() {
             <TextOperateButtons callback={setInput} />
           </div>
         </div>
-        <Editor value={input} onChange={(value) => setInput(value)} />
+        <Editor value={input()} onChange={(value) => setInput(value)} />
       </Container>
 
       {/*输出*/}
@@ -95,11 +95,11 @@ export default function Base64TextCodec() {
         <div class="flex items-center justify-between">
           <span class="text-sm">输出</span>
           <div class="flex items-center justify-center gap-2">
-            <CopyButton value={output} />
-            <SaveButton value={output} />
+            <CopyButton value={output()} />
+            <SaveButton value={output()} />
           </div>
         </div>
-        <Editor value={output} language="base64" readOnly={true} />
+        <Editor value={output()} language="base64" readOnly={true} />
       </Container>
     </div>
   );

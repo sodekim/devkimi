@@ -1,9 +1,9 @@
 import { MetaProvider, Title } from "@solidjs/meta";
 import { Route, Router } from "@solidjs/router";
-import { Suspense, useContext, type Component } from "solid-js";
-import { RouteMeta, routeMetas } from "./routes";
-import { StoreContext, StoreProvider, useSettings } from "./store";
+import { children, Suspense, type Component } from "solid-js";
 import Layout from "./component/Layout";
+import { RouteMeta, routeMetas } from "./routes";
+import { StoreProvider } from "./store";
 
 const App: Component = () => {
   // RouteMeta => Solid Route

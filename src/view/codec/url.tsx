@@ -42,7 +42,7 @@ export default function UrlCodec() {
           icon={() => <ArrowLeftRight size={16} />}
         >
           <Config.Switch
-            value={encode}
+            value={encode()}
             onChange={setEncode}
             on="编码"
             off="解码"
@@ -59,7 +59,7 @@ export default function UrlCodec() {
             <ClearButton onClick={() => setInput("")} />
           </div>
         </div>
-        <Editor value={input} onChange={setInput} />
+        <Editor value={input()} onChange={setInput} />
       </Container>
 
       {/*输出*/}
@@ -67,11 +67,11 @@ export default function UrlCodec() {
         <div class="flex items-center justify-between">
           <span class="text-sm">输出</span>
           <div class="flex items-center justify-center gap-2">
-            <CopyButton value={output} />
-            <SaveButton value={output} />
+            <CopyButton value={output()} />
+            <SaveButton value={output()} />
           </div>
         </div>
-        <Editor value={output} readOnly={true} />
+        <Editor value={output()} readOnly={true} />
       </Container>
     </div>
   );

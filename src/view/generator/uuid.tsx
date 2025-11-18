@@ -37,7 +37,7 @@ export default function UuidGenerator() {
           icon={() => <Settings2 size={16} />}
         >
           <Config.Select
-            value={version}
+            value={version()}
             options={UUID_VERSION_OPTIONS}
             onChange={setVersion}
             class="w-20"
@@ -46,18 +46,18 @@ export default function UuidGenerator() {
 
         {/*连字符配置*/}
         <Config.Option label="连字符" icon={() => <Minus size={16} />}>
-          <ConfigSwitch value={hyphen} onChange={setHyphen} />
+          <ConfigSwitch value={hyphen()} onChange={setHyphen} />
         </Config.Option>
 
         {/*大写字符配置*/}
         <Config.Option label="大写字符" icon={() => <CaseUpper size={16} />}>
-          <ConfigSwitch value={uppercase} onChange={setUppercase} />
+          <ConfigSwitch value={uppercase()} onChange={setUppercase} />
         </Config.Option>
 
         {/*数量配置*/}
         <Config.Option label="数量" icon={() => <Sigma size={16} />}>
           <Config.NumberInput
-            value={size}
+            value={size()}
             onInput={setSize}
             min={1}
             max={10000}
@@ -75,11 +75,11 @@ export default function UuidGenerator() {
               <RefreshCcw size={16} />
               重新生成
             </button>
-            <CopyButton value={output} />
-            <SaveButton value={output} />
+            <CopyButton value={output()} />
+            <SaveButton value={output()} />
           </div>
         </div>
-        <Editor value={output} language="plaintext" readOnly={true} />
+        <Editor value={output()} language="plaintext" readOnly={true} />
       </Container>
     </div>
   );

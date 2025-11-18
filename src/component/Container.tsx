@@ -1,29 +1,22 @@
 import _ from "lodash";
-import { Accessor, createMemo, JSX } from "solid-js";
+import { children, JSX } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
-interface ContainerProps {
+export default function Container(props: {
   children?: JSX.Element;
-  class?: string | Accessor<string>;
-}
-
-export default function Container(props: ContainerProps) {
+  class?: string;
+}) {
   const id = _.uniqueId("container-");
-  const _class = createMemo(() => {
-    let _class = "flex flex-col gap-2 px-4 py-2 bg-base-100 rounded-md p-4";
-    if (props.class) {
-      if (typeof props.class === "string") {
-        _class = twMerge(_class, props.class);
-      } else if (typeof props.class === "function") {
-        _class = twMerge(_class, props.class());
-      }
-    }
-    return _class;
-  });
-
+  const _children = children(() => props.children);
   return (
-    <div id={id} class={_class()}>
-      {props.children}
+    <div
+      id={id}
+      class={twMerge(
+        "bg-base-100 flex flex-col gap-2 rounded-md p-4 px-4 py-2",
+        props.class,
+      )}
+    >
+      {_children()}
     </div>
   );
 }

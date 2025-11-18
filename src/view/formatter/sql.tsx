@@ -44,7 +44,7 @@ export default function SqlFormatter() {
         {/*缩进配置*/}
         <Config.Option label="缩进" icon={() => <Space size={16} />}>
           <Config.Select
-            value={indent}
+            value={indent()}
             options={INDENT_OPTIONS}
             onChange={setIndent}
             class="w-30"
@@ -54,7 +54,7 @@ export default function SqlFormatter() {
         {/*语言配置*/}
         <Config.Option label="语言" icon={() => <Code size={16} />}>
           <Config.Select
-            value={dialect}
+            value={dialect()}
             options={DIALECT_OPTIONS}
             onChange={setDialect}
             class="w-30"
@@ -63,7 +63,7 @@ export default function SqlFormatter() {
 
         {/*关键字大写配置*/}
         <Config.Option label="关键字大写" icon={() => <CaseUpper size={16} />}>
-          <Config.Switch value={uppercase} onChange={setUppercase} />
+          <Config.Switch value={uppercase()} onChange={setUppercase} />
         </Config.Option>
       </Config.Card>
 
@@ -76,7 +76,7 @@ export default function SqlFormatter() {
           </div>
         </div>
         <Editor
-          value={input}
+          value={input()}
           onChange={(value) => setInput(value)}
           language="sql"
         />
@@ -87,11 +87,11 @@ export default function SqlFormatter() {
         <div class="flex items-center justify-between">
           <span class="text-sm">输出</span>
           <div class="flex items-center justify-center gap-2">
-            <CopyButton value={output} />
-            <SaveButton value={output} />
+            <CopyButton value={output()} />
+            <SaveButton value={output()} />
           </div>
         </div>
-        <Editor value={output} language="sql" readOnly={true} />
+        <Editor value={output()} language="sql" readOnly={true} />
       </Container>
     </div>
   );

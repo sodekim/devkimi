@@ -66,7 +66,7 @@ export default function Base64ImageCodec() {
           icon={() => <ArrowLeftRight size={16} />}
         >
           <Config.Switch
-            value={encode}
+            value={encode()}
             onChange={setEncode}
             on="编码"
             off="解码"
@@ -81,7 +81,7 @@ export default function Base64ImageCodec() {
         >
           <Config.Select
             class="w-35"
-            value={mode}
+            value={mode()}
             options={BASE_MODE_OPTIONS}
             onChange={setMode}
           />
@@ -89,9 +89,7 @@ export default function Base64ImageCodec() {
       </Config.Card>
 
       {/*图片*/}
-      <Container
-        class={() => (encode() ? "order-2 h-0 flex-1" : "order-3 h-0 flex-1")}
-      >
+      <Container class={encode() ? "order-2 h-0 flex-1" : "order-3 h-0 flex-1"}>
         <div class="flex items-center justify-between">
           <span class="text-sm">图片</span>
           <div class="flex items-center justify-center gap-2">
@@ -123,7 +121,7 @@ export default function Base64ImageCodec() {
 
             {/* 打开文件 */}
             <Show when={src()}>
-              <OpenFileButton path={image} />
+              <OpenFileButton path={image()} />
             </Show>
           </div>
         </div>
@@ -142,25 +140,23 @@ export default function Base64ImageCodec() {
       </Container>
 
       {/*Base64*/}
-      <Container
-        class={() => (encode() ? "order-3 h-0 flex-1" : "order-2 h-0 flex-1")}
-      >
+      <Container class={encode() ? "order-3 h-0 flex-1" : "order-2 h-0 flex-1"}>
         <div class="flex items-center justify-between">
           <span class="text-sm">Base64</span>
           <div class="flex items-center justify-center gap-2">
             {encode() && (
               <>
-                <CopyButton value={base64} />
-                <SaveButton value={base64} />
+                <CopyButton value={base64()} />
+                <SaveButton value={base64()} />
               </>
             )}
             {decode() && <TextOperateButtons callback={setBase64} />}
           </div>
         </div>
         {encode() ? (
-          <Editor value={base64} readOnly={true} wordWrap="on" />
+          <Editor value={base64()} readOnly={true} wordWrap="on" />
         ) : (
-          <Editor value={base64} wordWrap="on" onChange={setBase64} />
+          <Editor value={base64()} wordWrap="on" onChange={setBase64} />
         )}
       </Container>
     </div>

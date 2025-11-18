@@ -28,13 +28,13 @@ export default function MarkdownPreview() {
         <div class="flex items-center justify-between">
           <span class="text-sm">Markdown</span>
           <div class="flex items-center justify-center gap-2">
-            <CopyButton value={markdown} />
-            <SaveButton value={markdown} />
+            <CopyButton value={markdown()} />
+            <SaveButton value={markdown()} />
             <TextOperateButtons callback={setMarkdown} />
           </div>
         </div>
         <Editor
-          value={markdown}
+          value={markdown()}
           onChange={(value) => setMarkdown(value)}
           language="markdown"
         />

@@ -12,16 +12,14 @@ import {
 } from "lucide-solid";
 import { createSignal } from "solid-js";
 import { openFile } from "../command/fs";
-import { accessor, MaybeAccessor } from "../utils/accessor";
 
-const CopyButton = ({ value }: { value: MaybeAccessor<string> }) => {
+const CopyButton = (props: { value: string }) => {
   const [handle, setHandle] = createSignal<number | null>(null);
-  const _value = accessor(value);
   return (
     <button
       class="btn btn-sm"
       onClick={() =>
-        writeText(_value())
+        writeText(props.value)
           .then(() => console.log("复制成功"))
           .catch((e) => console.error("复制失败: " + e))
           .finally(() => {
@@ -43,69 +41,58 @@ const CopyButton = ({ value }: { value: MaybeAccessor<string> }) => {
   );
 };
 
-const PasteButton = ({ onRead }: { onRead: (value: string) => void }) => {
+const PasteButton = (props: { onRead: (value: string) => void }) => {
   return (
-    <button class="btn btn-sm" onClick={() => readText().then(onRead)}>
+    <button class="btn btn-sm" onClick={() => readText().then(props.onRead)}>
       <Clipboard size={16} /> 粘贴
     </button>
   );
 };
 
-const ClearButton = ({ onClick }: { onClick: (event: MouseEvent) => void }) => {
+const ClearButton = (props: { onClick: (event: MouseEvent) => void }) => {
   return (
-    <button class="btn btn-sm" onClick={onClick}>
+    <button class="btn btn-sm" onClick={props.onClick}>
       <Eraser size={16} />
       清空
     </button>
   );
 };
 
-const PickFileButton = ({
-  label,
-  filters,
-  onPick,
-  multiple,
-}: {
+const PickFileButton = (props: {
   label?: string;
   filters?: DialogFilter[];
   multiple?: boolean;
   onPick: (file: string | null) => void;
 }) => {
-  const _label = label || "选择文件";
-  const _multiple = multiple || false;
   return (
     <button
       class="btn btn-sm"
       onClick={() => {
         open({
-          title: _label,
-          filters,
-          multiple: _multiple,
+          title: props.label || "选择文件",
+          filters: props.filters,
+          multiple: props.multiple,
         })
-          .then((file) => onPick(file))
+          .then((file) => props.onPick(file))
           .catch((e) => console.error("pick file error: " + e));
       }}
     >
       <File size={16} />
-      {_label}
+      {props.label || "选择文件"}
     </button>
   );
 };
 
-const PickImageFileButton = ({
-  label = "选择图片",
-  multiple,
-  onPick,
-}: {
+const PickImageFileButton = (props: {
   label?: string;
   multiple?: boolean;
   onPick: (value: string | null) => void;
 }) => {
   return (
     <PickFileButton
-      onPick={onPick}
-      multiple={multiple}
-      label={label}
+      onPick={props.onPick}
+      multiple={props.multiple}
+      label={props.label}
       filters={[
         {
           name: "Images",
@@ -125,10 +112,7 @@ const PickImageFileButton = ({
   );
 };
 
-const PickTextFileButton = ({
-  onPick,
-  ...props
-}: {
+const PickTextFileButton = (props: {
   label?: string;
   filters?: DialogFilter[];
   multiple?: boolean;
@@ -140,7 +124,7 @@ const PickTextFileButton = ({
       onPick={(file) => {
         if (file) {
           readTextFile(file)
-            .then(onPick)
+            .then(props.onPick)
             .catch((e) => console.error("read text file error!", e));
         }
       }}
@@ -148,15 +132,14 @@ const PickTextFileButton = ({
   );
 };
 
-const OpenFileButton = ({ path }: { path: MaybeAccessor<string> }) => {
-  const _path = accessor(path);
+const OpenFileButton = (props: { path: string }) => {
   return (
     <button
       class="btn btn-sm"
       onClick={() => {
-        openFile(_path())
-          .then(() => console.log(`open file success: ${_path()}`))
-          .catch((e) => console.error(`open file error: ${_path()}`, e));
+        openFile(props.path)
+          .then(() => console.log(`open file success: ${props.path}`))
+          .catch((e) => console.error(`open file error: ${props.path}`, e));
       }}
     >
       <Eye size={16} /> 查看
@@ -164,15 +147,14 @@ const OpenFileButton = ({ path }: { path: MaybeAccessor<string> }) => {
   );
 };
 
-const SaveButton = ({ value }: { value: MaybeAccessor<string> }) => {
-  const _value = accessor(value);
+const SaveButton = (props: { value: string }) => {
   return (
     <button
       class="btn btn-sm"
       onClick={() =>
         save().then((file) => {
           if (file) {
-            writeTextFile(file, _value()).catch((e) =>
+            writeTextFile(file, props.value).catch((e) =>
               console.error("write text file error!", e),
             );
           }
@@ -184,16 +166,12 @@ const SaveButton = ({ value }: { value: MaybeAccessor<string> }) => {
   );
 };
 
-const TextOperateButtons = ({
-  callback,
-}: {
-  callback: (value: string) => void;
-}) => {
+const TextOperateButtons = (props: { callback: (value: string) => void }) => {
   return (
     <>
-      <PickTextFileButton onPick={callback} />
-      <PasteButton onRead={callback} />
-      <ClearButton onClick={() => callback("")} />
+      <PickTextFileButton onPick={props.callback} />
+      <PasteButton onRead={props.callback} />
+      <ClearButton onClick={() => props.callback("")} />
     </>
   );
 };
@@ -207,5 +185,6 @@ export {
   PickImageFileButton,
   PickTextFileButton,
   SaveButton,
-  TextOperateButtons,
+  TextOperateButtons
 };
+

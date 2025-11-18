@@ -37,7 +37,7 @@ export default function XmlFormatter() {
         {/*缩进配置*/}
         <Config.Option label="缩进" icon={() => <Space size={16} />}>
           <Config.Select
-            value={indent}
+            value={indent()}
             options={INDENT_OPTIONS}
             onChange={setIndent}
             class="w-30"
@@ -53,7 +53,7 @@ export default function XmlFormatter() {
             <TextOperateButtons callback={setInput} />
           </div>
         </div>
-        <Editor value={input} onChange={setInput} language="xml" />
+        <Editor value={input()} onChange={setInput} language="xml" />
       </Container>
 
       {/*输出*/}
@@ -61,11 +61,11 @@ export default function XmlFormatter() {
         <div class="flex items-center justify-between">
           <span class="text-sm">输出</span>
           <div class="flex items-center justify-center gap-2">
-            <CopyButton value={output} />
-            <SaveButton value={output} />
+            <CopyButton value={output()} />
+            <SaveButton value={output()} />
           </div>
         </div>
-        <Editor value={output} language="xml" readOnly={true} />
+        <Editor value={output()} language="xml" readOnly={true} />
       </Container>
     </div>
   );

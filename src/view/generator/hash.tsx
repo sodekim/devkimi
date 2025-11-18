@@ -70,7 +70,7 @@ export default function HashGenerator() {
           icon={() => <Settings2 size={16} />}
         >
           <Config.Select
-            value={algorithm}
+            value={algorithm()}
             options={HASH_ALGORITHM_OPTIONS}
             onChange={setAlgorithm}
             class="w-20"
@@ -79,7 +79,7 @@ export default function HashGenerator() {
 
         {/*大写字符配置*/}
         <Config.Option label="大写字符" icon={() => <CaseUpper size={16} />}>
-          <Config.Switch value={uppercase} onChange={setUppercase} />
+          <Config.Switch value={uppercase()} onChange={setUppercase} />
         </Config.Option>
       </Config.Card>
 
@@ -100,7 +100,7 @@ export default function HashGenerator() {
                 <PasteButton onRead={setText} />
                 <ClearButton onClick={() => setText("")} />
               </div>
-              <Editor value={text} onChange={setText} />
+              <Editor value={text()} onChange={setText} />
             </div>
           </div>
 
@@ -132,8 +132,8 @@ export default function HashGenerator() {
         <div class="flex items-center justify-between">
           <span class="text-sm">输出</span>
           <div class="flex items-center justify-center gap-2">
-            <CopyButton value={output} />
-            <SaveButton value={output} />
+            <CopyButton value={output()} />
+            <SaveButton value={output()} />
           </div>
         </div>
         <input

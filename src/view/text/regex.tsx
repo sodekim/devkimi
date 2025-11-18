@@ -78,7 +78,7 @@ export default function RegexTest() {
           description="查找文本中所有的匹配项，或在匹配一次后停止。"
           icon={() => <SquareAsterisk size={16} />}
         >
-          <Config.Switch value={global} onChange={setGlobal} />
+          <Config.Switch value={global()} onChange={setGlobal} />
         </Config.Option>
 
         {/* 忽略大小写配置 */}
@@ -88,7 +88,7 @@ export default function RegexTest() {
           icon={() => <CaseSensitive size={16} />}
         >
           <Config.Switch
-            value={caseInsensitive}
+            value={caseInsensitive()}
             onChange={setCaseInsensitive}
           />
         </Config.Option>
@@ -99,7 +99,7 @@ export default function RegexTest() {
           description="查找的模式从单行变为多行"
           icon={() => <ArrowLeftFromLine size={16} />}
         >
-          <Config.Switch value={multiLine} onChange={setMultiLine} />
+          <Config.Switch value={multiLine()} onChange={setMultiLine} />
         </Config.Option>
       </Config.Card>
 
@@ -128,7 +128,7 @@ export default function RegexTest() {
             <TextOperateButtons callback={setText} />
           </div>
         </div>
-        <Editor value={text} onChange={setText} />
+        <Editor value={text()} onChange={setText} />
       </Container>
 
       <div class="flex h-0 flex-1 items-center justify-center gap-4">

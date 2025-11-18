@@ -55,7 +55,7 @@ export default function QRCodeCodec() {
           icon={() => <ArrowLeftRight size={16} />}
         >
           <Config.Switch
-            value={encode}
+            value={encode()}
             onChange={setEncode}
             on="编码"
             off="解码"
@@ -64,32 +64,28 @@ export default function QRCodeCodec() {
       </Config.Card>
 
       {/*文本*/}
-      <Container
-        class={() => (encode() ? "order-2 h-0 flex-1" : "order-3 h-0 flex-1")}
-      >
+      <Container class={encode() ? "order-2 h-0 flex-1" : "order-3 h-0 flex-1"}>
         <div class="flex items-center justify-between">
           <span class="text-sm">文本</span>
           <div class="flex items-center justify-center gap-2">
             {encode() && <TextOperateButtons callback={setText} />}
             {decode() && (
               <>
-                <CopyButton value={text} />
-                <SaveButton value={text} />
+                <CopyButton value={text()} />
+                <SaveButton value={text()} />
               </>
             )}
           </div>
         </div>
         {encode() ? (
-          <Editor value={text} wordWrap="on" onChange={setText} />
+          <Editor value={text()} wordWrap="on" onChange={setText} />
         ) : (
-          <Editor value={text} readOnly={true} wordWrap="on" />
+          <Editor value={text()} readOnly={true} wordWrap="on" />
         )}
       </Container>
 
       {/*二维码*/}
-      <Container
-        class={() => (encode() ? "order-3 h-0 flex-1" : "order-2 h-0 flex-1")}
-      >
+      <Container class={encode() ? "order-3 h-0 flex-1" : "order-2 h-0 flex-1"}>
         <div class="flex items-center justify-between">
           <span class="text-sm">二维码</span>
           <div class="flex items-center justify-center gap-2">
@@ -121,7 +117,7 @@ export default function QRCodeCodec() {
 
             {/* 打开文件 */}
             <Show when={src()}>
-              <OpenFileButton path={image} />
+              <OpenFileButton path={image()} />
             </Show>
           </div>
         </div>

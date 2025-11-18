@@ -37,7 +37,7 @@ export default function CronConverter() {
           description="计划执行时间的格式"
           icon={() => <ALargeSmall size={16} />}
         >
-          <Config.Input value={pattern} onInput={setPattern} class="w-50" />
+          <Config.Input value={pattern()} onInput={setPattern} class="w-50" />
         </Config.Option>
 
         <Config.Option
@@ -46,7 +46,7 @@ export default function CronConverter() {
           icon={() => <Sigma size={16} />}
         >
           <Config.NumberInput
-            value={size}
+            value={size()}
             onInput={setSize}
             min={1}
             max={10000}
@@ -81,11 +81,11 @@ export default function CronConverter() {
               <RefreshCcw size={16} />
               重新生成
             </button>
-            <CopyButton value={output} />
-            <SaveButton value={output} />
+            <CopyButton value={output()} />
+            <SaveButton value={output()} />
           </div>
         </div>
-        <Editor value={output} readOnly={true} />
+        <Editor value={output()} readOnly={true} />
       </Container>
     </div>
   );

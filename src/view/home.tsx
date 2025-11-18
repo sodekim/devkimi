@@ -1,6 +1,7 @@
 import { useNavigate } from "@solidjs/router";
 import Container from "../component/Container";
 import { routeMetas } from "../routes";
+import { Show } from "solid-js";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -24,13 +25,15 @@ export default function Home() {
                     class="btn h-20 w-60 items-center justify-center gap-2"
                     onClick={() => navigate(`${meta.path}${child.path}`)}
                   >
-                    <span>
-                      {child.icon &&
-                        child.icon({
+                    <Show when={child.icon} fallback={<span></span>}>
+                      <span>
+                        {child.icon!({
                           size: 16,
                           color: "var(--color-primary)",
                         })}
-                    </span>
+                      </span>
+                    </Show>
+
                     <span class="text-sm font-bold">{child.label}</span>
                   </button>
                 ))}

@@ -7,19 +7,24 @@ import {
   onMount,
   useContext,
 } from "solid-js";
-import { createStore, SetStoreFunction, unwrap } from "solid-js/store";
+import { createStore, SetStoreFunction } from "solid-js/store";
 
-type Settings = {
+export type WordWrap = "off" | "on" | "wordWrapColumn" | "bounded";
+
+export type Settings = {
   theme: string;
-  font: {
-    family: string;
-    size: number;
+  editor: {
+    wordWrap: WordWrap;
+    font: {
+      family: string;
+      size: number;
+    };
   };
 };
 
 const defaultSettings: Settings = {
   theme: "dark",
-  font: { family: "SansSerif", size: 14 },
+  editor: { wordWrap: "off", font: { family: "SansSerif", size: 14 } },
 };
 
 export const StoreContext = createContext<{

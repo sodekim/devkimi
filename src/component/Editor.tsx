@@ -5,9 +5,8 @@ import cssWorker from "monaco-editor/esm/vs/language/css/css.worker?worker";
 import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
 import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
 import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
-import { createEffect, onCleanup, onMount } from "solid-js";
+import { createEffect, onCleanup, onMount, splitProps } from "solid-js";
 import { twMerge } from "tailwind-merge";
-import { accessor, MaybeAccessor } from "../utils/accessor";
 import { useSettings } from "../store";
 
 self.MonacoEnvironment = {
@@ -30,10 +29,10 @@ self.MonacoEnvironment = {
 
 type MonacoEditor = monaco.editor.IStandaloneCodeEditor;
 type MonacoEditorOptions = monaco.editor.IStandaloneEditorConstructionOptions;
-type EditorProps = Omit<MonacoEditorOptions, "value"> & {
+type EditorProps = Omit<MonacoEditorOptions, "value" | "model"> & {
   onChange?: (content: string) => void;
   onSetup?: (editor: MonacoEditor) => void;
-  value?: MaybeAccessor<string>;
+  value?: string;
   class?: string;
 };
 
@@ -55,23 +54,24 @@ monaco.editor.defineTheme("dark", {
   },
 });
 
-const editors = [];
-
-export default function Editor({
-  onSetup,
-  onChange,
-  value,
-  class: _class,
-  ...props
-}: EditorProps) {
+export default function Editor(props: EditorProps) {
   const id = _.uniqueId("editor-");
   let editor: MonacoEditor | null = null;
   const [settings] = useSettings();
+  const [local, options] = splitProps(props, [
+    "onSetup",
+    "onChange",
+    "value",
+    "class",
+  ]);
+
+  // 初始化编辑器
   onMount(() => {
+    // 编辑器容器
     const container = document.getElementById(id)!;
 
     // 创建编辑器
-    const _editor = monaco.editor.create(container!, {
+    editor = monaco.editor.create(container!, {
       language: "plaintext",
       automaticLayout: true,
       stickyScroll: {
@@ -81,38 +81,31 @@ export default function Editor({
         enabled: false,
       },
       theme: settings.theme,
-      fontSize: settings.font.size,
-      fontFamily: settings.font.family,
+      fontSize: settings.editor.font.size,
+      fontFamily: settings.editor.font.family,
+      wordWrap: settings.editor.wordWrap,
       scrollBeyondLastLine: false,
-      ...props,
+      ...options,
     });
 
     // 监听内容变化
-    if (onChange) {
-      _editor.onDidChangeModelContent(() => {
-        onChange(_editor.getValue());
+    if (local.onChange) {
+      editor.onDidChangeModelContent(() => {
+        local.onChange?.(editor!.getValue());
       });
     }
 
     // 更新编辑器内容
-    if (value) {
-      const _value = accessor(value);
-      createEffect(() => {
-        const snapshot = _value();
-        if (snapshot !== _editor.getValue()) {
-          _editor.setValue(snapshot);
-        }
-      });
-    }
+    createEffect(() => {
+      if (local.value !== editor!.getValue()) {
+        editor!.setValue(local.value || "");
+      }
+    });
 
     // 调用 onSetup 回调
-    if (onSetup) {
-      onSetup(_editor);
+    if (local.onSetup) {
+      local.onSetup(editor);
     }
-
-    // 保存实例
-    editors.push(_editor);
-    editor = _editor;
   });
 
   // 清理Editor实例
@@ -126,7 +119,7 @@ export default function Editor({
   return (
     <div
       id={id}
-      class={twMerge("input h-0 w-full flex-1 outline-none", _class)}
+      class={twMerge("input h-0 w-full flex-1 outline-none", local.class)}
     ></div>
   );
 }

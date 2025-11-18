@@ -45,7 +45,7 @@ export default function JsonYamlConverter() {
         >
           {/*转换配置*/}
           <Config.Switch
-            value={mode}
+            value={mode()}
             onChange={setMode}
             on="JSON -> YAML"
             off="YAML -> JSON"
@@ -65,10 +65,10 @@ export default function JsonYamlConverter() {
           <Show
             when={mode()}
             fallback={
-              <Editor value={input} onChange={setInput} language="yaml" />
+              <Editor value={input()} onChange={setInput} language="yaml" />
             }
           >
-            <Editor value={input} onChange={setInput} language="json" />
+            <Editor value={input()} onChange={setInput} language="json" />
           </Show>
         </Container>
 
@@ -77,15 +77,17 @@ export default function JsonYamlConverter() {
           <div class="flex items-center justify-between">
             <span class="text-sm">输出</span>
             <div class="flex items-center justify-center gap-2">
-              <CopyButton value={output} />
-              <SaveButton value={output} />
+              <CopyButton value={output()} />
+              <SaveButton value={output()} />
             </div>
           </div>
           <Show
             when={mode()}
-            fallback={<Editor value={output} readOnly={true} language="json" />}
+            fallback={
+              <Editor value={output()} readOnly={true} language="json" />
+            }
           >
-            <Editor value={output} readOnly={true} language="yaml" />
+            <Editor value={output()} readOnly={true} language="yaml" />
           </Show>
         </Container>
       </div>

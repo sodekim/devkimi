@@ -49,7 +49,7 @@ export default function YamlPropertiesConverter() {
         >
           {/*转换配置*/}
           <Config.Switch
-            value={mode}
+            value={mode()}
             onChange={setMode}
             on="YAML -> PROPERTIES"
             off="PROPERTIES -> YAML"
@@ -69,10 +69,10 @@ export default function YamlPropertiesConverter() {
           <Show
             when={mode()}
             fallback={
-              <Editor value={input} onChange={setInput} language="properties" />
+              <Editor value={input()} onChange={setInput} language="properties" />
             }
           >
-            <Editor value={input} onChange={setInput} language="yaml" />
+            <Editor value={input()} onChange={setInput} language="yaml" />
           </Show>
         </Container>
 
@@ -81,15 +81,15 @@ export default function YamlPropertiesConverter() {
           <div class="flex items-center justify-between">
             <span class="text-sm">输出</span>
             <div class="flex items-center justify-center gap-2">
-              <CopyButton value={output} />
-              <SaveButton value={output} />
+              <CopyButton value={output()} />
+              <SaveButton value={output()} />
             </div>
           </div>
           <Show
             when={mode()}
-            fallback={<Editor value={output} readOnly={true} language="yaml" />}
+            fallback={<Editor value={output()} readOnly={true} language="yaml" />}
           >
-            <Editor value={output} readOnly={true} language="properties" />
+            <Editor value={output()} readOnly={true} language="properties" />
           </Show>
         </Container>
       </div>

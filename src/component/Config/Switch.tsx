@@ -1,22 +1,22 @@
-export default function Switch({
-  value,
-  on = "开启",
-  off = "关闭",
-  onChange,
-}: {
-  value: () => boolean;
+import { createMemo } from "solid-js";
+
+export default function Switch(props: {
+  value: boolean;
   on?: string;
   off?: string;
   onChange?: (value: boolean) => void;
 }) {
+  const label = createMemo(() =>
+    props.value ? props.on || "开启" : props.off || "关闭",
+  );
   return (
     <label class="label text-base-content text-sm">
-      {value() ? on : off}
+      {label()}
       <input
         type="checkbox"
-        checked={value()}
+        checked={props.value}
         class="toggle toggle-primary toggle-sm"
-        onChange={(e) => onChange && onChange(e.target.checked)}
+        onChange={(e) => props.onChange && props.onChange(e.target.checked)}
       />
     </label>
   );

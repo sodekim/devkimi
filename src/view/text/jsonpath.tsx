@@ -155,7 +155,7 @@ export default function JSONPath() {
             <TextOperateButtons callback={setText} />
           </div>
         </div>
-        <Editor value={text} onChange={setText} language="json" />
+        <Editor value={text()} onChange={setText} language="json" />
       </Container>
 
       <div class="flex h-0 flex-1 items-center justify-center gap-4">
@@ -164,7 +164,7 @@ export default function JSONPath() {
           <div class="flex items-center justify-between">
             <span class="text-sm">结果</span>
           </div>
-          <Editor language="json" value={output} readOnly={true} />
+          <Editor language="json" value={output()} readOnly={true} />
         </Container>
 
         {/*速查表*/}

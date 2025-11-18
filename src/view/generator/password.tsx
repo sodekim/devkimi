@@ -53,7 +53,7 @@ export default function PasswordGenerator() {
       <Config.Card>
         <Config.Option label="长度" icon={() => <Ruler size={16} />}>
           <Config.NumberInput
-            value={length}
+            value={length()}
             onInput={setLength}
             min={1}
             max={10000}
@@ -66,7 +66,7 @@ export default function PasswordGenerator() {
           description="使用大写字符 (ABCDEFGHIJKLMNOPQRSTUVWXYZ)"
           icon={() => <CaseUpper size={16} />}
         >
-          <Config.Switch value={uppercase} onChange={setUppercase} />
+          <Config.Switch value={uppercase()} onChange={setUppercase} />
         </Config.Option>
 
         <Config.Option
@@ -74,7 +74,7 @@ export default function PasswordGenerator() {
           description="使用小写字符 (abcdefghijklmnopqrstuvwxyz)"
           icon={() => <CaseLower size={16} />}
         >
-          <Config.Switch value={lowercase} onChange={setLowercase} />
+          <Config.Switch value={lowercase()} onChange={setLowercase} />
         </Config.Option>
 
         <Config.Option
@@ -82,7 +82,7 @@ export default function PasswordGenerator() {
           description="使用数字字符 (0123456789)"
           icon={() => <Binary size={16} />}
         >
-          <Config.Switch value={numberic} onChange={setNumberic} />
+          <Config.Switch value={numberic()} onChange={setNumberic} />
         </Config.Option>
 
         <Config.Option
@@ -90,7 +90,7 @@ export default function PasswordGenerator() {
           description="使用特殊字符 (!#$%&')*+-,:;=>?@]^_}~)"
           icon={() => <Hash size={16} />}
         >
-          <Config.Switch value={special} onChange={setSpecial} />
+          <Config.Switch value={special()} onChange={setSpecial} />
         </Config.Option>
 
         <Config.Option
@@ -98,12 +98,12 @@ export default function PasswordGenerator() {
           description="设置需要排除的字符"
           icon={() => <SquaresExclude size={16} />}
         >
-          <Config.Input value={excludes} onInput={setExcludes} class="w-40" />
+          <Config.Input value={excludes()} onInput={setExcludes} class="w-40" />
         </Config.Option>
 
         <Config.Option label="数量" icon={() => <Sigma size={16} />}>
           <Config.NumberInput
-            value={size}
+            value={size()}
             onInput={setSize}
             min={1}
             max={10000}
@@ -121,11 +121,11 @@ export default function PasswordGenerator() {
               <RefreshCcw size={16} />
               重新生成
             </button>
-            <CopyButton value={output} />
-            <SaveButton value={output} />
+            <CopyButton value={output()} />
+            <SaveButton value={output()} />
           </div>
         </div>
-        <Editor value={output} language="plaintext" readOnly={true} />
+        <Editor value={output()} language="plaintext" readOnly={true} />
       </Container>
     </div>
   );

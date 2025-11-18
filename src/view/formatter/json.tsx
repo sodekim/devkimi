@@ -38,7 +38,7 @@ export default function JsonFormatter() {
         {/*缩进配置*/}
         <Config.Option label="缩进" icon={() => <Space size={16} />}>
           <Config.Select
-            value={indent}
+            value={indent()}
             options={INDENT_OPTIONS}
             onChange={setIndent}
             class="w-30"
@@ -51,7 +51,7 @@ export default function JsonFormatter() {
           description="按照字符顺序排序 JSON 属性"
           icon={() => <ArrowDownAZ size={16} />}
         >
-          <Config.Switch value={sortable} onChange={setSortable} />
+          <Config.Switch value={sortable()} onChange={setSortable} />
         </Config.Option>
       </Config.Card>
 
@@ -64,8 +64,11 @@ export default function JsonFormatter() {
           </div>
         </div>
         <Editor
-          value={input}
-          onChange={(value) => setInput(value)}
+          value={input()}
+          onChange={(value) => {
+            console.log(value);
+            setInput(value);
+          }}
           language="json"
         />
       </Container>
@@ -75,11 +78,11 @@ export default function JsonFormatter() {
         <div class="flex items-center justify-between">
           <span class="text-sm">输出</span>
           <div class="flex items-center justify-center gap-2">
-            <CopyButton value={output} />
-            <SaveButton value={output} />
+            <CopyButton value={output()} />
+            <SaveButton value={output()} />
           </div>
         </div>
-        <Editor value={output} language="json" readOnly={true} />
+        <Editor value={output()} language="json" readOnly={true} />
       </Container>
     </div>
   );
