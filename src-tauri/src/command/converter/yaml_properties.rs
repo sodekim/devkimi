@@ -13,7 +13,7 @@ pub fn convert_yaml_to_properties(yaml: &str) -> Result<String, Error> {
 #[tauri::command]
 pub fn convert_properties_to_yaml(properties: &str) -> Result<String, Error> {
     let properties = deserialize_properties(properties);
-    let value = properties_to_yaml(properties);
+    let value = properties_to_yaml(properties)?;
     serde_yaml::to_string(&value).map_err(Into::into)
 }
 
@@ -59,7 +59,7 @@ fn yaml_to_properties(yaml: &str) -> Result<Properties, Error> {
     Ok(properties)
 }
 
-fn parse_key(key: &str) -> Result<Vec<String>, String> {
+fn parse_key(key: &str) -> Result<Vec<String>, Error> {
     let re = Regex::new(r#"([^\[\].]+)|\[(\d+)\]"#).unwrap();
     let mut parts = Vec::new();
     for cap in re.captures_iter(key) {
@@ -69,10 +69,9 @@ fn parse_key(key: &str) -> Result<Vec<String>, String> {
             parts.push(format!("[{}]", idx.as_str()));
         }
     }
-    if parts.is_empty() {
-        Err("Empty key".to_string())
-    } else {
-        Ok(parts)
+    match parts.is_empty() {
+        true => Err(Error::EmptyKey),
+        false => Ok(parts),
     }
 }
 
@@ -94,7 +93,7 @@ fn parse_value(s: &str) -> Value {
     Value::String(s.to_string())
 }
 
-pub fn properties_to_yaml(properties: Properties) -> Result<Value, String> {
+pub fn properties_to_yaml(properties: Properties) -> Result<Value, Error> {
     let mut root = Value::Mapping(Mapping::new());
 
     let mut entries: Vec<(Vec<String>, Value)> = Vec::new();
@@ -110,7 +109,7 @@ pub fn properties_to_yaml(properties: Properties) -> Result<Value, String> {
     Ok(root)
 }
 
-fn insert_value(root: &mut Value, path: &[String], value: Value) -> Result<(), String> {
+fn insert_value(root: &mut Value, path: &[String], value: Value) -> Result<(), Error> {
     let mut current = root;
 
     for (i, part) in path.iter().enumerate() {
@@ -120,7 +119,7 @@ fn insert_value(root: &mut Value, path: &[String], value: Value) -> Result<(), S
             let idx_str = &part[1..part.len() - 1];
             let idx = idx_str
                 .parse::<usize>()
-                .map_err(|_| format!("Invalid array index: {}", part))?;
+                .map_err(|_| Error::InvalidArrayIndex(idx_str.to_string()))?;
 
             // 如果 current 不是序列，则创建一个新的序列
             if !current.is_sequence() {
@@ -128,9 +127,7 @@ fn insert_value(root: &mut Value, path: &[String], value: Value) -> Result<(), S
             }
 
             // 获取序列的可变引用
-            let seq = current
-                .as_sequence_mut()
-                .ok_or("Expected a sequence (array)")?;
+            let seq = current.as_sequence_mut().ok_or(Error::ExpectedSequence)?;
 
             // 扩展数组以确保索引位置存在
             while seq.len() <= idx {
@@ -153,9 +150,7 @@ fn insert_value(root: &mut Value, path: &[String], value: Value) -> Result<(), S
                 *current = Value::Mapping(Mapping::new());
             }
 
-            let map = current
-                .as_mapping_mut()
-                .ok_or("Expected a mapping (object)")?;
+            let map = current.as_mapping_mut().ok_or(Error::ExpectedMap)?;
 
             if is_last {
                 map.insert(Value::String(part.clone()), value);
@@ -170,13 +165,13 @@ fn insert_value(root: &mut Value, path: &[String], value: Value) -> Result<(), S
             }
         }
     }
-
     Ok(())
 }
 
 fn serialize_properties(properties: &Properties) -> String {
     properties
         .iter()
+        .inspect(|(k, v)| println!("{}: {}", k, v))
         .map(|(key, value)| format!("{}={}", key, value))
         .collect::<Vec<_>>()
         .join("\n")
@@ -196,4 +191,8 @@ command_error! {
     (Yaml, "yaml error: {0}", #[from]  serde_yaml::Error),
     (ContainsTaggedValue, "unsupported yaml tagged value: {0}", String),
     (KeyNotString, "unsupported yaml key is not string: {0}", String),
+    (InvalidArrayIndex, "invalid array index: {0}", String),
+    (ExpectedSequence, "expected a sequence (array)"),
+    (ExpectedMap, "expected a map (object)"),
+    (EmptyKey, "empty key"),
 }
