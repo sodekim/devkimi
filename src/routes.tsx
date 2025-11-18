@@ -192,6 +192,7 @@ const routeMetas: RouteMeta[] = [
     path: "/settings",
     component: lazy(() => import("./view/settings")),
     icon: Settings,
+    hidden: true,
   },
   {
     label: "主页",
