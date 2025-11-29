@@ -98,7 +98,11 @@ export default function HashGenerator() {
                 <PasteButton onRead={setText} />
                 <ClearButton onClick={() => setText("")} />
               </div>
-              <Editor value={text()} onChange={setText} />
+              <Editor
+                value={text()}
+                onChange={setText}
+                placeholder="输入要计算哈希值的文本"
+              />
             </div>
           </div>
 
@@ -117,7 +121,7 @@ export default function HashGenerator() {
                   )}
                 >
                   <Paperclip size={14} />
-                  {file() || "未选择文件"}
+                  {file() || "选择需要计算哈希值的文件"}
                 </span>
               </div>
             </div>
@@ -125,10 +129,10 @@ export default function HashGenerator() {
         </div>
       </Container>
 
-      {/*输出*/}
+      {/*哈希值*/}
       <Container class="h-30">
         <div class="flex items-center justify-between">
-          <span class="text-sm">输出</span>
+          <span class="text-sm">哈希值</span>
           <div class="flex items-center justify-center gap-2">
             <CopyButton value={output()} />
             <SaveButton value={output()} />
@@ -141,11 +145,11 @@ export default function HashGenerator() {
         />
       </Container>
 
-      {/*校验数据*/}
+      {/*校验哈希值*/}
       <Container class="h-30">
         <div class="flex items-center justify-between">
           <span class="flex items-center justify-center gap-4 text-sm">
-            校验数据
+            校验哈希值
             <Show when={target()}>
               <Switch>
                 <Match when={matched()}>
@@ -171,6 +175,7 @@ export default function HashGenerator() {
           class="input input-md w-full outline-none"
           value={target()}
           onInput={(e) => setTarget(e.target.value)}
+          placeholder="输入要校验的哈希值即可与结果进行比对"
         />
       </Container>
     </div>

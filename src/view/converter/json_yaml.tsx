@@ -65,10 +65,20 @@ export default function JsonYamlConverter() {
           <Show
             when={mode()}
             fallback={
-              <Editor value={input()} onChange={setInput} language="yaml" />
+              <Editor
+                value={input()}
+                onChange={setInput}
+                language="yaml"
+                placeholder="输入需要转换的 YAML 数据"
+              />
             }
           >
-            <Editor value={input()} onChange={setInput} language="json" />
+            <Editor
+              value={input()}
+              onChange={setInput}
+              language="json"
+              placeholder="输入需要转换的 JSON 数据"
+            />
           </Show>
         </Container>
 

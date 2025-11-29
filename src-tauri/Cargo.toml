@@ -31,7 +31,7 @@ open = "5.3"
 qrcode = "0.14"
 quick-xml = "0.38"
 quircs = "0.10"
-rand = { version = "0.9" }
+rand = { version = "0.8" }
 regex = "1.12"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", features = ["preserve_order"] }
@@ -52,6 +52,10 @@ urlencoding = "2.1"
 uuid = { version = "1.18", features = ["v1", "v4", "v7"] }
 font-kit = "0.14"
 tauri-plugin-store = "2"
+rsa = "0.9"
+pkcs1 = "0.7"
+pkcs8 = { version = "0.10", features = ["encryption"] }
+pem = "1.0"
 
 [profile.dev]
 incremental = true # 以较小的步骤编译您的二进制文件。

@@ -70,6 +70,7 @@ export default function JsonFormatter() {
             setInput(value);
           }}
           language="json"
+          placeholder="输入需要格式化的 JSON 数据"
         />
       </Container>
 

@@ -132,7 +132,7 @@ export default function Base64ImageCodec() {
             encode() && (
               <span class="text-warning flex items-center justify-center gap-2 text-sm">
                 <Image size={16} />
-                未选择图片
+                选择需要转换的图片
               </span>
             )
           )}
@@ -156,7 +156,12 @@ export default function Base64ImageCodec() {
         {encode() ? (
           <Editor value={base64()} readOnly={true} wordWrap="on" />
         ) : (
-          <Editor value={base64()} wordWrap="on" onChange={setBase64} />
+          <Editor
+            value={base64()}
+            wordWrap="on"
+            onChange={setBase64}
+            placeholder="输入要解码的Base64文本"
+          />
         )}
       </Container>
     </div>

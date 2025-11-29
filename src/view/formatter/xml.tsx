@@ -53,7 +53,12 @@ export default function XmlFormatter() {
             <TextOperateButtons callback={setInput} />
           </div>
         </div>
-        <Editor value={input()} onChange={setInput} language="xml" />
+        <Editor
+          value={input()}
+          onChange={setInput}
+          language="xml"
+          placeholder="输入需要格式化的 XML 数据"
+        />
       </Container>
 
       {/*输出*/}

@@ -51,7 +51,7 @@ export default function UrlCodec() {
       </Config.Card>
 
       {/*输入*/}
-      <Container class="h-0 flex-1 border border-base-300">
+      <Container class="border-base-300 h-0 flex-1 border">
         <div class="flex items-center justify-between">
           <span class="text-sm">输入</span>
           <div class="flex items-center justify-center gap-2">
@@ -59,7 +59,11 @@ export default function UrlCodec() {
             <ClearButton onClick={() => setInput("")} />
           </div>
         </div>
-        <Editor value={input()} onChange={setInput} />
+        <Editor
+          value={input()}
+          onChange={setInput}
+          placeholder={encode() ? "输入要编码的文本" : "输入要解码的文本"}
+        />
       </Container>
 
       {/*输出*/}

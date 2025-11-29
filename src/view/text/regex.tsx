@@ -128,7 +128,11 @@ export default function RegexTest() {
             <TextOperateButtons callback={setText} />
           </div>
         </div>
-        <Editor value={text()} onChange={setText} />
+        <Editor
+          value={text()}
+          onChange={setText}
+          placeholder="输入要匹配的文本"
+        />
       </Container>
 
       <div class="flex h-0 flex-1 items-center justify-center gap-4">

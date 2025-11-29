@@ -78,7 +78,12 @@ export default function QRCodeCodec() {
           </div>
         </div>
         {encode() ? (
-          <Editor value={text()} wordWrap="on" onChange={setText} />
+          <Editor
+            value={text()}
+            wordWrap="on"
+            onChange={setText}
+            placeholder="输入要编码的文本"
+          />
         ) : (
           <Editor value={text()} readOnly={true} wordWrap="on" />
         )}

@@ -96,7 +96,7 @@ export default function GZipCodec() {
         <Editor
           value={input()}
           onChange={(value) => setInput(value)}
-          language="base64"
+          placeholder={encode() ? "输入要压缩的文本" : "输入要解压的文本"}
         />
       </Container>
 
@@ -111,13 +111,16 @@ export default function GZipCodec() {
             <SaveButton value={output()} />
           </div>
         </div>
-        <Editor value={output()} language="base64" readOnly={true} />
+        <Editor value={output()} readOnly={true} />
       </Container>
 
       <Container class="h-10 justify-center">
         <span class="flex items-center justify-start gap-1 text-sm">
           <AudioWaveform size={16} />
-          压缩率 {(ratio() * 100).toFixed(2)}%
+          压缩率
+          <span class={ratio() > 0 ? "text-success" : "text-warning"}>
+            {(ratio() * 100).toFixed(2)}%
+          </span>
         </span>
       </Container>
     </div>

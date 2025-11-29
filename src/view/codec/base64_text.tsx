@@ -87,7 +87,11 @@ export default function Base64TextCodec() {
             <TextOperateButtons callback={setInput} />
           </div>
         </div>
-        <Editor value={input()} onChange={(value) => setInput(value)} />
+        <Editor
+          value={input()}
+          onChange={(value) => setInput(value)}
+          placeholder={encode() ? "输入要编码的文本" : "输入要解码的文本"}
+        />
       </Container>
 
       {/*输出*/}

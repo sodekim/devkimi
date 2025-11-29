@@ -29,11 +29,15 @@ self.MonacoEnvironment = {
 
 type MonacoEditor = monaco.editor.IStandaloneCodeEditor;
 type MonacoEditorOptions = monaco.editor.IStandaloneEditorConstructionOptions;
-type EditorProps = Omit<MonacoEditorOptions, "value" | "model"> & {
+type EditorProps = Omit<
+  MonacoEditorOptions,
+  "value" | "model" | "placeholder"
+> & {
   onChange?: (content: string) => void;
   onSetup?: (editor: MonacoEditor) => void;
   value?: string;
   class?: string;
+  placeholder?: string;
 };
 
 monaco.editor.defineTheme("light", {
@@ -63,6 +67,7 @@ export default function Editor(props: EditorProps) {
     "onChange",
     "value",
     "class",
+    "placeholder",
   ]);
 
   // 初始化编辑器
@@ -72,6 +77,7 @@ export default function Editor(props: EditorProps) {
 
     // 创建编辑器
     editor = monaco.editor.create(container!, {
+      placeholder: local.placeholder,
       language: "plaintext",
       automaticLayout: true,
       stickyScroll: {
@@ -86,6 +92,11 @@ export default function Editor(props: EditorProps) {
       wordWrap: settings.editor.wordWrap,
       scrollBeyondLastLine: false,
       ...options,
+    });
+
+    // 监听占位符变化
+    createEffect(() => {
+      editor?.updateOptions({ placeholder: local.placeholder });
     });
 
     // 监听内容变化
@@ -119,7 +130,7 @@ export default function Editor(props: EditorProps) {
   return (
     <div
       id={id}
-      class={twMerge("input h-0 w-full flex-1 outline-none", local.class)}
+      class={twMerge("input h-0 w-full flex-1 p-2 outline-none", local.class)}
     ></div>
   );
 }

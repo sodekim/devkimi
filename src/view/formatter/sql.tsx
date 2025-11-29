@@ -79,6 +79,7 @@ export default function SqlFormatter() {
           value={input()}
           onChange={(value) => setInput(value)}
           language="sql"
+          placeholder="输入需要格式化的 SQL 语句"
         />
       </Container>
 
