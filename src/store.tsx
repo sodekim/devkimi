@@ -9,21 +9,32 @@ import {
 } from "solid-js";
 import { createStore, SetStoreFunction } from "solid-js/store";
 
+//
+// 编辑器自动换行类型
+//
 export type WordWrap = "off" | "on" | "wordWrapColumn" | "bounded";
 
+//
+// 设置类型
+//
 export type Settings = {
-  theme: string;
+  // 通用配置
+  common: {
+    theme: string;
+    openConfigCollapse: boolean,
+  },
+  // 编辑器配置
   editor: {
     wordWrap: WordWrap;
     font: {
       family: string;
       size: number;
     };
-  };
+  }
 };
 
 const defaultSettings: Settings = {
-  theme: "dark",
+  common: { theme: "dark", openConfigCollapse: true },
   editor: { wordWrap: "off", font: { family: "SansSerif", size: 14 } },
 };
 
@@ -55,7 +66,7 @@ export const StoreProvider = (props: { children?: JSX.Element }) => {
 
   // 切换主题
   createEffect(() => {
-    const theme = settings.theme;
+    const theme = settings.common.theme;
     const element = document.documentElement;
     element.setAttribute("data-theme", theme);
   });

@@ -19,6 +19,7 @@ import {
   QrCode,
   Regex,
   Settings,
+  ShieldPlus,
   SquareAsterisk,
   SquareChartGantt,
   Turntable
@@ -185,6 +186,38 @@ const routeMetas: RouteMeta[] = [
         component: lazy(() => import("./view/converter/yaml_properties")),
         icon: FileBracesCorner,
       },
+    ],
+  },
+  {
+    label: "加解密",
+    path: "/crypto",
+    icon: ShieldPlus,
+    children: [
+      {
+        label: "RSA",
+        path: "/crypto/rsa",
+        icon: ArrowLeftRight,
+        component: lazy(() => import("./view/crypto/rsa")),
+      },
+      {
+        label: "SM4",
+        path: "/crypto/sm4",
+        icon: ArrowLeftRight,
+        component: lazy(() => import("./view/crypto/sm4")),
+      },
+      {
+        label: "AES",
+        path: "/crypto/aes",
+        icon: ArrowLeftRight,
+        component: lazy(() => import("./view/crypto/aes")),
+      },
+      {
+        label: "DES",
+        path: "/crypto/des",
+        icon: ArrowLeftRight,
+        component: lazy(() => import("./view/crypto/des")),
+      },
+
     ],
   },
   {

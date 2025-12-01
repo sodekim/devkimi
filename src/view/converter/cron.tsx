@@ -57,7 +57,7 @@ export default function CronConverter() {
       </Config.Card>
 
       {/*CRON表达式*/}
-      <Container class="h-30">
+      <Container>
         <div class="flex items-center justify-between">
           <span class="text-sm">CRON表达式</span>
           <div class="flex items-center justify-center gap-2">

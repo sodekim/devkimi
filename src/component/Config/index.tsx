@@ -4,14 +4,23 @@ import { Input, NumberInput } from "./Input";
 import Option from "./Option";
 import Select from "./Select";
 import Switch from "./Switch";
+import { twMerge } from "tailwind-merge";
+import { useSettings } from "../../store";
 
-const Card = (props: { label?: string; children?: JSX.Element }) => {
+const Card = (props: { label?: string; collapse?: boolean, children?: JSX.Element }) => {
+  const [settings] = useSettings();
   const _children = children(() => props.children);
+  const _collapse = () => props.collapse ?? true;
   return (
-    <Container class="gap-4">
-      <span class="text-sm">{props.label}</span>
-      <div class="flex flex-col items-center gap-2">{_children()}</div>
-    </Container>
+    <div class={twMerge("collapse bg-base-100", _collapse() ? "collapse-arrow" : "collapse-open")}>
+      <input type="checkbox" checked={settings.common.openConfigCollapse} />
+      <div class="collapse-title font-semibold text-sm">{props.label || "配置"}</div>
+      <div class=" collapse-content">
+        <div class="flex flex-col items-center gap-2 rounded-md">
+          {_children()}
+        </div>
+      </div>
+    </div>
   );
 };
 

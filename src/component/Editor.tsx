@@ -86,7 +86,7 @@ export default function Editor(props: EditorProps) {
       minimap: {
         enabled: false,
       },
-      theme: settings.theme,
+      theme: settings.common.theme,
       fontSize: settings.editor.font.size,
       fontFamily: settings.editor.font.family,
       wordWrap: settings.editor.wordWrap,

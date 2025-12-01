@@ -37,6 +37,9 @@ pub fn run() {
             command::converter::json_yaml::convert_yaml_to_json,
             command::converter::yaml_properties::convert_yaml_to_properties,
             command::converter::yaml_properties::convert_properties_to_yaml,
+            command::crypto::rsa::generate_rsa_key_pair,
+            command::crypto::rsa::rsa_encrypt,
+            command::crypto::rsa::rsa_decrypt,
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {
