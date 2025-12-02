@@ -63,19 +63,22 @@ macro_rules! encrypt_symmetric {
         match $block_mode {
             // 块机密
             BlockMode::Cbc => {
-                let encryptor = cbc::Encryptor::<$ty>::new_from_slices(&key, &iv).map_err(|_|Error::InvalidLength($bit_size))?;
+                let encryptor = cbc::Encryptor::<$ty>::new_from_slices(&key, &iv)
+                    .map_err(|_| Error::InvalidLength($bit_size))?;
                 $crate::command::crypto::symmetric::encrypt_block(
                     encryptor, &input, pos, $padding, $encoding,
                 )
             }
             BlockMode::Cfb => {
-                let encryptor = cfb_mode::Encryptor::<$ty>::new_from_slices(&key, &iv).map_err(|_|Error::InvalidLength($bit_size))?;
+                let encryptor = cfb_mode::Encryptor::<$ty>::new_from_slices(&key, &iv)
+                    .map_err(|_| Error::InvalidLength($bit_size))?;
                 $crate::command::crypto::symmetric::encrypt_block(
                     encryptor, &input, pos, $padding, $encoding,
                 )
             }
             BlockMode::Ecb => {
-                let encryptor = ecb::Encryptor::<$ty>::new_from_slice(&key).map_err(|_|Error::InvalidLength($bit_size))?;
+                let encryptor = ecb::Encryptor::<$ty>::new_from_slice(&key)
+                    .map_err(|_| Error::InvalidLength($bit_size))?;
                 $crate::command::crypto::symmetric::encrypt_block(
                     encryptor, &input, pos, $padding, $encoding,
                 )
@@ -83,11 +86,13 @@ macro_rules! encrypt_symmetric {
 
             // 流加密
             BlockMode::Ofb => {
-                let encryptor = ofb::Ofb::<$ty>::new_from_slices(&key, &iv).map_err(|_|Error::InvalidLength($bit_size))?;
+                let encryptor = ofb::Ofb::<$ty>::new_from_slices(&key, &iv)
+                    .map_err(|_| Error::InvalidLength($bit_size))?;
                 $crate::command::crypto::symmetric::encrypt_stream(encryptor, &mut input, $encoding)
             }
             BlockMode::Ctr => {
-                let encryptor = ctr::Ctr128BE::<$ty>::new_from_slices(&key, &iv).map_err(|_|Error::InvalidLength($bit_size))?;
+                let encryptor = ctr::Ctr32BE::<$ty>::new_from_slices(&key, &iv)
+                    .map_err(|_| Error::InvalidLength($bit_size))?;
                 $crate::command::crypto::symmetric::encrypt_stream(encryptor, &mut input, $encoding)
             }
         }
@@ -110,19 +115,22 @@ macro_rules! decrypt_symmetric {
         match $block_mode {
             // 块解密
             BlockMode::Cbc => {
-                let decryptor = cbc::Decryptor::<$ty>::new_from_slices(&key, &iv).map_err(|_|Error::InvalidLength($bit_size))?;
+                let decryptor = cbc::Decryptor::<$ty>::new_from_slices(&key, &iv)
+                    .map_err(|_| Error::InvalidLength($bit_size))?;
                 $crate::command::crypto::symmetric::decrypt_block(
                     decryptor, &mut input, $padding, $encoding,
                 )
             }
             BlockMode::Cfb => {
-                let decryptor = cfb_mode::Decryptor::<$ty>::new_from_slices(&key, &iv).map_err(|_|Error::InvalidLength($bit_size))?;
+                let decryptor = cfb_mode::Decryptor::<$ty>::new_from_slices(&key, &iv)
+                    .map_err(|_| Error::InvalidLength($bit_size))?;
                 $crate::command::crypto::symmetric::decrypt_block(
                     decryptor, &mut input, $padding, $encoding,
                 )
             }
             BlockMode::Ecb => {
-                let decryptor = ecb::Decryptor::<$ty>::new_from_slice(&key).map_err(|_|Error::InvalidLength($bit_size))?;
+                let decryptor = ecb::Decryptor::<$ty>::new_from_slice(&key)
+                    .map_err(|_| Error::InvalidLength($bit_size))?;
                 $crate::command::crypto::symmetric::decrypt_block(
                     decryptor, &mut input, $padding, $encoding,
                 )
@@ -130,11 +138,13 @@ macro_rules! decrypt_symmetric {
 
             // 流解密
             BlockMode::Ofb => {
-                let decryptor = ofb::Ofb::<$ty>::new_from_slices(&key, &iv).map_err(|_|Error::InvalidLength($bit_size))?;
+                let decryptor = ofb::Ofb::<$ty>::new_from_slices(&key, &iv)
+                    .map_err(|_| Error::InvalidLength($bit_size))?;
                 $crate::command::crypto::symmetric::decrypt_stream(decryptor, &mut input, $encoding)
             }
             BlockMode::Ctr => {
-                let decryptor = ctr::Ctr128BE::<$ty>::new_from_slices(&key, &iv).map_err(|_|Error::InvalidLength($bit_size))?;
+                let decryptor = ctr::Ctr32BE::<$ty>::new_from_slices(&key, &iv)
+                    .map_err(|_| Error::InvalidLength($bit_size))?;
                 $crate::command::crypto::symmetric::decrypt_stream(decryptor, &mut input, $encoding)
             }
         }
@@ -178,7 +188,38 @@ where
 command_error! {
     (InvalidLength, "invalid key length, must be {0} bits", usize),
     (Pad, "Pad error", #[from] inout::PadError),
-    (Unpad, "unpad error", #[from] cipher::block_padding::UnpadError),
+    (Unpad, "UnPad error", #[from] cipher::block_padding::UnpadError),
     (RequiredIv, "block mode `{0:?}` required iv", crate::command::crypto::block_mode::BlockMode),
     (Encoding, "encoding error", #[from] crate::encoding::EncodingError)
+}
+
+#[macro_export]
+macro_rules! generate_key {
+    ($ty:ty, $encoding:expr) => {{
+        let mut rng = rand::thread_rng();
+        let key = <$ty as crypto_common::KeyInit>::generate_key(&mut rng);
+        $encoding.encode(&key).map_err(Into::into)
+    }};
+}
+
+#[macro_export]
+macro_rules! generate_iv {
+    ($ty:ty, $block_mode:expr, $encoding:expr) => {{
+        let mut rng = rand::thread_rng();
+        match $block_mode {
+            BlockMode::Cbc => $encoding
+                .encode(&cbc::Encryptor::<$ty>::generate_iv(&mut rng))
+                .map_err(Into::into),
+            BlockMode::Cfb => $encoding
+                .encode(&cfb_mode::Encryptor::<$ty>::generate_iv(&mut rng))
+                .map_err(Into::into),
+            BlockMode::Ofb => $encoding
+                .encode(&ofb::Ofb::<$ty>::generate_iv(&mut rng))
+                .map_err(Into::into),
+            BlockMode::Ctr => $encoding
+                .encode(&ctr::Ctr32BE::<$ty>::generate_iv(&mut rng))
+                .map_err(Into::into),
+            BlockMode::Ecb => unreachable!("ECB mode is not supported for SM4"),
+        }
+    }};
 }

@@ -4,7 +4,7 @@ import {
   PanelLeftRightDashed,
   Ruler,
 } from "lucide-solid";
-import { createEffect, createSignal, Show } from "solid-js";
+import { createEffect, createSignal, onMount, Show } from "solid-js";
 import {
   BIT_SIZE_OPTIONS,
   BitSize,
@@ -26,7 +26,12 @@ import Config from "../../component/Config";
 import Container from "../../component/Container";
 import Editor from "../../component/Editor";
 import { EncodingInput, EncodingSelect } from "../../component/Encoding";
-import { decrypt_aes, encrypt_aes } from "../../command/crypto/aes";
+import {
+  decrypt_aes,
+  encrypt_aes,
+  generateAesIv,
+  generateAesKey,
+} from "../../command/crypto/aes";
 
 export default function Aes() {
   const [encryption, setEncryption] = createSignal(true);
@@ -38,6 +43,15 @@ export default function Aes() {
   const [padding, setPadding] = createSignal<Padding>(Padding.Pkcs7);
   const [encoding, setEncoding] = createSignal<Encoding>(Encoding.Hex);
   const [output, setOutput] = createSignal("");
+
+  onMount(() => {
+    generateAesKey(bitSize(), key.encoding).then((value) =>
+      setKey("text", value),
+    );
+    generateAesIv(bitSize(), blockMode(), iv.encoding).then((value) =>
+      setIv("text", value),
+    );
+  });
 
   createEffect(() => {
     if (input.text.length > 0) {
@@ -174,7 +188,7 @@ export default function Aes() {
         <Editor
           value={input.text}
           onChange={(value) => setInput("text", value)}
-          placeholder={encryption() ? "输入要加密的文本" : "输入要解密的文本"}
+          placeholder={encryption() ? "输入要加密的数据" : "输入要解密的数据"}
         />
       </Container>
 

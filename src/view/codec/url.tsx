@@ -51,7 +51,7 @@ export default function UrlCodec() {
       </Config.Card>
 
       {/*输入*/}
-      <Container class="border-base-300 h-0 flex-1 border">
+      <Container class="h-0 flex-1">
         <div class="flex items-center justify-between">
           <span class="text-sm">输入</span>
           <div class="flex items-center justify-center gap-2">

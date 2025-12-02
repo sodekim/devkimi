@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 pub enum BlockMode {
     Cbc,
     Cfb,
+    Ecb,
     Ofb,
     Ctr,
-    Ecb,
 }

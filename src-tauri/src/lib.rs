@@ -43,8 +43,12 @@ pub fn run() {
             command::crypto::rsa::decrypt_rsa,
             command::crypto::sm4::encrypt_sm4,
             command::crypto::sm4::decrypt_sm4,
+            command::crypto::sm4::generate_sm4_key,
+            command::crypto::sm4::generate_sm4_iv,
             command::crypto::aes::encrypt_aes,
             command::crypto::aes::decrypt_aes,
+            command::crypto::aes::generate_aes_key,
+            command::crypto::aes::generate_aes_iv,
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {

@@ -5,10 +5,32 @@ use crate::command::crypto::symmetric::Error;
 use crate::{
     decrypt_symmetric,
     encoding::{Encoding, EncodingText},
-    encrypt_symmetric,
+    encrypt_symmetric, generate_iv, generate_key,
 };
 use aes::{Aes128, Aes192, Aes256};
 use crypto_common::{KeyInit, KeyIvInit};
+
+#[tauri::command]
+pub fn generate_aes_key(bit_size: BitSize, encoding: Encoding) -> Result<String, Error> {
+    match bit_size {
+        BitSize::Bits128 => generate_key!(Aes128, encoding),
+        BitSize::Bits192 => generate_key!(Aes192, encoding),
+        BitSize::Bits256 => generate_key!(Aes256, encoding),
+    }
+}
+
+#[tauri::command]
+pub fn generate_aes_iv(
+    bit_size: BitSize,
+    block_mode: BlockMode,
+    encoding: Encoding,
+) -> Result<String, Error> {
+    match bit_size {
+        BitSize::Bits128 => generate_iv!(Aes128, block_mode, encoding),
+        BitSize::Bits192 => generate_iv!(Aes192, block_mode, encoding),
+        BitSize::Bits256 => generate_iv!(Aes256, block_mode, encoding),
+    }
+}
 
 #[tauri::command]
 pub fn encrypt_aes(
