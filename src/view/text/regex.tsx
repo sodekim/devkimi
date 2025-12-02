@@ -104,7 +104,7 @@ export default function RegexTest() {
       </Config.Card>
 
       {/*正则表达式*/}
-      <Container class="h-30">
+      <Container>
         <div class="flex items-center justify-between">
           <span class="text-sm">正则表达式</span>
           <div class="flex items-center justify-center gap-2">

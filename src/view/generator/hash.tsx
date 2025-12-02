@@ -130,7 +130,7 @@ export default function HashGenerator() {
       </Container>
 
       {/*哈希值*/}
-      <Container class="h-30">
+      <Container>
         <div class="flex items-center justify-between">
           <span class="text-sm">哈希值</span>
           <div class="flex items-center justify-center gap-2">
@@ -146,7 +146,7 @@ export default function HashGenerator() {
       </Container>
 
       {/*校验哈希值*/}
-      <Container class="h-30">
+      <Container>
         <div class="flex items-center justify-between">
           <span class="flex items-center justify-center gap-4 text-sm">
             校验哈希值

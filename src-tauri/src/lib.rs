@@ -1,4 +1,5 @@
 mod command;
+mod encoding;
 mod error;
 
 pub fn run() {
@@ -38,8 +39,12 @@ pub fn run() {
             command::converter::yaml_properties::convert_yaml_to_properties,
             command::converter::yaml_properties::convert_properties_to_yaml,
             command::crypto::rsa::generate_rsa_key_pair,
-            command::crypto::rsa::rsa_encrypt,
-            command::crypto::rsa::rsa_decrypt,
+            command::crypto::rsa::encrypt_rsa,
+            command::crypto::rsa::decrypt_rsa,
+            command::crypto::sm4::encrypt_sm4,
+            command::crypto::sm4::decrypt_sm4,
+            command::crypto::aes::encrypt_aes,
+            command::crypto::aes::decrypt_aes,
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {

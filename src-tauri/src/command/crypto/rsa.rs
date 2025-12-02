@@ -42,7 +42,7 @@ pub fn generate_rsa_key_pair(
 }
 
 #[tauri::command]
-pub fn rsa_encrypt(key_format: KeyFormat, public_key: &str, text: &str) -> Result<String, Error> {
+pub fn encrypt_rsa(key_format: KeyFormat, public_key: &str, text: &str) -> Result<String, Error> {
     let public_key = match key_format {
         KeyFormat::Pkcs1 => RsaPublicKey::from_pkcs1_pem(public_key)?,
         KeyFormat::Pkcs8 => {
@@ -57,7 +57,7 @@ pub fn rsa_encrypt(key_format: KeyFormat, public_key: &str, text: &str) -> Resul
 }
 
 #[tauri::command]
-pub fn rsa_decrypt(key_format: KeyFormat, private_key: &str, text: &str) -> Result<String, Error> {
+pub fn decrypt_rsa(key_format: KeyFormat, private_key: &str, text: &str) -> Result<String, Error> {
     let private_key = match key_format {
         KeyFormat::Pkcs1 => RsaPrivateKey::from_pkcs1_pem(private_key)?,
         KeyFormat::Pkcs8 => RsaPrivateKey::from_pkcs8_pem(private_key)?,

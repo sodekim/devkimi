@@ -1,25 +1,31 @@
 import { For } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
-export default function Select(props: {
-  value: string;
+export default function Select<T = number | string>(props: {
+  value: T;
   options:
     | {
         label: string;
-        value: string;
+        value: T;
       }[]
     | undefined;
   class?: string;
-  onChange?: (value: string) => void;
+  onChange?: (value: T) => void;
 }) {
+  const isNumberic = typeof props.value === "number";
   return (
     <select
       class={twMerge("select select-sm outline-none", props.class)}
-      onChange={(e) => props.onChange && props.onChange(e.target.value)}
+      onChange={(e) =>
+        props.onChange &&
+        props.onChange(
+          (isNumberic ? Number(e.target.value) : e.target.value) as T,
+        )
+      }
     >
       <For each={props.options}>
         {({ label, value }) => (
-          <option value={value} selected={props.value === value}>
+          <option value={`${value}`} selected={props.value === value}>
             {label}
           </option>
         )}

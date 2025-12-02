@@ -1,130 +1,173 @@
-import { ArrowLeftRight, Blend } from "lucide-solid";
-import { createEffect, createSignal } from "solid-js";
+import { ArrowLeftRight, Blend, PanelLeftRightDashed } from "lucide-solid";
+import { createEffect, createSignal, Show } from "solid-js";
 import {
-    ClearButton,
-    CopyButton,
-    PasteButton,
-    SaveButton,
-    TextOperateButtons,
+  BLOCK_MODE_OPTIONS,
+  BlockMode,
+  createEncodingText,
+  Encoding,
+  Padding,
+  PADDING_OPTIONS,
+} from "../../command/crypto/type";
+import {
+  ClearButton,
+  CopyButton,
+  PasteButton,
+  SaveButton,
+  TextOperateButtons,
 } from "../../component/Buttons";
 import Config from "../../component/Config";
 import Container from "../../component/Container";
 import Editor from "../../component/Editor";
-import { sm4_decrypt, sm4_encrypt, Sm4Mode } from "../../command/crypto/sm4";
-
-const SM4_MODE_OPTIONS = [
-    { value: "CBC", label: "CBC (Cipher Block Chaining)" },
-    { value: "CFB", label: "CFB (Cipher Feed Back)" },
-    { value: "CTR", label: "CTR (Counter)" },
-    { value: "OFB", label: "OFB (Output Feed Back)" },
-    { value: "ECB", label: "ECB (Electronic Code Book)" },
-]
+import { decrypt_sm4, encrypt_sm4 } from "../../command/crypto/sm4";
+import { EncodingInput, EncodingSelect } from "../../component/Encoding";
 
 export default function Sm4() {
-    const [encryption, setEncryption] = createSignal(true);
-    const [mode, setMode] = createSignal<Sm4Mode>("CBC");
-    const [iv, setIv] = createSignal("");
-    const [secret, setSecret] = createSignal("");
+  const [encryption, setEncryption] = createSignal(true);
+  const [blockMode, setBlockMode] = createSignal<BlockMode>(BlockMode.Cbc);
+  const [key, setKey] = createEncodingText();
+  const [iv, setIv] = createEncodingText();
+  const [padding, setPadding] = createSignal<Padding>(Padding.Pkcs7);
+  const [input, setInput] = createEncodingText();
+  const [output, setOutput] = createSignal("");
+  const [encoding, setEncoding] = createSignal<Encoding>(Encoding.Hex);
 
+  createEffect(() => {
+    if (input.text.length > 0) {
+      if (encryption()) {
+        encrypt_sm4(input, key, iv, blockMode(), padding(), encoding())
+          .then(setOutput)
+          .catch((e) => setOutput(e.toString()));
+      } else {
+        decrypt_sm4(input, key, iv, blockMode(), padding(), encoding())
+          .then(setOutput)
+          .catch((e) => setOutput(e.toString()));
+      }
+    } else {
+      setOutput("");
+    }
+  });
+  return (
+    <div class="flex h-full flex-col gap-4">
+      {/* 配置 */}
+      <Config.Card>
+        {/* 转换类型 */}
+        <Config.Option
+          label="操作"
+          description="选择操作的类型"
+          icon={() => <ArrowLeftRight size={16} />}
+        >
+          <Config.Switch
+            value={encryption()}
+            onChange={setEncryption}
+            on="加密"
+            off="解密"
+          />
+        </Config.Option>
 
-    const [input, setInput] = createSignal("");
-    const [output, setOutput] = createSignal("");
+        {/* 加密模式 */}
+        <Config.Option
+          label="加密模式"
+          icon={() => <Blend size={16} />}
+          description="ECB模式不需要输入向量(iv)，CTR和OFB模式不需要填充模式。"
+        >
+          <Config.Select
+            value={blockMode()}
+            options={BLOCK_MODE_OPTIONS}
+            onChange={(value) => setBlockMode(value as BlockMode)}
+            class="w-60"
+          />
+        </Config.Option>
 
-    // 切换模式时重置输入和输出
-    createEffect(() => {
-        const _ = encryption();
-        setInput("");
-        setOutput("");
-    });
+        {/* 填充模式 */}
+        <Show when={blockMode() !== "Ctr" && blockMode() !== "Ofb"}>
+          <Config.Option
+            label="填充模式"
+            icon={() => <PanelLeftRightDashed size={16} />}
+            description="数据填充模式"
+          >
+            <Config.Select
+              value={padding()}
+              options={PADDING_OPTIONS}
+              onChange={(value) => setPadding(value as Padding)}
+              class="w-40"
+            />
+          </Config.Option>
+        </Show>
+      </Config.Card>
 
-    createEffect(() => {
-        if (input().length > 0) {
-            if (encryption()) {
-                sm4_encrypt(secret(), input(), mode(), iv())
-                    .then(setOutput)
-                    .catch((e) => setOutput(e.toString()))
-            } else {
-                sm4_decrypt(secret(), input(), mode(), iv())
-                    .then(setOutput)
-                    .catch((e) => setOutput(e.toString()))
-            }
-        } else {
-            setOutput("");
-        }
-    });
-    return (
-        <div class="flex h-full flex-col gap-4">
-            {/* 配置 */}
-            <Config.Card>
-                {/* 转换类型 */}
-                <Config.Option
-                    label="转换"
-                    description="选择转换的类型"
-                    icon={() => <ArrowLeftRight size={16} />}
-                >
-                    <Config.Switch
-                        value={encryption()}
-                        onChange={setEncryption}
-                        on="加密"
-                        off="解密"
-                    />
-                </Config.Option>
-
-                {/* 加密模式 */}
-                <Config.Option label="加密模式" icon={() => <Blend size={16} />}>
-                    <Config.Select
-                        value={mode()}
-                        options={SM4_MODE_OPTIONS}
-                        onChange={(value) => setMode(value as Sm4Mode)}
-                        class="w-60"
-                    />
-                </Config.Option>
-            </Config.Card>
-
-            <Container >
-                <div class="flex items-center justify-between">
-                    <span class="text-sm">密钥</span>
-                    <div class="flex items-center justify-center gap-2">
-                        <PasteButton onRead={setSecret} />
-                        <ClearButton onClick={() => setSecret("")} />
-                    </div>
-                </div>
-                <input
-                    class="input w-full rounded-md outline-none"
-                    placeholder="输入密钥"
-                    value={secret()}
-                    onInput={(e) => setSecret(e.target.value)}
-                />
-            </Container>
-
-            {/*输入*/}
-            <Container class="h-0 flex-1">
-                <div class="flex items-center justify-between">
-                    <span class="text-sm">输入</span>
-                    <div class="flex items-center justify-center gap-2">
-                        <TextOperateButtons callback={setInput} />
-                    </div>
-                </div>
-                <Editor
-                    value={input()}
-                    onChange={(value) => setInput(value)}
-                    placeholder={encryption() ? "输入要加密的文本" : "输入要解密的文本"}
-                />
-            </Container>
-
-            {/*输出*/}
-            <Container class="h-0 flex-1">
-                <div class="flex items-center justify-between">
-                    <span class="flex items-center justify-center gap-4 text-sm">
-                        输出
-                    </span>
-                    <div class="flex items-center justify-center gap-2">
-                        <CopyButton value={output()} />
-                        <SaveButton value={output()} />
-                    </div>
-                </div>
-                <Editor value={output()} readOnly={true} />
-            </Container>
+      {/* 密钥 */}
+      <Container>
+        <div class="flex items-center justify-between">
+          <span class="text-sm">
+            密钥{" "}
+            <span class="text-base-content/50 text-xs">
+              (SM4 密钥固定为128位)
+            </span>
+          </span>
+          <div class="flex items-center justify-center gap-2">
+            <PasteButton onRead={(value) => setKey("text", value)} />
+            <ClearButton onClick={() => setKey("text", "")} />
+          </div>
         </div>
-    );
+        <EncodingInput value={key} setStore={setKey} placeholder="请输入密钥" />
+      </Container>
+
+      {/* 向量 */}
+      <Show when={blockMode() !== "Ecb"}>
+        <Container>
+          <div class="flex items-center justify-between">
+            <span class="text-sm">
+              向量{" "}
+              <span class="text-base-content/50 text-xs">
+                (SM4 向量固定为128位)
+              </span>
+            </span>
+            <div class="flex items-center justify-center gap-2">
+              <PasteButton onRead={(value) => setIv("text", value)} />
+              <ClearButton onClick={() => setIv("text", "")} />
+            </div>
+          </div>
+          <EncodingInput value={iv} setStore={setIv} placeholder="请输入向量" />
+        </Container>
+      </Show>
+
+      {/*输入*/}
+      <Container class="h-0 flex-1">
+        <div class="flex items-center justify-between">
+          <span class="text-sm">输入</span>
+          <div class="flex items-center justify-center gap-2">
+            <EncodingSelect
+              value={input.encoding}
+              onChange={(value) => setInput("encoding", value)}
+            />
+            <TextOperateButtons callback={(value) => setInput("text", value)} />
+          </div>
+        </div>
+        <Editor
+          value={input.text}
+          onChange={(value) => setInput("text", value)}
+          placeholder={encryption() ? "输入要加密的文本" : "输入要解密的文本"}
+        />
+      </Container>
+
+      {/*输出*/}
+      <Container class="h-0 flex-1">
+        <div class="flex items-center justify-between">
+          <span class="flex items-center justify-center gap-4 text-sm">
+            输出
+          </span>
+          <div class="flex items-center justify-center gap-2">
+            <EncodingSelect
+              exclude={[Encoding.Utf8] as const}
+              value={encoding()}
+              onChange={(value) => setEncoding(value)}
+            />
+            <CopyButton value={output()} />
+            <SaveButton value={output()} />
+          </div>
+        </div>
+        <Editor value={output()} readOnly={true} />
+      </Container>
+    </div>
+  );
 }

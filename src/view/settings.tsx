@@ -1,10 +1,5 @@
 import { trackStore } from "@solid-primitives/deep";
-import {
-  AudioLines,
-  CaseSensitive,
-  Palette,
-  TextWrap
-} from "lucide-solid";
+import { AudioLines, CaseSensitive, Palette, TextWrap } from "lucide-solid";
 import { createEffect, createResource } from "solid-js";
 import { getSystemFonts } from "../command/font";
 import Config from "../component/Config";
@@ -46,11 +41,15 @@ export default function Settings() {
   });
 
   return (
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-4">
       {/* 界面 */}
       <Config.Card label="界面" collapse={false}>
         {/* 主题 */}
-        <Config.Option label="主题" icon={() => <Palette size={16} />} description="切换主界面的主题">
+        <Config.Option
+          label="主题"
+          icon={() => <Palette size={16} />}
+          description="切换主界面的主题"
+        >
           <Config.Select
             options={THEMES.map((theme) => ({ label: theme, value: theme }))}
             value={settings.common.theme}
@@ -59,16 +58,28 @@ export default function Settings() {
           />
         </Config.Option>
 
-        <Config.Option label="配置默认展开" icon={() => <TextWrap size={16} />} description="控制切换到工具界面时顶部的配置区域是否默认展开">
-          <Config.Switch value={settings.common.openConfigCollapse} onChange={(value) => setSettings("common", "openConfigCollapse", value)} />
+        <Config.Option
+          label="配置默认展开"
+          icon={() => <TextWrap size={16} />}
+          description="控制切换到工具界面时顶部的配置区域是否默认展开"
+        >
+          <Config.Switch
+            value={settings.common.openConfigCollapse}
+            onChange={(value) =>
+              setSettings("common", "openConfigCollapse", value)
+            }
+          />
         </Config.Option>
-
       </Config.Card>
 
       {/* 编辑器 */}
       <Config.Card label="编辑器" collapse={false}>
         {/* 编辑器字体 */}
-        <Config.Option label="字体" icon={() => <CaseSensitive size={16} />} description="编辑器中显示文字的字体">
+        <Config.Option
+          label="字体"
+          icon={() => <CaseSensitive size={16} />}
+          description="编辑器中显示文字的字体"
+        >
           <Config.Select
             options={fonts()}
             class="w-60"
@@ -77,7 +88,11 @@ export default function Settings() {
           />
         </Config.Option>
 
-        <Config.Option label="字体大小" icon={() => <AudioLines size={16} />} description="编辑器中显示文字的大小">
+        <Config.Option
+          label="字体大小"
+          icon={() => <AudioLines size={16} />}
+          description="编辑器中显示文字的大小"
+        >
           <Config.NumberInput
             value={settings.editor.font.size}
             onInput={(value) => setSettings("editor", "font", "size", value)}

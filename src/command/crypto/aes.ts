@@ -1,7 +1,8 @@
 import { invoke } from "@tauri-apps/api/core";
-import { BlockMode, Encoding, EncodingText, Padding } from "./type";
+import { BitSize, BlockMode, Encoding, EncodingText, Padding } from "./type";
 
-export function encrypt_sm4(
+export function encrypt_aes(
+  bitSize: BitSize,
   input: EncodingText,
   key: EncodingText,
   iv: EncodingText,
@@ -9,7 +10,8 @@ export function encrypt_sm4(
   padding: Padding,
   encoding: Encoding,
 ) {
-  return invoke<string>("encrypt_sm4", {
+  return invoke<string>("encrypt_aes", {
+    bitSize,
     input,
     key,
     iv,
@@ -19,7 +21,8 @@ export function encrypt_sm4(
   });
 }
 
-export function decrypt_sm4(
+export function decrypt_aes(
+  bitSize: BitSize,
   input: EncodingText,
   key: EncodingText,
   iv: EncodingText,
@@ -27,7 +30,8 @@ export function decrypt_sm4(
   padding: Padding,
   encoding: Encoding,
 ) {
-  return invoke<string>("decrypt_sm4", {
+  return invoke<string>("decrypt_aes", {
+    bitSize,
     input,
     key,
     iv,
