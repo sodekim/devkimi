@@ -11,7 +11,7 @@ devkimi 是一个基于 Tauri 和 SolidJS 构建的多功能开发者工具集�
 
 ## 功能特性
 
-devkimi 包含以下五大功能模块：
+devkimi 包含以下六大功能模块：
 
 ### 🔄 编解码工具 (Codec)
 - Base64 文本编解码
@@ -39,6 +39,13 @@ devkimi 包含以下五大功能模块：
 - Cron 表达式解析
 - JSON/YAML 互转
 - YAML/Properties 互转
+
+### 🔐 加密 & 解密 (Crypto)
+- RSA 加密/解密（支持 PKCS#1、PKCS#8 格式）
+- SM2 加密/解密（支持 PEM、Hex 格式）
+- SM4 加密/解密（支持多种分组模式）
+- AES 加密/解密（支持 128/192/256 位密钥）
+- DES/3DES 加密/解密
 
 ## 技术栈
 
@@ -93,14 +100,14 @@ pnpm tauri build
 .
 ├── src/                 # 前端源码
 │   ├── components/      # 通用组件
+│   ├── command/         # Tauri 命令封装
 │   ├── view/            # 功能页面
 │   │   ├── codec/       # 编解码工具
 │   │   ├── formatter/   # 格式化工具
 │   │   ├── generator/   # 生成器
 │   │   ├── text/        # 文本工具
 │   │   ├── converter/   # 转换器
-│   │   ├── network/     # 网络工具
-│   │   ├── home.tsx     # 主页
+│   │   ├── crypto/      # 加密解密工具
 │   │   └── settings.tsx # 设置页面
 │   ├── routes.tsx       # 路由配置
 │   └── App.tsx          # 应用入口
