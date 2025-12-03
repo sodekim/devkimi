@@ -1,9 +1,9 @@
 import { ArrowLeftRight, PanelLeftRightDashed, Ruler } from "lucide-solid";
 import { createEffect, createSignal } from "solid-js";
 import {
-  decrypt_rsa,
-  encrypt_rsa,
-  generate_rsa_key_pair,
+  decryptRsa,
+  encryptRsa,
+  generateRsaKeyPair,
 } from "../../command/crypto/rsa";
 import { KeyFormat } from "../../command/crypto/type";
 import {
@@ -36,7 +36,7 @@ export default function Rsa() {
   const [input, setInput] = createSignal("");
   const [output, setOutput] = createSignal("");
   createEffect(() => {
-    generate_rsa_key_pair(keyFormat(), bitSize()).then(
+    generateRsaKeyPair(keyFormat(), bitSize()).then(
       ([private_key, public_key]) => {
         setPrivateKey(private_key);
         setPublicKey(public_key);
@@ -47,11 +47,11 @@ export default function Rsa() {
   createEffect(() => {
     if (input().length > 0) {
       if (encryption()) {
-        encrypt_rsa(keyFormat(), publicKey(), input())
+        encryptRsa(keyFormat(), publicKey(), input())
           .then(setOutput)
           .catch((e) => setOutput(e.toString()));
       } else {
-        decrypt_rsa(keyFormat(), privateKey(), input())
+        decryptRsa(keyFormat(), privateKey(), input())
           .then(setOutput)
           .catch((e) => setOutput(e.toString()));
       }

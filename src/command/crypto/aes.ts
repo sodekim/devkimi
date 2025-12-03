@@ -13,7 +13,7 @@ export function generateAesIv(
   return invoke<string>("generate_aes_iv", { bitSize, blockMode, encoding });
 }
 
-export function encrypt_aes(
+export function encryptAes(
   bitSize: BitSize,
   input: EncodingText,
   key: EncodingText,
@@ -33,7 +33,7 @@ export function encrypt_aes(
   });
 }
 
-export function decrypt_aes(
+export function decryptAes(
   bitSize: BitSize,
   input: EncodingText,
   key: EncodingText,

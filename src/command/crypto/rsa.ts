@@ -1,11 +1,11 @@
 import { invoke } from "@tauri-apps/api/core";
 import { KeyFormat } from "./type";
 
-export function generate_rsa_key_pair(keyFormat: KeyFormat, bitSize: number) {
+export function generateRsaKeyPair(keyFormat: KeyFormat, bitSize: number) {
   return invoke<string[]>("generate_rsa_key_pair", { keyFormat, bitSize });
 }
 
-export function encrypt_rsa(
+export function encryptRsa(
   keyFormat: KeyFormat,
   publicKey: string,
   text: string,
@@ -13,7 +13,7 @@ export function encrypt_rsa(
   return invoke<string>("encrypt_rsa", { keyFormat, publicKey, text });
 }
 
-export function decrypt_rsa(
+export function decryptRsa(
   keyFormat: KeyFormat,
   privateKey: string,
   text: string,

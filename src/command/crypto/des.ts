@@ -13,7 +13,7 @@ export function generateDesIv(
   return invoke<string>("generate_des_iv", { bitSize, blockMode, encoding });
 }
 
-export function encrypt_des(
+export function encryptDes(
   bitSize: DesBitSize,
   input: EncodingText,
   key: EncodingText,
@@ -33,7 +33,7 @@ export function encrypt_des(
   });
 }
 
-export function decrypt_des(
+export function decryptDes(
   bitSize: DesBitSize,
   input: EncodingText,
   key: EncodingText,

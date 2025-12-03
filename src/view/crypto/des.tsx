@@ -28,8 +28,8 @@ import Container from "../../component/Container";
 import Editor from "../../component/Editor";
 import { EncodingInput, EncodingSelect } from "../../component/Encoding";
 import {
-  decrypt_des,
-  encrypt_des,
+  decryptDes,
+  encryptDes,
   generateDesIv,
   generateDesKey,
 } from "../../command/crypto/des";
@@ -62,7 +62,7 @@ export default function Des() {
   createEffect(() => {
     if (input.text.length > 0) {
       if (encryption()) {
-        encrypt_des(
+        encryptDes(
           bitSize(),
           input,
           key,
@@ -74,7 +74,7 @@ export default function Des() {
           .then(setOutput)
           .catch((e) => setOutput(e.toString()));
       } else {
-        decrypt_des(
+        decryptDes(
           bitSize(),
           input,
           key,

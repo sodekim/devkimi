@@ -28,8 +28,8 @@ import Container from "../../component/Container";
 import Editor from "../../component/Editor";
 import { EncodingInput, EncodingSelect } from "../../component/Encoding";
 import {
-  decrypt_aes,
-  encrypt_aes,
+  decryptAes,
+  encryptAes,
   generateAesIv,
   generateAesKey,
 } from "../../command/crypto/aes";
@@ -62,7 +62,7 @@ export default function Aes() {
   createEffect(() => {
     if (input.text.length > 0) {
       if (encryption()) {
-        encrypt_aes(
+        encryptAes(
           bitSize(),
           input,
           key,
@@ -74,7 +74,7 @@ export default function Aes() {
           .then(setOutput)
           .catch((e) => setOutput(e.toString()));
       } else {
-        decrypt_aes(
+        decryptAes(
           bitSize(),
           input,
           key,

@@ -9,7 +9,7 @@ export function generateSm4Iv(blockMode: BlockMode, encoding: Encoding) {
   return invoke<string>("generate_sm4_iv", { blockMode, encoding });
 }
 
-export function encrypt_sm4(
+export function encryptSm4(
   input: EncodingText,
   key: EncodingText,
   iv: EncodingText,
@@ -27,7 +27,7 @@ export function encrypt_sm4(
   });
 }
 
-export function decrypt_sm4(
+export function decryptSm4(
   input: EncodingText,
   key: EncodingText,
   iv: EncodingText,

@@ -20,8 +20,8 @@ import Config from "../../component/Config";
 import Container from "../../component/Container";
 import Editor from "../../component/Editor";
 import {
-  decrypt_sm4,
-  encrypt_sm4,
+  decryptSm4,
+  encryptSm4,
   generateSm4Iv,
   generateSm4Key,
 } from "../../command/crypto/sm4";
@@ -52,11 +52,11 @@ export default function Sm4() {
   createEffect(() => {
     if (input.text.length > 0) {
       if (encryption()) {
-        encrypt_sm4(input, key, iv, blockMode(), padding(), encoding())
+        encryptSm4(input, key, iv, blockMode(), padding(), encoding())
           .then(setOutput)
           .catch((e) => setOutput(e.toString()));
       } else {
-        decrypt_sm4(input, key, iv, blockMode(), padding(), encoding())
+        decryptSm4(input, key, iv, blockMode(), padding(), encoding())
           .then(setOutput)
           .catch((e) => setOutput(e.toString()));
       }

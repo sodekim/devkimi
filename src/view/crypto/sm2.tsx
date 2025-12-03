@@ -1,9 +1,9 @@
 import { ArrowLeftRight, PanelLeftRightDashed } from "lucide-solid";
 import { createEffect, createSignal } from "solid-js";
 import {
-  decrypt_sm2,
-  encrypt_sm2,
-  generate_sm2_key_pair,
+  decryptSm2,
+  encryptSm2,
+  generateSm2KeyPair,
   Sm2KeyFormat,
 } from "../../command/crypto/sm2";
 import {
@@ -32,7 +32,7 @@ export default function Sm2() {
 
   // 当 keyFormat 变化时，重新生成密钥对
   createEffect(() => {
-    generate_sm2_key_pair(keyFormat()).then(([private_key, public_key]) => {
+    generateSm2KeyPair(keyFormat()).then(([private_key, public_key]) => {
       setPrivateKey(private_key);
       setPublicKey(public_key);
     });
@@ -41,11 +41,11 @@ export default function Sm2() {
   createEffect(() => {
     if (input().length > 0) {
       if (encryption()) {
-        encrypt_sm2(keyFormat(), publicKey(), input())
+        encryptSm2(keyFormat(), publicKey(), input())
           .then(setOutput)
           .catch((e) => setOutput(e.toString()));
       } else {
-        decrypt_sm2(keyFormat(), privateKey(), input())
+        decryptSm2(keyFormat(), privateKey(), input())
           .then(setOutput)
           .catch((e) => setOutput(e.toString()));
       }
@@ -95,7 +95,7 @@ export default function Sm2() {
             <div class="flex items-center justify-center gap-2">
               <GenerateButton
                 onGenerate={() =>
-                  generate_sm2_key_pair(keyFormat()).then(
+                  generateSm2KeyPair(keyFormat()).then(
                     ([private_key, public_key]) => {
                       setPrivateKey(private_key);
                       setPublicKey(public_key);
