@@ -39,8 +39,8 @@ export default function JsonYamlConverter() {
       {/* 配置 */}
       <Config.Card>
         <Config.Option
-          label="转换"
-          description="选择转换的类型"
+          label="操作"
+          description="选择操作的类型"
           icon={() => <ArrowLeftRight size={16} />}
         >
           {/*转换配置*/}

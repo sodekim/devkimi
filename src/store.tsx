@@ -1,4 +1,5 @@
 import { trackStore } from "@solid-primitives/deep";
+import { getTauriVersion, getVersion } from "@tauri-apps/api/app";
 import { load, Store } from "@tauri-apps/plugin-store";
 import {
   createContext,
@@ -21,8 +22,8 @@ export type Settings = {
   // 通用配置
   common: {
     theme: string;
-    openConfigCollapse: boolean,
-  },
+    openConfigCollapse: boolean;
+  };
   // 编辑器配置
   editor: {
     wordWrap: WordWrap;
@@ -30,12 +31,23 @@ export type Settings = {
       family: string;
       size: number;
     };
-  }
+  };
+  version: {
+    app: string;
+    tauri: string;
+  };
 };
+
+const APP_VERSION = await getVersion();
+const TAURI_VERSION = await getTauriVersion();
 
 const defaultSettings: Settings = {
   common: { theme: "dark", openConfigCollapse: true },
   editor: { wordWrap: "off", font: { family: "SansSerif", size: 14 } },
+  version: {
+    app: APP_VERSION,
+    tauri: TAURI_VERSION,
+  },
 };
 
 export const StoreContext = createContext<{

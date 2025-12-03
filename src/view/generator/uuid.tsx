@@ -45,17 +45,29 @@ export default function UuidGenerator() {
         </Config.Option>
 
         {/*连字符配置*/}
-        <Config.Option label="连字符" icon={() => <Minus size={16} />}>
+        <Config.Option
+          label="连字符"
+          description="在UUID中添加连字符分隔"
+          icon={() => <Minus size={16} />}
+        >
           <ConfigSwitch value={hyphen()} onChange={setHyphen} />
         </Config.Option>
 
         {/*大写字符配置*/}
-        <Config.Option label="大写字符" icon={() => <CaseUpper size={16} />}>
+        <Config.Option
+          label="大写字符"
+          description="使用大写字母输出UUID"
+          icon={() => <CaseUpper size={16} />}
+        >
           <ConfigSwitch value={uppercase()} onChange={setUppercase} />
         </Config.Option>
 
         {/*数量配置*/}
-        <Config.Option label="数量" icon={() => <Sigma size={16} />}>
+        <Config.Option
+          label="数量"
+          description="需要生成的UUID数量"
+          icon={() => <Sigma size={16} />}
+        >
           <Config.NumberInput
             value={size()}
             onInput={setSize}

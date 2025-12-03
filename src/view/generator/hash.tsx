@@ -76,7 +76,11 @@ export default function HashGenerator() {
         </Config.Option>
 
         {/*大写字符配置*/}
-        <Config.Option label="大写字符" icon={() => <CaseUpper size={16} />}>
+        <Config.Option
+          label="大写字符"
+          description="使用大写字母输出哈希值"
+          icon={() => <CaseUpper size={16} />}
+        >
           <Config.Switch value={uppercase()} onChange={setUppercase} />
         </Config.Option>
       </Config.Card>

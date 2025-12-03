@@ -41,6 +41,9 @@ pub fn run() {
             command::crypto::rsa::generate_rsa_key_pair,
             command::crypto::rsa::encrypt_rsa,
             command::crypto::rsa::decrypt_rsa,
+            command::crypto::sm2::generate_sm2_key_pair,
+            command::crypto::sm2::encrypt_sm2,
+            command::crypto::sm2::decrypt_sm2,
             command::crypto::sm4::encrypt_sm4,
             command::crypto::sm4::decrypt_sm4,
             command::crypto::sm4::generate_sm4_key,
@@ -49,6 +52,10 @@ pub fn run() {
             command::crypto::aes::decrypt_aes,
             command::crypto::aes::generate_aes_key,
             command::crypto::aes::generate_aes_iv,
+            command::crypto::des::encrypt_des,
+            command::crypto::des::decrypt_des,
+            command::crypto::des::generate_des_key,
+            command::crypto::des::generate_des_iv,
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {

@@ -6,6 +6,11 @@ export enum BitSize {
   Bit256 = "Bits256",
 }
 
+export enum DesBitSize {
+  Bits64 = "Bits64",
+  Bits192 = "Bits192",
+}
+
 export enum KeyFormat {
   Pkcs1 = "Pkcs1",
   Pkcs8 = "Pkcs8",
@@ -49,6 +54,11 @@ export const BIT_SIZE_OPTIONS = [
   { value: "Bits256", label: "256 bits" },
 ];
 
+export const DES_BIT_SIZE_OPTIONS = [
+  { value: "Bits64", label: "DES (64 bits)" },
+  { value: "Bits192", label: "3DES (192 bits)" },
+];
+
 export enum Encoding {
   Utf8 = "Utf8",
   Base64 = "Base64",
@@ -58,9 +68,9 @@ export enum Encoding {
 export type EncodingText = { text: string; encoding: Encoding };
 
 export function createEncodingText(params?: Partial<EncodingText>) {
-  const { text, encoding } = params ?? { text: "", encoding: Encoding.Utf8 };
+  const { text, encoding } = params ?? { text: "", encoding: Encoding.Hex };
   return createStore<EncodingText>({
     text: text ?? "",
-    encoding: encoding ?? Encoding.Utf8,
+    encoding: encoding ?? Encoding.Hex,
   });
 }

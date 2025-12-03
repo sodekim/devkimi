@@ -48,10 +48,10 @@ export default function QRCodeCodec() {
     <div class="flex h-full flex-col gap-4">
       {/* 配置 */}
       <Config.Card>
-        {/*转换配置*/}
+        {/*操作配置*/}
         <Config.Option
-          label="转换"
-          description="选择转换的类型"
+          label="操作"
+          description="选择操作的类型"
           icon={() => <ArrowLeftRight size={16} />}
         >
           <Config.Switch

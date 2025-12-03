@@ -1,5 +1,13 @@
 import { trackStore } from "@solid-primitives/deep";
-import { AudioLines, CaseSensitive, Palette, TextWrap } from "lucide-solid";
+import { openUrl } from "@tauri-apps/plugin-opener";
+import {
+  AudioLines,
+  CaseSensitive,
+  Link,
+  OctagonAlert,
+  Palette,
+  TextWrap,
+} from "lucide-solid";
 import { createEffect, createResource } from "solid-js";
 import { getSystemFonts } from "../command/font";
 import Config from "../component/Config";
@@ -130,6 +138,33 @@ export default function Settings() {
             onSetup={(editor) => editors.push(editor)}
           />
         </div>
+      </Config.Card>
+
+      <Config.Card label="关于" collapse={false}>
+        <Config.Option label="链接" icon={() => <Link size={16} />}>
+          <div class="join gap-2">
+            <a
+              class="link link-primary"
+              onClick={() => openUrl("https://github.com/sodekim/devkimi.git")}
+            >
+              源代码
+            </a>
+            <a
+              class="link link-primary"
+              onClick={() =>
+                openUrl("https://github.com/sodekim/devkimi/blob/main/LICENSE")
+              }
+            >
+              许可证
+            </a>
+          </div>
+        </Config.Option>
+        <Config.Option label="Devkimi" icon={() => <OctagonAlert size={16} />}>
+          <div class="join gap-2">
+            <span class="text-sm">App: {settings.version.app}</span>
+            <span class="text-sm">Tauri: {settings.version.tauri}</span>
+          </div>
+        </Config.Option>
       </Config.Card>
     </div>
   );

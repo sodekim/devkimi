@@ -11,6 +11,7 @@ import {
 import {
   ClearButton,
   CopyButton,
+  GenerateButton,
   PasteButton,
   SaveButton,
   TextOperateButtons,
@@ -18,18 +19,35 @@ import {
 import Config from "../../component/Config";
 import Container from "../../component/Container";
 import Editor from "../../component/Editor";
-import { decrypt_sm4, encrypt_sm4 } from "../../command/crypto/sm4";
+import {
+  decrypt_sm4,
+  encrypt_sm4,
+  generateSm4Iv,
+  generateSm4Key,
+} from "../../command/crypto/sm4";
 import { EncodingInput, EncodingSelect } from "../../component/Encoding";
 
 export default function Sm4() {
   const [encryption, setEncryption] = createSignal(true);
-  const [blockMode, setBlockMode] = createSignal<BlockMode>(BlockMode.Cbc);
+  const [blockMode, setBlockMode] = createSignal(BlockMode.Cbc);
   const [key, setKey] = createEncodingText();
   const [iv, setIv] = createEncodingText();
-  const [padding, setPadding] = createSignal<Padding>(Padding.Pkcs7);
-  const [input, setInput] = createEncodingText();
+  const [padding, setPadding] = createSignal(Padding.Pkcs7);
+  const [input, setInput] = createEncodingText({ encoding: Encoding.Utf8 });
   const [output, setOutput] = createSignal("");
-  const [encoding, setEncoding] = createSignal<Encoding>(Encoding.Hex);
+  const [encoding, setEncoding] = createSignal(Encoding.Hex);
+
+  // 当 key.encoding 变化时，重新生成密钥
+  createEffect(() => {
+    generateSm4Key(key.encoding).then((value) => setKey("text", value));
+  });
+
+  // 当 blockMode 或 iv.encoding 变化时，重新生成向量
+  createEffect(() => {
+    generateSm4Iv(blockMode(), iv.encoding).then((value) =>
+      setIv("text", value),
+    );
+  });
 
   createEffect(() => {
     if (input.text.length > 0) {
@@ -105,6 +123,13 @@ export default function Sm4() {
             </span>
           </span>
           <div class="flex items-center justify-center gap-2">
+            <GenerateButton
+              onGenerate={() =>
+                generateSm4Key(key.encoding).then((value) =>
+                  setKey("text", value),
+                )
+              }
+            />
             <PasteButton onRead={(value) => setKey("text", value)} />
             <ClearButton onClick={() => setKey("text", "")} />
           </div>
@@ -123,6 +148,13 @@ export default function Sm4() {
               </span>
             </span>
             <div class="flex items-center justify-center gap-2">
+              <GenerateButton
+                onGenerate={() =>
+                  generateSm4Iv(blockMode(), iv.encoding).then((value) =>
+                    setIv("text", value),
+                  )
+                }
+              />
               <PasteButton onRead={(value) => setIv("text", value)} />
               <ClearButton onClick={() => setIv("text", "")} />
             </div>

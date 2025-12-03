@@ -4,7 +4,7 @@ import {
   PanelLeftRightDashed,
   Ruler,
 } from "lucide-solid";
-import { createEffect, createSignal, onMount, Show } from "solid-js";
+import { createEffect, createSignal, Show } from "solid-js";
 import {
   BIT_SIZE_OPTIONS,
   BitSize,
@@ -18,6 +18,7 @@ import {
 import {
   ClearButton,
   CopyButton,
+  GenerateButton,
   PasteButton,
   SaveButton,
   TextOperateButtons,
@@ -35,19 +36,24 @@ import {
 
 export default function Aes() {
   const [encryption, setEncryption] = createSignal(true);
-  const [blockMode, setBlockMode] = createSignal<BlockMode>(BlockMode.Cbc);
-  const [bitSize, setBitSize] = createSignal<BitSize>(BitSize.Bit128);
+  const [blockMode, setBlockMode] = createSignal(BlockMode.Cbc);
+  const [bitSize, setBitSize] = createSignal(BitSize.Bit128);
   const [key, setKey] = createEncodingText();
   const [iv, setIv] = createEncodingText();
-  const [input, setInput] = createEncodingText();
-  const [padding, setPadding] = createSignal<Padding>(Padding.Pkcs7);
-  const [encoding, setEncoding] = createSignal<Encoding>(Encoding.Hex);
+  const [input, setInput] = createEncodingText({ encoding: Encoding.Utf8 });
+  const [padding, setPadding] = createSignal(Padding.Pkcs7);
+  const [encoding, setEncoding] = createSignal(Encoding.Hex);
   const [output, setOutput] = createSignal("");
 
-  onMount(() => {
+  // 当 bitSize 或 key.encoding 变化时，重新生成密钥
+  createEffect(() => {
     generateAesKey(bitSize(), key.encoding).then((value) =>
       setKey("text", value),
     );
+  });
+
+  // 当 bitSize、blockMode 或 iv.encoding 变化时，重新生成向量
+  createEffect(() => {
     generateAesIv(bitSize(), blockMode(), iv.encoding).then((value) =>
       setIv("text", value),
     );
@@ -152,6 +158,13 @@ export default function Aes() {
         <div class="flex items-center justify-between">
           <span class="text-sm">密钥</span>
           <div class="flex items-center justify-center gap-2">
+            <GenerateButton
+              onGenerate={() =>
+                generateAesKey(bitSize(), key.encoding).then((value) =>
+                  setKey("text", value),
+                )
+              }
+            />
             <PasteButton onRead={(value) => setKey("text", value)} />
             <ClearButton onClick={() => setKey("text", "")} />
           </div>
@@ -165,6 +178,13 @@ export default function Aes() {
           <div class="flex items-center justify-between">
             <span class="text-sm">向量</span>
             <div class="flex items-center justify-center gap-2">
+              <GenerateButton
+                onGenerate={() =>
+                  generateAesIv(bitSize(), blockMode(), iv.encoding).then(
+                    (value) => setIv("text", value),
+                  )
+                }
+              />
               <PasteButton onRead={(value) => setIv("text", value)} />
               <ClearButton onClick={() => setIv("text", "")} />
             </div>

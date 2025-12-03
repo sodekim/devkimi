@@ -21,6 +21,7 @@ import {
   PaintRoller,
   QrCode,
   Regex,
+  SeparatorHorizontal,
   Settings,
   Shell,
   ShieldPlus,
@@ -202,6 +203,12 @@ const routeMetas: RouteMeta[] = [
         path: "/crypto/rsa",
         icon: Bubbles,
         component: lazy(() => import("./view/crypto/rsa")),
+      },
+      {
+        label: "SM2",
+        path: "/crypto/sm2",
+        icon: SeparatorHorizontal,
+        component: lazy(() => import("./view/crypto/sm2")),
       },
       {
         label: "SM4",

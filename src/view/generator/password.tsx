@@ -51,7 +51,11 @@ export default function PasswordGenerator() {
     <div class="flex h-full flex-col gap-4">
       {/* 配置 */}
       <Config.Card>
-        <Config.Option label="长度" icon={() => <Ruler size={16} />}>
+        <Config.Option
+          label="长度"
+          description="设置密码的字符长度"
+          icon={() => <Ruler size={16} />}
+        >
           <Config.NumberInput
             value={length()}
             onInput={setLength}
@@ -101,7 +105,11 @@ export default function PasswordGenerator() {
           <Config.Input value={excludes()} onInput={setExcludes} class="w-40" />
         </Config.Option>
 
-        <Config.Option label="数量" icon={() => <Sigma size={16} />}>
+        <Config.Option
+          label="数量"
+          description="需要生成的密码数量"
+          icon={() => <Sigma size={16} />}
+        >
           <Config.NumberInput
             value={size()}
             onInput={setSize}
