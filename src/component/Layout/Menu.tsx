@@ -50,7 +50,7 @@ export default function Menu() {
   let Menu = () => routeMetas.filter((meta) => !meta.hidden).map(menu);
 
   return (
-    <ul class="menu scrollbar-width-none w-full grow flex-nowrap gap-1 overflow-y-auto">
+    <ul class="menu w-full grow flex-nowrap gap-1 overflow-y-auto">
       <Menu />
     </ul>
   );

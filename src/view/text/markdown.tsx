@@ -7,6 +7,8 @@ import {
 } from "../../component/Buttons";
 import Container from "../../component/Container";
 import Editor from "../../component/Editor";
+import hljs from "highlight.js";
+import "./a11y-dark.css";
 
 export default function MarkdownPreview() {
   const [markdown, setMarkdown] = createSignal("");
@@ -15,6 +17,7 @@ export default function MarkdownPreview() {
     if (markdown().length > 0) {
       parseMarkdown(markdown())
         .then(setHtml)
+        .then(() => hljs.highlightAll())
         .catch((e) => setHtml(e.toString()));
     } else {
       setHtml("");
@@ -50,7 +53,7 @@ export default function MarkdownPreview() {
         </div>
         <div
           id="preview"
-          class="prose size-full max-w-full overflow-auto rounded-md px-2"
+          class="prose dark:prose-invert size-full max-w-full overflow-auto rounded-md px-2"
           innerHTML={html()}
         ></div>
       </Container>
