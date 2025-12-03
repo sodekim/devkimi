@@ -131,7 +131,7 @@ export default function JSONPath() {
   return (
     <div class="flex h-full flex-col gap-4">
       {/*JSONPath*/}
-      <Container class="h-30">
+      <Container>
         <div class="flex items-center justify-between">
           <span class="text-sm">JSONPath</span>
           <div class="flex items-center justify-center gap-2">
@@ -141,7 +141,7 @@ export default function JSONPath() {
         </div>
         <input
           class="input w-full rounded-md outline-none"
-          placeholder="输入JSONPath表达式"
+          placeholder="输入 JSONPath 表达式"
           value={pattern()}
           onInput={(e) => setPattern(e.target.value)}
         />
@@ -155,7 +155,12 @@ export default function JSONPath() {
             <TextOperateButtons callback={setText} />
           </div>
         </div>
-        <Editor value={text()} onChange={setText} language="json" />
+        <Editor
+          value={text()}
+          onChange={setText}
+          language="json"
+          placeholder="输入需要解析的 JSON 数据"
+        />
       </Container>
 
       <div class="flex h-0 flex-1 items-center justify-center gap-4">

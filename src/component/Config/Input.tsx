@@ -9,7 +9,7 @@ export function Input(props: {
     <input
       class={twMerge("input input-sm outline-none", props.class)}
       value={props.value}
-      onInput={(e) => props.onInput && props.onInput(e.target.value)}
+      onInput={(e) => props.onInput?.(e.target.value)}
     />
   );
 }
@@ -30,7 +30,7 @@ export function NumberInput(props: {
       value={props.value}
       min={props.min}
       max={props.max}
-      onInput={(e) => props.onInput && props.onInput(e.target.valueAsNumber)}
+      onInput={(e) => props.onInput?.(e.target.valueAsNumber)}
     />
   );
 }

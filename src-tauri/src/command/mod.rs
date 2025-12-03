@@ -5,3 +5,4 @@ pub mod formatter;
 pub mod fs;
 pub mod generator;
 pub mod text;
+pub mod crypto;

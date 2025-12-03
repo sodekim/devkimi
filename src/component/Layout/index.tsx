@@ -19,7 +19,6 @@ export default function Layout(props: { children?: JSX.Element }) {
 
       {/* Drawer Sidebar */}
       <Sidebar />
-    
     </div>
   );
 }

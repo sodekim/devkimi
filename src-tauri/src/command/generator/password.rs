@@ -18,7 +18,9 @@ pub fn generate_password(
     fn random(length: u16, chars: &[char]) -> String {
         let mut password = String::with_capacity(length as usize);
         for _ in 0..length {
-            let c = chars.get(rand::rng().random_range(0..chars.len())).unwrap();
+            let c = chars
+                .get(rand::thread_rng().gen_range(0..chars.len()))
+                .unwrap();
             password.push(*c);
         }
         password

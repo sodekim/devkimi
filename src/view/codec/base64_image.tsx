@@ -59,10 +59,10 @@ export default function Base64ImageCodec() {
     <div class="flex h-full flex-col gap-4">
       {/* 配置 */}
       <Config.Card>
-        {/*转换配置*/}
+        {/*操作配置*/}
         <Config.Option
-          label="转换"
-          description="选择转换的类型"
+          label="操作"
+          description="选择操作的类型"
           icon={() => <ArrowLeftRight size={16} />}
         >
           <Config.Switch
@@ -132,7 +132,7 @@ export default function Base64ImageCodec() {
             encode() && (
               <span class="text-warning flex items-center justify-center gap-2 text-sm">
                 <Image size={16} />
-                未选择图片
+                选择需要转换的图片
               </span>
             )
           )}
@@ -156,7 +156,12 @@ export default function Base64ImageCodec() {
         {encode() ? (
           <Editor value={base64()} readOnly={true} wordWrap="on" />
         ) : (
-          <Editor value={base64()} wordWrap="on" onChange={setBase64} />
+          <Editor
+            value={base64()}
+            wordWrap="on"
+            onChange={setBase64}
+            placeholder="输入要解码的Base64文本"
+          />
         )}
       </Container>
     </div>

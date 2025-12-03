@@ -1,7 +1,10 @@
+import { trackStore } from "@solid-primitives/deep";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import {
-  ALargeSmall,
   AudioLines,
   CaseSensitive,
+  Link,
+  OctagonAlert,
   Palette,
   TextWrap,
 } from "lucide-solid";
@@ -10,7 +13,6 @@ import { getSystemFonts } from "../command/font";
 import Config from "../component/Config";
 import Editor, { MonacoEditor } from "../component/Editor";
 import { useSettings, WordWrap } from "../store";
-import { trackStore } from "@solid-primitives/deep";
 //
 // 主题
 const THEMES = ["light", "dark"];
@@ -30,7 +32,7 @@ export default function Settings() {
 
   // 更新界面主题
   createEffect(() => {
-    const theme = settings.theme;
+    const theme = settings.common.theme;
     editors.forEach((editor) => editor.updateOptions({ theme }));
   });
 
@@ -47,24 +49,45 @@ export default function Settings() {
   });
 
   return (
-    <div class="flex flex-col gap-2">
-      {/* 外观 */}
-      <Config.Card label="外观">
+    <div class="flex flex-col gap-4">
+      {/* 界面 */}
+      <Config.Card label="界面" collapse={false}>
         {/* 主题 */}
-        <Config.Option label="主题" icon={() => <Palette size={16} />}>
+        <Config.Option
+          label="主题"
+          icon={() => <Palette size={16} />}
+          description="切换主界面的主题"
+        >
           <Config.Select
             options={THEMES.map((theme) => ({ label: theme, value: theme }))}
-            value={settings.theme}
+            value={settings.common.theme}
             class="w-30"
-            onChange={(value) => setSettings("theme", value)}
+            onChange={(value) => setSettings("common", "theme", value)}
+          />
+        </Config.Option>
+
+        <Config.Option
+          label="配置默认展开"
+          icon={() => <TextWrap size={16} />}
+          description="控制切换到工具界面时顶部的配置区域是否默认展开"
+        >
+          <Config.Switch
+            value={settings.common.openConfigCollapse}
+            onChange={(value) =>
+              setSettings("common", "openConfigCollapse", value)
+            }
           />
         </Config.Option>
       </Config.Card>
 
       {/* 编辑器 */}
-      <Config.Card label="编辑器">
+      <Config.Card label="编辑器" collapse={false}>
         {/* 编辑器字体 */}
-        <Config.Option label="字体" icon={() => <CaseSensitive size={16} />}>
+        <Config.Option
+          label="字体"
+          icon={() => <CaseSensitive size={16} />}
+          description="编辑器中显示文字的字体"
+        >
           <Config.Select
             options={fonts()}
             class="w-60"
@@ -73,7 +96,11 @@ export default function Settings() {
           />
         </Config.Option>
 
-        <Config.Option label="字体大小" icon={() => <AudioLines size={16} />}>
+        <Config.Option
+          label="字体大小"
+          icon={() => <AudioLines size={16} />}
+          description="编辑器中显示文字的大小"
+        >
           <Config.NumberInput
             value={settings.editor.font.size}
             onInput={(value) => setSettings("editor", "font", "size", value)}
@@ -111,6 +138,33 @@ export default function Settings() {
             onSetup={(editor) => editors.push(editor)}
           />
         </div>
+      </Config.Card>
+
+      <Config.Card label="关于" collapse={false}>
+        <Config.Option label="链接" icon={() => <Link size={16} />}>
+          <div class="join gap-2">
+            <a
+              class="link link-primary"
+              onClick={() => openUrl("https://github.com/sodekim/devkimi.git")}
+            >
+              源代码
+            </a>
+            <a
+              class="link link-primary"
+              onClick={() =>
+                openUrl("https://github.com/sodekim/devkimi/blob/main/LICENSE")
+              }
+            >
+              许可证
+            </a>
+          </div>
+        </Config.Option>
+        <Config.Option label="Devkimi" icon={() => <OctagonAlert size={16} />}>
+          <div class="join gap-2">
+            <span class="text-sm">App: {settings.version.app}</span>
+            <span class="text-sm">Tauri: {settings.version.tauri}</span>
+          </div>
+        </Config.Option>
       </Config.Card>
     </div>
   );

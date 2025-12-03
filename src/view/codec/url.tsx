@@ -35,10 +35,10 @@ export default function UrlCodec() {
     <div class="flex h-full flex-col gap-4">
       {/* 配置 */}
       <Config.Card>
-        {/*转换配置*/}
+        {/*操作配置*/}
         <Config.Option
-          label="转换"
-          description="选择转换的类型"
+          label="操作"
+          description="选择操作的类型"
           icon={() => <ArrowLeftRight size={16} />}
         >
           <Config.Switch
@@ -51,7 +51,7 @@ export default function UrlCodec() {
       </Config.Card>
 
       {/*输入*/}
-      <Container class="h-0 flex-1 border border-base-300">
+      <Container class="h-0 flex-1">
         <div class="flex items-center justify-between">
           <span class="text-sm">输入</span>
           <div class="flex items-center justify-center gap-2">
@@ -59,7 +59,11 @@ export default function UrlCodec() {
             <ClearButton onClick={() => setInput("")} />
           </div>
         </div>
-        <Editor value={input()} onChange={setInput} />
+        <Editor
+          value={input()}
+          onChange={setInput}
+          placeholder={encode() ? "输入要编码的文本" : "输入要解码的文本"}
+        />
       </Container>
 
       {/*输出*/}

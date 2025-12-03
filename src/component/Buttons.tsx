@@ -5,6 +5,7 @@ import {
   CircleCheckBig,
   Clipboard,
   Copy,
+  Dices,
   Eraser,
   Eye,
   File,
@@ -176,9 +177,18 @@ const TextOperateButtons = (props: { callback: (value: string) => void }) => {
   );
 };
 
+const GenerateButton = (props: { onGenerate: () => void }) => {
+  return (
+    <button class="btn btn-sm" onClick={props.onGenerate}>
+      <Dices size={16} /> 生成
+    </button>
+  );
+};
+
 export {
   ClearButton,
   CopyButton,
+  GenerateButton,
   OpenFileButton,
   PasteButton,
   PickFileButton,

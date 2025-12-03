@@ -12,7 +12,7 @@ export default function Container(props: {
     <div
       id={id}
       class={twMerge(
-        "bg-base-100 flex flex-col gap-2 rounded-md p-4 px-4 py-2",
+        "bg-base-100 flex flex-col gap-2 rounded-md px-4 py-2",
         props.class,
       )}
     >

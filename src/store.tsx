@@ -1,4 +1,5 @@
 import { trackStore } from "@solid-primitives/deep";
+import { getTauriVersion, getVersion } from "@tauri-apps/api/app";
 import { load, Store } from "@tauri-apps/plugin-store";
 import {
   createContext,
@@ -9,10 +10,21 @@ import {
 } from "solid-js";
 import { createStore, SetStoreFunction } from "solid-js/store";
 
+//
+// 编辑器自动换行类型
+//
 export type WordWrap = "off" | "on" | "wordWrapColumn" | "bounded";
 
+//
+// 设置类型
+//
 export type Settings = {
-  theme: string;
+  // 通用配置
+  common: {
+    theme: string;
+    openConfigCollapse: boolean;
+  };
+  // 编辑器配置
   editor: {
     wordWrap: WordWrap;
     font: {
@@ -20,11 +32,22 @@ export type Settings = {
       size: number;
     };
   };
+  version: {
+    app: string;
+    tauri: string;
+  };
 };
 
+const APP_VERSION = await getVersion();
+const TAURI_VERSION = await getTauriVersion();
+
 const defaultSettings: Settings = {
-  theme: "dark",
+  common: { theme: "dark", openConfigCollapse: true },
   editor: { wordWrap: "off", font: { family: "SansSerif", size: 14 } },
+  version: {
+    app: APP_VERSION,
+    tauri: TAURI_VERSION,
+  },
 };
 
 export const StoreContext = createContext<{
@@ -55,7 +78,7 @@ export const StoreProvider = (props: { children?: JSX.Element }) => {
 
   // 切换主题
   createEffect(() => {
-    const theme = settings.theme;
+    const theme = settings.common.theme;
     const element = document.documentElement;
     element.setAttribute("data-theme", theme);
   });

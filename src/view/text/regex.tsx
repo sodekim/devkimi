@@ -104,7 +104,7 @@ export default function RegexTest() {
       </Config.Card>
 
       {/*正则表达式*/}
-      <Container class="h-30">
+      <Container>
         <div class="flex items-center justify-between">
           <span class="text-sm">正则表达式</span>
           <div class="flex items-center justify-center gap-2">
@@ -128,7 +128,11 @@ export default function RegexTest() {
             <TextOperateButtons callback={setText} />
           </div>
         </div>
-        <Editor value={text()} onChange={setText} />
+        <Editor
+          value={text()}
+          onChange={setText}
+          placeholder="输入要匹配的文本"
+        />
       </Container>
 
       <div class="flex h-0 flex-1 items-center justify-center gap-4">

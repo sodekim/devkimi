@@ -26,6 +26,14 @@
           "path": "$TEMP/**"
         }
       ]
+    },
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [
+        {
+          "url": "*"
+        }
+      ]
     }
   ]
 }

@@ -54,10 +54,10 @@ export default function GZipCodec() {
     <div class="flex h-full flex-col gap-4">
       {/* 配置 */}
       <Config.Card>
-        {/* 转换配置 */}
+        {/* 操作配置 */}
         <Config.Option
-          label="转换"
-          description="选择转换的类型"
+          label="操作"
+          description="选择操作的类型"
           icon={() => <ArrowLeftRight size={16} />}
         >
           <Config.Switch
@@ -96,7 +96,7 @@ export default function GZipCodec() {
         <Editor
           value={input()}
           onChange={(value) => setInput(value)}
-          language="base64"
+          placeholder={encode() ? "输入要压缩的文本" : "输入要解压的文本"}
         />
       </Container>
 
@@ -111,13 +111,16 @@ export default function GZipCodec() {
             <SaveButton value={output()} />
           </div>
         </div>
-        <Editor value={output()} language="base64" readOnly={true} />
+        <Editor value={output()} readOnly={true} />
       </Container>
 
       <Container class="h-10 justify-center">
         <span class="flex items-center justify-start gap-1 text-sm">
           <AudioWaveform size={16} />
-          压缩率 {(ratio() * 100).toFixed(2)}%
+          压缩率
+          <span class={ratio() > 0 ? "text-success" : "text-warning"}>
+            {(ratio() * 100).toFixed(2)}%
+          </span>
         </span>
       </Container>
     </div>

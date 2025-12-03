@@ -42,7 +42,11 @@ export default function SqlFormatter() {
       {/* 配置 */}
       <Config.Card>
         {/*缩进配置*/}
-        <Config.Option label="缩进" icon={() => <Space size={16} />}>
+        <Config.Option
+          label="缩进"
+          description="设置SQL格式化的缩进方式"
+          icon={() => <Space size={16} />}
+        >
           <Config.Select
             value={indent()}
             options={INDENT_OPTIONS}
@@ -52,7 +56,11 @@ export default function SqlFormatter() {
         </Config.Option>
 
         {/*语言配置*/}
-        <Config.Option label="语言" icon={() => <Code size={16} />}>
+        <Config.Option
+          label="语言"
+          description="选择SQL方言类型"
+          icon={() => <Code size={16} />}
+        >
           <Config.Select
             value={dialect()}
             options={DIALECT_OPTIONS}
@@ -62,7 +70,11 @@ export default function SqlFormatter() {
         </Config.Option>
 
         {/*关键字大写配置*/}
-        <Config.Option label="关键字大写" icon={() => <CaseUpper size={16} />}>
+        <Config.Option
+          label="关键字大写"
+          description="将SQL关键字转为大写格式"
+          icon={() => <CaseUpper size={16} />}
+        >
           <Config.Switch value={uppercase()} onChange={setUppercase} />
         </Config.Option>
       </Config.Card>
@@ -79,6 +91,7 @@ export default function SqlFormatter() {
           value={input()}
           onChange={(value) => setInput(value)}
           language="sql"
+          placeholder="输入需要格式化的 SQL 语句"
         />
       </Container>
 

@@ -50,10 +50,10 @@ export default function Base64TextCodec() {
     <div class="flex h-full flex-col gap-4">
       {/* 配置 */}
       <Config.Card>
-        {/*转换配置*/}
+        {/*操作配置*/}
         <Config.Option
-          label="转换"
-          description="选择转换的类型"
+          label="操作"
+          description="选择操作的类型"
           icon={() => <ArrowLeftRight size={16} />}
         >
           <ConfigSwitch
@@ -87,7 +87,11 @@ export default function Base64TextCodec() {
             <TextOperateButtons callback={setInput} />
           </div>
         </div>
-        <Editor value={input()} onChange={(value) => setInput(value)} />
+        <Editor
+          value={input()}
+          onChange={(value) => setInput(value)}
+          placeholder={encode() ? "输入要编码的文本" : "输入要解码的文本"}
+        />
       </Container>
 
       {/*输出*/}

@@ -41,10 +41,10 @@ export default function YamlPropertiesConverter() {
     <div class="flex size-0 h-full w-full flex-col gap-4">
       {/* 配置 */}
       <Config.Card>
-        {/*转换配置*/}
+        {/*操作配置*/}
         <Config.Option
-          label="转换"
-          description="选择转换的类型"
+          label="操作"
+          description="选择操作的类型"
           icon={() => <ArrowLeftRight size={16} />}
         >
           {/*转换配置*/}
@@ -69,10 +69,20 @@ export default function YamlPropertiesConverter() {
           <Show
             when={mode()}
             fallback={
-              <Editor value={input()} onChange={setInput} language="properties" />
+              <Editor
+                value={input()}
+                onChange={setInput}
+                language="properties"
+                placeholder="输入需要转换的 PROPERTIES 数据"
+              />
             }
           >
-            <Editor value={input()} onChange={setInput} language="yaml" />
+            <Editor
+              value={input()}
+              onChange={setInput}
+              language="yaml"
+              placeholder="输入需要转换的 YAML 数据"
+            />
           </Show>
         </Container>
 
@@ -87,7 +97,9 @@ export default function YamlPropertiesConverter() {
           </div>
           <Show
             when={mode()}
-            fallback={<Editor value={output()} readOnly={true} language="yaml" />}
+            fallback={
+              <Editor value={output()} readOnly={true} language="yaml" />
+            }
           >
             <Editor value={output()} readOnly={true} language="properties" />
           </Show>

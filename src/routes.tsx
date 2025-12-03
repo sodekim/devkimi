@@ -3,6 +3,8 @@ import {
   ArrowLeftRight,
   BadgePlus,
   Braces,
+  Bubbles,
+  CirclePercent,
   CodeXml,
   Database,
   Dices,
@@ -14,14 +16,18 @@ import {
   History,
   House,
   Image,
+  LifeBuoy,
   Link,
   PaintRoller,
   QrCode,
   Regex,
+  SeparatorHorizontal,
   Settings,
+  Shell,
+  ShieldPlus,
   SquareAsterisk,
   SquareChartGantt,
-  Turntable
+  Turntable,
 } from "lucide-solid";
 import { Component, JSX, lazy } from "solid-js";
 
@@ -65,7 +71,7 @@ const routeMetas: RouteMeta[] = [
     ],
   },
   {
-    label: "编解码器",
+    label: "编码 & 解码",
     path: "/codec",
     icon: GitCompareArrows,
     children: [
@@ -188,6 +194,43 @@ const routeMetas: RouteMeta[] = [
     ],
   },
   {
+    label: "加密 & 解密",
+    path: "/crypto",
+    icon: ShieldPlus,
+    children: [
+      {
+        label: "RSA",
+        path: "/crypto/rsa",
+        icon: Bubbles,
+        component: lazy(() => import("./view/crypto/rsa")),
+      },
+      {
+        label: "SM2",
+        path: "/crypto/sm2",
+        icon: SeparatorHorizontal,
+        component: lazy(() => import("./view/crypto/sm2")),
+      },
+      {
+        label: "SM4",
+        path: "/crypto/sm4",
+        icon: Shell,
+        component: lazy(() => import("./view/crypto/sm4")),
+      },
+      {
+        label: "AES",
+        path: "/crypto/aes",
+        icon: CirclePercent,
+        component: lazy(() => import("./view/crypto/aes")),
+      },
+      {
+        label: "DES",
+        path: "/crypto/des",
+        icon: LifeBuoy,
+        component: lazy(() => import("./view/crypto/des")),
+      },
+    ],
+  },
+  {
     label: "设置",
     path: "/settings",
     component: lazy(() => import("./view/settings")),
@@ -205,4 +248,3 @@ const routeMetas: RouteMeta[] = [
 
 export { routeMetas };
 export type { RouteMeta };
-

@@ -35,7 +35,11 @@ export default function XmlFormatter() {
       {/* 配置 */}
       <Config.Card>
         {/*缩进配置*/}
-        <Config.Option label="缩进" icon={() => <Space size={16} />}>
+        <Config.Option
+          label="缩进"
+          description="设置XML格式化的缩进方式"
+          icon={() => <Space size={16} />}
+        >
           <Config.Select
             value={indent()}
             options={INDENT_OPTIONS}
@@ -53,7 +57,12 @@ export default function XmlFormatter() {
             <TextOperateButtons callback={setInput} />
           </div>
         </div>
-        <Editor value={input()} onChange={setInput} language="xml" />
+        <Editor
+          value={input()}
+          onChange={setInput}
+          language="xml"
+          placeholder="输入需要格式化的 XML 数据"
+        />
       </Container>
 
       {/*输出*/}
