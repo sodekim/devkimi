@@ -46,6 +46,7 @@ pub struct EncodingText {
 }
 
 impl EncodingText {
+    #[allow(unused)]
     pub fn new(value: impl Into<String>, encoding: Encoding) -> Self {
         Self {
             text: value.into(),

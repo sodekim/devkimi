@@ -77,19 +77,3 @@ pub fn decrypt_aes(
         }
     }
 }
-
-#[cfg(test)]
-mod test {
-    use crate::encoding::{Encoding, EncodingText};
-    use aes::Aes192;
-    use crypto_common::KeyIvInit;
-
-    #[test]
-    fn test_aes() {
-        let key = EncodingText::new("123456781234567812345678", Encoding::Utf8);
-        let iv = EncodingText::new("1234567812345678", Encoding::Utf8);
-        let key = key.to_bytes().unwrap();
-        let iv = iv.to_bytes().unwrap();
-        let encryptor = cbc::Encryptor::<Aes192>::new_from_slices(&key, &iv).unwrap();
-    }
-}
