@@ -10,7 +10,9 @@ export default function Sidebar() {
     <div class="drawer-side flex w-70 flex-col overflow-visible">
       {/* Logo */}
       <div class="flex h-12 w-full scale-65 items-center justify-start">
-        <Logo />
+        <a href="/home">
+          <Logo />
+        </a>
       </div>
 
       {/* Sidebar Menu */}
