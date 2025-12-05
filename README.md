@@ -7,13 +7,18 @@ devkimi 是一个基于 Tauri 和 SolidJS 构建的多功能开发者工具集�
 
 ## 界面截图
 
-![Screenshot](devkimi.png)
+![screenshot-1](./screenshot/screenshot-1.png)
+
+![screenshot-2](./screenshot/screenshot-2.png)
+
+![screenshot-3](./screenshot/screenshot-3.png)
 
 ## 功能特性
 
 devkimi 包含以下六大功能模块：
 
 ### 🔄 编解码工具 (Codec)
+
 - Base64 文本编解码
 - Base64 图片编解码
 - GZip 压缩与解压缩
@@ -21,26 +26,31 @@ devkimi 包含以下六大功能模块：
 - 二维码生成与解析
 
 ### 🎨 格式化工具 (Formatter)
+
 - JSON 格式化
 - SQL 格式化
 - XML 格式化
 
 ### ⚡ 生成器 (Generator)
+
 - UUID 生成
 - 密码生成
 - 哈希生成 (支持 MD5, SHA1, SHA256 等)
 
 ### 📝 文本工具 (Text)
+
 - Markdown 预览
 - 正则表达式测试
 - JSONPath 查询
 
 ### 🔁 转换器 (Converter)
+
 - Cron 表达式解析
 - JSON/YAML 互转
 - YAML/Properties 互转
 
 ### 🔐 加密 & 解密 (Crypto)
+
 - RSA 加密/解密（支持 PKCS#1、PKCS#8 格式）
 - SM2 加密/解密（支持 PEM、Hex 格式）
 - SM4 加密/解密（支持多种分组模式）
