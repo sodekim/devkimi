@@ -34,12 +34,14 @@ pub fn parse_regex(
     text: &str,
     pattern: &str,
     global: bool,
-    case_insensitive: bool,
     multi_line: bool,
+    case_insensitive: bool,
+    unicode: bool,
 ) -> Result<Vec<Captures>, Error> {
     let regex = RegexBuilder::new(pattern)
         .case_insensitive(case_insensitive)
         .multi_line(multi_line)
+        .unicode(unicode)
         .build()?;
 
     fn captures<'h>(captures: regex::Captures<'h>) -> Captures {

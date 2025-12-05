@@ -20,14 +20,14 @@ import {
   Link,
   PaintRoller,
   QrCode,
+  Rainbow,
   Regex,
-  SeparatorHorizontal,
   Settings,
   Shell,
   ShieldPlus,
   SquareAsterisk,
   SquareChartGantt,
-  Turntable,
+  Turntable
 } from "lucide-solid";
 import { Component, JSX, lazy } from "solid-js";
 
@@ -207,7 +207,7 @@ const routeMetas: RouteMeta[] = [
       {
         label: "SM2",
         path: "/crypto/sm2",
-        icon: SeparatorHorizontal,
+        icon: Rainbow,
         component: lazy(() => import("./view/crypto/sm2")),
       },
       {
@@ -248,3 +248,4 @@ const routeMetas: RouteMeta[] = [
 
 export { routeMetas };
 export type { RouteMeta };
+

@@ -7,20 +7,18 @@ import {
 } from "lucide-solid";
 import { createEffect, createSignal, Match, Show, Switch } from "solid-js";
 import { twMerge } from "tailwind-merge";
-import {
-  generateFileHash,
-  generateTextHash,
-} from "../../command/generate/hash";
+import { generateFileHash, generateTextHash } from "@/command/generate/hash";
 import {
   ClearButton,
   CopyButton,
   PasteButton,
   PickFileButton,
   SaveButton,
-} from "../../component/Buttons";
-import Config from "../../component/Config";
-import Container from "../../component/Container";
-import Editor from "../../component/Editor";
+} from "@/component/Buttons";
+import Config from "@/component/Config";
+import Container from "@/component/Container";
+import Card from "@/component/Card";
+import Editor from "@/component/Editor";
 
 const HASH_ALGORITHM_OPTIONS = [
   { value: "Fsb160", label: "FSB-160" },
@@ -70,7 +68,7 @@ export default function HashGenerator() {
       .catch((e) => setOutput(e.toString()));
   });
   return (
-    <div class="flex h-full flex-col gap-4 flex-1">
+    <Container>
       {/* 配置 */}
       <Config.Card>
         {/*版本配置*/}
@@ -98,7 +96,7 @@ export default function HashGenerator() {
       </Config.Card>
 
       {/*输入*/}
-      <Container>
+      <Card>
         <div class="tabs tabs-border gap-2">
           {/*文本*/}
           <input
@@ -143,10 +141,10 @@ export default function HashGenerator() {
             </div>
           </div>
         </div>
-      </Container>
+      </Card>
 
       {/*哈希值*/}
-      <Container>
+      <Card>
         <div class="flex items-center justify-between">
           <span class="text-sm">哈希值</span>
           <div class="flex items-center justify-center gap-2">
@@ -159,10 +157,10 @@ export default function HashGenerator() {
           value={output()}
           readOnly={true}
         />
-      </Container>
+      </Card>
 
       {/*校验哈希值*/}
-      <Container>
+      <Card>
         <div class="flex items-center justify-between">
           <span class="flex items-center justify-center gap-4 text-sm">
             校验哈希值
@@ -193,7 +191,7 @@ export default function HashGenerator() {
           onInput={(e) => setTarget(e.target.value)}
           placeholder="输入要校验的哈希值即可与结果进行比对"
         />
-      </Container>
-    </div>
+      </Card>
+    </Container>
   );
 }

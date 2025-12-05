@@ -2,19 +2,19 @@ import { convertFileSrc } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { ArrowLeftRight, Image, Save } from "lucide-solid";
 import { createEffect, createMemo, createSignal, Show } from "solid-js";
-import { decodeQrCode, encodeQrCode } from "../../command/codec/qrcode";
-import { copyFile } from "../../command/fs";
+import { decodeQrCode, encodeQrCode } from "@/command/codec/qrcode";
+import { copyFile } from "@/command/fs";
 import {
   CopyButton,
   OpenFileButton,
   PickImageFileButton,
   SaveButton,
   TextOperateButtons,
-} from "../../component/Buttons";
-import Config from "../../component/Config";
-import Container from "../../component/Container";
-import Editor from "../../component/Editor";
-import IOLayout from "../../component/IOLayout";
+} from "@/component/Buttons";
+import Config from "@/component/Config";
+import Container from "@/component/Container";
+import Editor from "@/component/Editor";
+import IOLayout from "@/component/IOLayout";
 
 export default function QRCodeCodec() {
   const [image, setImage] = createSignal("");
@@ -47,7 +47,7 @@ export default function QRCodeCodec() {
   });
 
   return (
-    <div class="flex h-full flex-1 flex-col gap-4">
+    <Container>
       {/* 配置 */}
       <Config.Card>
         {/*操作配置*/}
@@ -144,6 +144,6 @@ export default function QRCodeCodec() {
           </>,
         ]}
       />
-    </div>
+    </Container>
   );
 }

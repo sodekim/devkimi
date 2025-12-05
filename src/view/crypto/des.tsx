@@ -14,7 +14,7 @@ import {
   Encoding,
   Padding,
   PADDING_OPTIONS,
-} from "../../command/crypto/type";
+} from "@/command/crypto/type";
 import {
   ClearButton,
   CopyButton,
@@ -22,18 +22,19 @@ import {
   PasteButton,
   SaveButton,
   TextOperateButtons,
-} from "../../component/Buttons";
-import Config from "../../component/Config";
-import Container from "../../component/Container";
-import Editor from "../../component/Editor";
-import { EncodingTextInput, EncodingSelect } from "../../component/Encoding";
+} from "@/component/Buttons";
+import Config from "@/component/Config";
+import Container from "@/component/Container";
+import Card from "@/component/Card";
+import Editor from "@/component/Editor";
+import { EncodingTextInput, EncodingSelect } from "@/component/Encoding";
 import {
   decryptDes,
   encryptDes,
   generateDesIv,
   generateDesKey,
-} from "../../command/crypto/des";
-import IOLayout from "../../component/IOLayout";
+} from "@/command/crypto/des";
+import IOLayout from "@/component/IOLayout";
 
 export default function Des() {
   const [encryption, setEncryption] = createSignal(true);
@@ -112,7 +113,7 @@ export default function Des() {
     }
   });
   return (
-    <div class="flex h-full flex-1 flex-col gap-4">
+    <Container>
       {/* 配置 */}
       <Config.Card>
         {/* 转换类型 */}
@@ -175,7 +176,7 @@ export default function Des() {
       </Config.Card>
 
       {/* 密钥 */}
-      <Container>
+      <Card>
         <div class="flex items-center justify-between">
           <span class="text-sm">密钥</span>
           <div class="flex items-center justify-center gap-2">
@@ -195,11 +196,11 @@ export default function Des() {
           setValue={setKey}
           placeholder="请输入密钥"
         />
-      </Container>
+      </Card>
 
       {/* 向量 */}
       <Show when={blockMode() !== "Ecb"}>
-        <Container>
+        <Card>
           <div class="flex items-center justify-between">
             <span class="text-sm">向量</span>
             <div class="flex items-center justify-center gap-2">
@@ -219,7 +220,7 @@ export default function Des() {
             setValue={setIv}
             placeholder="请输入向量"
           />
-        </Container>
+        </Card>
       </Show>
 
       <IOLayout
@@ -267,6 +268,6 @@ export default function Des() {
           </>,
         ]}
       />
-    </div>
+    </Container>
   );
 }

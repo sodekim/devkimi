@@ -5,17 +5,18 @@ import {
   encryptSm2,
   generateSm2KeyPair,
   Sm2KeyFormat,
-} from "../../command/crypto/sm2";
+} from "@/command/crypto/sm2";
 import {
   CopyButton,
   GenerateButton,
   SaveButton,
   TextOperateButtons,
-} from "../../component/Buttons";
-import Config from "../../component/Config";
-import Container from "../../component/Container";
-import Editor from "../../component/Editor";
-import IOLayout from "../../component/IOLayout";
+} from "@/component/Buttons";
+import Config from "@/component/Config";
+import Container from "@/component/Container";
+import Card from "@/component/Card";
+import Editor from "@/component/Editor";
+import IOLayout from "@/component/IOLayout";
 
 const KEY_FORMAT_OPTIONS = [
   { value: "Sec1", label: "PEM (SEC1)" },
@@ -63,7 +64,7 @@ export default function Sm2() {
   });
 
   return (
-    <div class="flex h-full flex-1 flex-col gap-4">
+    <Container>
       {/* 配置 */}
       <Config.Card>
         <Config.Option
@@ -97,7 +98,7 @@ export default function Sm2() {
       {/* 密钥对 */}
       <div class="flex h-0 max-h-100 flex-1 gap-4">
         {/*私钥*/}
-        <Container class="h-full w-0 flex-1">
+        <Card class="h-full w-0 flex-1">
           <div class="flex items-center justify-between">
             <span class="text-sm">私钥</span>
             <div class="flex items-center justify-center gap-2">
@@ -120,10 +121,10 @@ export default function Sm2() {
             onChange={setPrivateKey}
             placeholder="SM2 私钥"
           />
-        </Container>
+        </Card>
 
         {/*公钥*/}
-        <Container class="h-full w-0 flex-1">
+        <Card class="h-full w-0 flex-1">
           <div class="flex items-center justify-between">
             <span class="text-sm">公钥</span>
             <div class="flex items-center justify-center gap-2">
@@ -136,7 +137,7 @@ export default function Sm2() {
             onChange={setPublicKey}
             placeholder="SM2 公钥"
           />
-        </Container>
+        </Card>
       </div>
 
       <IOLayout
@@ -169,6 +170,6 @@ export default function Sm2() {
           </>,
         ]}
       />
-    </div>
+    </Container>
   );
 }

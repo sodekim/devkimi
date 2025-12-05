@@ -1,6 +1,6 @@
 import { useNavigate } from "@solidjs/router";
-import Container from "../component/Container";
-import { routeMetas } from "../routes";
+import Card from "@/component/Card";
+import { routeMetas } from "@/routes";
 import { Show } from "solid-js";
 
 export default function Home() {
@@ -12,7 +12,7 @@ export default function Home() {
         .map((meta) => {
           const children = meta.children || [];
           return (
-            <Container class="gap-4">
+            <Card class="gap-4">
               <div class="flex items-center justify-start gap-2">
                 <span class="text-primary">
                   {meta.icon && meta.icon({ size: 14 })}
@@ -38,7 +38,7 @@ export default function Home() {
                   </button>
                 ))}
               </div>
-            </Container>
+            </Card>
           );
         })}
     </div>

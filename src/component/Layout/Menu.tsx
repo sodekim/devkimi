@@ -1,8 +1,7 @@
+import { RouteMeta, routeMetas } from "@/routes";
 import { useLocation } from "@solidjs/router";
 import { EllipsisVertical } from "lucide-solid";
 import { createMemo } from "solid-js";
-import { twMerge } from "tailwind-merge";
-import { RouteMeta, routeMetas } from "../../routes";
 
 export default function Menu() {
   const pathname = createMemo(() => useLocation().pathname);

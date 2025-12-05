@@ -3,15 +3,16 @@ import { createEffect, createSignal, Show } from "solid-js";
 import {
   convertPropertiesToYaml,
   convertYamlToProperties,
-} from "../../command/converter/yaml_properties";
+} from "@/command/converter/yaml_properties";
 import {
   CopyButton,
   SaveButton,
   TextOperateButtons,
-} from "../../component/Buttons";
-import Config from "../../component/Config";
-import Editor from "../../component/Editor";
-import IOLayout from "../../component/IOLayout";
+} from "@/component/Buttons";
+import Config from "@/component/Config";
+import Container from "@/component/Container";
+import Editor from "@/component/Editor";
+import IOLayout from "@/component/IOLayout";
 
 export default function YamlPropertiesConverter() {
   const [mode, setMode] = createSignal(true);
@@ -38,7 +39,7 @@ export default function YamlPropertiesConverter() {
   });
 
   return (
-    <div class="flex flex-1 flex-col gap-4">
+    <Container>
       {/* 配置 */}
       <Config.Card>
         {/*操作配置*/}
@@ -104,6 +105,6 @@ export default function YamlPropertiesConverter() {
           </>,
         ]}
       />
-    </div>
+    </Container>
   );
 }

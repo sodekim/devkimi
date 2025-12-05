@@ -3,17 +3,17 @@ import { createEffect, createSignal } from "solid-js";
 import {
   decodeTextBase64,
   encodeTextBase64,
-} from "../../command/codec/base64_text";
+} from "@/command/codec/base64_text";
 import {
   CopyButton,
   SaveButton,
   TextOperateButtons,
-} from "../../component/Buttons";
-import Config from "../../component/Config";
-import ConfigSwitch from "../../component/Config/Switch";
-import Container from "../../component/Container";
-import Editor from "../../component/Editor";
-import IOLayout from "../../component/IOLayout";
+} from "@/component/Buttons";
+import Config from "@/component/Config";
+import ConfigSwitch from "@/component/Config/Switch";
+import Container from "@/component/Container";
+import Editor from "@/component/Editor";
+import IOLayout from "@/component/IOLayout";
 
 const BASE_MODE_OPTIONS = [
   { label: "Standard", value: "Standard" },
@@ -48,7 +48,7 @@ export default function Base64TextCodec() {
     }
   });
   return (
-    <div class="flex flex-1 flex-col gap-4">
+    <Container>
       {/* 配置 */}
       <Config.Card>
         {/*操作配置*/}
@@ -107,6 +107,6 @@ export default function Base64TextCodec() {
           </>,
         ]}
       />
-    </div>
+    </Container>
   );
 }

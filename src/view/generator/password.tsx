@@ -9,11 +9,12 @@ import {
   SquaresExclude,
 } from "lucide-solid";
 import { createEffect, createSignal } from "solid-js";
-import { generatePassword } from "../../command/generate/password";
-import { CopyButton, SaveButton } from "../../component/Buttons";
-import Config from "../../component/Config";
-import Container from "../../component/Container";
-import Editor from "../../component/Editor";
+import { generatePassword } from "@/command/generate/password";
+import { CopyButton, SaveButton } from "@/component/Buttons";
+import Config from "@/component/Config";
+import Container from "@/component/Container";
+import Card from "@/component/Card";
+import Editor from "@/component/Editor";
 
 export default function PasswordGenerator() {
   const [length, setLength] = createSignal(16);
@@ -48,7 +49,7 @@ export default function PasswordGenerator() {
     }
   });
   return (
-    <div class="flex h-full flex-col gap-4 flex-1">
+    <Container>
       {/* 配置 */}
       <Config.Card>
         <Config.Option
@@ -121,7 +122,7 @@ export default function PasswordGenerator() {
       </Config.Card>
 
       {/*输出*/}
-      <Container class="h-0 flex-1">
+      <Card class="h-0 flex-1">
         <div class="flex items-center justify-between">
           <span class="text-sm">输出</span>
           <div class="flex items-center justify-center gap-2">
@@ -134,7 +135,7 @@ export default function PasswordGenerator() {
           </div>
         </div>
         <Editor value={output()} language="plaintext" readOnly={true} />
-      </Container>
-    </div>
+      </Card>
+    </Container>
   );
 }

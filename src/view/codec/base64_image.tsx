@@ -5,19 +5,19 @@ import { createEffect, createMemo, createSignal, Show } from "solid-js";
 import {
   decodeImageBase64,
   encodeImageBase64,
-} from "../../command/codec/base64_image";
-import { copyFile } from "../../command/fs";
+} from "@/command/codec/base64_image";
+import { copyFile } from "@/command/fs";
 import {
   CopyButton,
   OpenFileButton,
   PickImageFileButton,
   SaveButton,
   TextOperateButtons,
-} from "../../component/Buttons";
-import Config from "../../component/Config";
-import Container from "../../component/Container";
-import Editor from "../../component/Editor";
-import IOLayout from "../../component/IOLayout";
+} from "@/component/Buttons";
+import Config from "@/component/Config";
+import Container from "@/component/Container";
+import Editor from "@/component/Editor";
+import IOLayout from "@/component/IOLayout";
 
 const BASE_MODE_OPTIONS = [
   { label: "Standard", value: "Standard" },
@@ -57,7 +57,7 @@ export default function Base64ImageCodec() {
     }
   });
   return (
-    <div class="flex flex-1 flex-col gap-4">
+    <Container>
       {/* 配置 */}
       <Config.Card>
         {/*操作配置*/}
@@ -168,6 +168,6 @@ export default function Base64ImageCodec() {
           </>,
         ]}
       />
-    </div>
+    </Container>
   );
 }

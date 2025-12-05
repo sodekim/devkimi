@@ -10,13 +10,13 @@ import {
   TextWrap,
 } from "lucide-solid";
 import { createEffect, createResource } from "solid-js";
-import { getSystemFonts } from "../command/font";
-import Config from "../component/Config";
-import Editor, { MonacoEditor } from "../component/Editor";
-import { IOLayout, useSettings, WordWrap } from "../store";
+import { getSystemFonts } from "@/command/font";
+import Config from "@/component/Config";
+import Editor, { MonacoEditor } from "@/component/Editor";
+import { IOLayout, useSettings, WordWrap } from "@/store";
 //
 // 主题
-const THEMES = ["light", "dark"];
+const THEMES = ["light", "dark", "dracula"];
 
 export default function Settings() {
   const editors = [] as MonacoEditor[];

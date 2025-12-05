@@ -1,16 +1,17 @@
 import { ArrowLeftRight } from "lucide-solid";
 import { createEffect, createSignal } from "solid-js";
-import { decodeURL, encodeURL } from "../../command/codec/url";
+import { decodeURL, encodeURL } from "@/command/codec/url";
 import {
   ClearButton,
   CopyButton,
   PasteButton,
   SaveButton,
-} from "../../component/Buttons";
-import Config from "../../component/Config";
-import Container from "../../component/Container";
-import Editor from "../../component/Editor";
-import IOLayout from "../../component/IOLayout";
+} from "@/component/Buttons";
+import Config from "@/component/Config";
+import Card from "@/component/Card";
+import Editor from "@/component/Editor";
+import IOLayout from "@/component/IOLayout";
+import Container from "@/component/Container";
 
 export default function UrlCodec() {
   const [encode, setEncode] = createSignal(true);
@@ -33,7 +34,7 @@ export default function UrlCodec() {
     }
   });
   return (
-    <div class="flex h-full flex-1 flex-col gap-4">
+    <Container>
       {/* 配置 */}
       <Config.Card>
         {/*操作配置*/}
@@ -79,6 +80,6 @@ export default function UrlCodec() {
           </>,
         ]}
       />
-    </div>
+    </Container>
   );
 }

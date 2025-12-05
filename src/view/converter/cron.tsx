@@ -1,15 +1,16 @@
 import { ALargeSmall, RefreshCcw, Sigma } from "lucide-solid";
 import { createEffect, createSignal } from "solid-js";
-import { parseCron } from "../../command/converter/cron";
+import { parseCron } from "@/command/converter/cron";
 import {
   ClearButton,
   CopyButton,
   PasteButton,
   SaveButton,
-} from "../../component/Buttons";
-import Config from "../../component/Config";
-import Container from "../../component/Container";
-import Editor from "../../component/Editor";
+} from "@/component/Buttons";
+import Config from "@/component/Config";
+import Container from "@/component/Container";
+import Card from "@/component/Card";
+import Editor from "@/component/Editor";
 
 export default function CronConverter() {
   const [cron, setCron] = createSignal("* * * * * *");
@@ -29,7 +30,7 @@ export default function CronConverter() {
     }
   });
   return (
-    <div class="flex h-full flex-col gap-4 flex-1">
+    <Container>
       {/* 配置 */}
       <Config.Card>
         <Config.Option
@@ -57,7 +58,7 @@ export default function CronConverter() {
       </Config.Card>
 
       {/*CRON表达式*/}
-      <Container>
+      <Card>
         <div class="flex items-center justify-between">
           <span class="text-sm">CRON表达式</span>
           <div class="flex items-center justify-center gap-2">
@@ -66,14 +67,14 @@ export default function CronConverter() {
           </div>
         </div>
         <input
-          class="input w-full rounded-md outline-none"
+          class="input input-md w-full rounded-md outline-none"
           value={cron()}
           onInput={(e) => setCron(e.target.value)}
         />
-      </Container>
+      </Card>
 
       {/*计划时间*/}
-      <Container class="h-0 flex-1">
+      <Card class="h-0 flex-1">
         <div class="flex items-center justify-between">
           <span class="text-sm">计划执行时间</span>
           <div class="flex items-center justify-center gap-2">
@@ -86,7 +87,7 @@ export default function CronConverter() {
           </div>
         </div>
         <Editor value={output()} readOnly={true} />
-      </Container>
-    </div>
+      </Card>
+    </Container>
   );
 }

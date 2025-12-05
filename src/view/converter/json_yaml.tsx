@@ -2,17 +2,17 @@ import { createEffect, createSignal, Show } from "solid-js";
 import {
   convertJsonToYaml,
   convertYamlToJson,
-} from "../../command/converter/json_yaml";
+} from "@/command/converter/json_yaml";
 import {
   CopyButton,
   SaveButton,
   TextOperateButtons,
-} from "../../component/Buttons";
-import Config from "../../component/Config";
-import Container from "../../component/Container";
-import Editor from "../../component/Editor";
+} from "@/component/Buttons";
+import Config from "@/component/Config";
+import Container from "@/component/Container";
+import Editor from "@/component/Editor";
 import { ArrowLeftRight } from "lucide-solid";
-import IOLayout from "../../component/IOLayout";
+import IOLayout from "@/component/IOLayout";
 
 export default function JsonYamlConverter() {
   const [mode, setMode] = createSignal(true);
@@ -36,7 +36,7 @@ export default function JsonYamlConverter() {
   });
 
   return (
-    <div class="flex flex-1 flex-col gap-4">
+    <Container>
       {/* 配置 */}
       <Config.Card>
         <Config.Option
@@ -101,6 +101,6 @@ export default function JsonYamlConverter() {
           </>,
         ]}
       />
-    </div>
+    </Container>
   );
 }

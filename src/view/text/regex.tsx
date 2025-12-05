@@ -1,14 +1,21 @@
-import { ArrowLeftFromLine, CaseSensitive, SquareAsterisk } from "lucide-solid";
+import {
+  ArrowLeftFromLine,
+  CaseSensitive,
+  Ellipsis,
+  SquareAsterisk,
+  Ungroup,
+} from "lucide-solid";
 import { createEffect, createSignal, For } from "solid-js";
-import { Capture, parseRegex } from "../../command/text/regex";
+import { Capture, parseRegex } from "@/command/text/regex";
 import {
   ClearButton,
   PasteButton,
   TextOperateButtons,
-} from "../../component/Buttons";
-import Config from "../../component/Config";
-import Container from "../../component/Container";
-import Editor from "../../component/Editor";
+} from "@/component/Buttons";
+import Config from "@/component/Config";
+import Container from "@/component/Container";
+import Card from "@/component/Card";
+import Editor from "@/component/Editor";
 
 const RegexGrammars: Array<{ grammar: string; description: string }> = [
   // 🔹 基础字符匹配
@@ -57,11 +64,19 @@ export default function RegexTest() {
   const [multiLine, setMultiLine] = createSignal(false);
   const [pattern, setPattern] = createSignal("");
   const [text, setText] = createSignal("");
+  const [unicode, setUnicode] = createSignal(false);
   const [captures, setCaptures] = createSignal<Capture[]>([]);
 
   createEffect(() => {
     if (pattern().length > 0 && text().length > 0) {
-      parseRegex(text(), pattern(), global(), multiLine(), caseInsensitive())
+      parseRegex(
+        text(),
+        pattern(),
+        global(),
+        multiLine(),
+        caseInsensitive(),
+        unicode(),
+      )
         .then(setCaptures)
         .catch((e) => console.error("parse regex error!", e));
     } else {
@@ -69,7 +84,7 @@ export default function RegexTest() {
     }
   });
   return (
-    <div class="flex h-full flex-col gap-4 flex-1">
+    <Container>
       {/* 配置 */}
       <Config.Card>
         {/* 全部匹配配置 */}
@@ -101,10 +116,19 @@ export default function RegexTest() {
         >
           <Config.Switch value={multiLine()} onChange={setMultiLine} />
         </Config.Option>
+
+        {/* 多行模式配置 */}
+        <Config.Option
+          label="Unicode模式"
+          description="启用Unicode模式"
+          icon={() => <Ungroup size={16} />}
+        >
+          <Config.Switch value={unicode()} onChange={setUnicode} />
+        </Config.Option>
       </Config.Card>
 
       {/*正则表达式*/}
-      <Container>
+      <Card>
         <div class="flex items-center justify-between">
           <span class="text-sm">正则表达式</span>
           <div class="flex items-center justify-center gap-2">
@@ -113,15 +137,15 @@ export default function RegexTest() {
           </div>
         </div>
         <input
-          class="input w-full rounded-md outline-none"
+          class="input input-md w-full rounded-md outline-none"
           placeholder="输入正则表达式"
           value={pattern()}
           onInput={(e) => setPattern(e.target.value)}
         />
-      </Container>
+      </Card>
 
       {/*文本*/}
-      <Container class="h-0 flex-1">
+      <Card class="h-0 flex-1">
         <div class="flex items-center justify-between">
           <span class="text-sm">文本</span>
           <div class="flex items-center justify-center gap-2">
@@ -133,11 +157,11 @@ export default function RegexTest() {
           onChange={setText}
           placeholder="输入要匹配的文本"
         />
-      </Container>
+      </Card>
 
       <div class="flex h-0 flex-1 items-center justify-center gap-4">
         {/*匹配信息*/}
-        <Container class="h-full flex-1 overflow-x-hidden">
+        <Card class="h-full flex-1 overflow-x-hidden">
           <div class="flex items-center justify-between">
             <span class="text-sm">匹配信息</span>
           </div>
@@ -170,10 +194,10 @@ export default function RegexTest() {
               </tbody>
             </table>
           </div>
-        </Container>
+        </Card>
 
         {/*速查表*/}
-        <Container class="h-full flex-1 overflow-x-hidden">
+        <Card class="h-full flex-1 overflow-x-hidden">
           <div class="flex items-center justify-between">
             <span class="text-sm">速查表</span>
           </div>
@@ -195,8 +219,8 @@ export default function RegexTest() {
               </tbody>
             </table>
           </div>
-        </Container>
+        </Card>
       </div>
-    </div>
+    </Container>
   );
 }

@@ -1,12 +1,13 @@
 import { createEffect, createSignal } from "solid-js";
-import { parseJsonPath } from "../../command/text/jsonpath";
+import { parseJsonPath } from "@/command/text/jsonpath";
 import {
   ClearButton,
   PasteButton,
   TextOperateButtons,
-} from "../../component/Buttons";
-import Container from "../../component/Container";
-import Editor from "../../component/Editor";
+} from "@/component/Buttons";
+import Container from "@/component/Container";
+import Card from "@/component/Card";
+import Editor from "@/component/Editor";
 
 const JsonPathGrammars: Array<{ expression: string; description: string }> = [
   {
@@ -129,9 +130,9 @@ export default function JSONPath() {
     }
   });
   return (
-    <div class="flex h-full flex-col gap-4 flex-1">
+    <Container>
       {/*JSONPath*/}
-      <Container>
+      <Card>
         <div class="flex items-center justify-between">
           <span class="text-sm">JSONPath</span>
           <div class="flex items-center justify-center gap-2">
@@ -140,15 +141,15 @@ export default function JSONPath() {
           </div>
         </div>
         <input
-          class="input w-full rounded-md outline-none"
+          class="input input-md w-full rounded-md outline-none"
           placeholder="输入 JSONPath 表达式"
           value={pattern()}
           onInput={(e) => setPattern(e.target.value)}
         />
-      </Container>
+      </Card>
 
       {/*JSON*/}
-      <Container class="h-0 flex-1">
+      <Card class="h-0 flex-1">
         <div class="flex items-center justify-between">
           <span class="text-sm">JSON</span>
           <div class="flex items-center justify-center gap-2">
@@ -161,19 +162,19 @@ export default function JSONPath() {
           language="json"
           placeholder="输入需要解析的 JSON 数据"
         />
-      </Container>
+      </Card>
 
       <div class="flex h-0 flex-1 items-center justify-center gap-4">
         {/*匹配信息*/}
-        <Container class="h-full flex-1 overflow-x-hidden">
+        <Card class="h-full flex-1 overflow-x-hidden">
           <div class="flex items-center justify-between">
             <span class="text-sm">结果</span>
           </div>
           <Editor language="json" value={output()} readOnly={true} />
-        </Container>
+        </Card>
 
         {/*速查表*/}
-        <Container class="h-full flex-1 overflow-x-hidden">
+        <Card class="h-full flex-1 overflow-x-hidden">
           <div class="flex items-center justify-between">
             <span class="text-sm">速查表</span>
           </div>
@@ -195,8 +196,8 @@ export default function JSONPath() {
               </tbody>
             </table>
           </div>
-        </Container>
+        </Card>
       </div>
-    </div>
+    </Container>
   );
 }

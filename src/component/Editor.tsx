@@ -7,7 +7,7 @@ import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
 import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
 import { createEffect, onCleanup, onMount, splitProps } from "solid-js";
 import { twMerge } from "tailwind-merge";
-import { useSettings } from "../store";
+import { useSettings } from "@/store";
 
 self.MonacoEnvironment = {
   getWorker(_: any, label: string) {
@@ -55,6 +55,15 @@ monaco.editor.defineTheme("dark", {
   rules: [],
   colors: {
     "editor.background": "#1d232a",
+  },
+});
+
+monaco.editor.defineTheme("dracula", {
+  base: "vs-dark",
+  inherit: true,
+  rules: [],
+  colors: {
+    "editor.background": "#282a36",
   },
 });
 

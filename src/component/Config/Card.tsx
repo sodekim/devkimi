@@ -1,5 +1,5 @@
+import { useSettings } from "@/store";
 import { children, JSX } from "solid-js";
-import { useSettings } from "../../store";
 import { twMerge } from "tailwind-merge";
 
 const Card = (props: {

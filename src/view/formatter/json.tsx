@@ -1,15 +1,15 @@
 import { ArrowDownAZ, Space } from "lucide-solid";
 import { createEffect, createSignal } from "solid-js";
-import { formatJson } from "../../command/formatter/json";
+import { formatJson } from "@/command/formatter/json";
 import {
   CopyButton,
   SaveButton,
   TextOperateButtons,
-} from "../../component/Buttons";
-import Config from "../../component/Config";
-import Container from "../../component/Container";
-import Editor from "../../component/Editor";
-import IOLayout from "../../component/IOLayout";
+} from "@/component/Buttons";
+import Config from "@/component/Config";
+import Container from "@/component/Container";
+import Editor from "@/component/Editor";
+import IOLayout from "@/component/IOLayout";
 
 const INDENT_OPTIONS = [
   { value: "TwoSpace", label: "2个空格" },
@@ -33,7 +33,7 @@ export default function JsonFormatter() {
     }
   });
   return (
-    <div class="flex h-full flex-1 flex-col gap-4">
+    <Container>
       {/* 配置 */}
       <Config.Card>
         {/*缩进配置*/}
@@ -92,6 +92,6 @@ export default function JsonFormatter() {
           </>,
         ]}
       />
-    </div>
+    </Container>
   );
 }

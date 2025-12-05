@@ -1,16 +1,17 @@
 import { range } from "lodash";
 import { ArrowLeftRight, AudioWaveform, Blend } from "lucide-solid";
 import { createEffect, createSignal, Show } from "solid-js";
-import { decodeGZip, encodeGZip } from "../../command/codec/gzip";
+import { decodeGZip, encodeGZip } from "@/command/codec/gzip";
 import {
   CopyButton,
   SaveButton,
   TextOperateButtons,
-} from "../../component/Buttons";
-import Config from "../../component/Config";
-import Container from "../../component/Container";
-import Editor from "../../component/Editor";
-import IOLayout from "../../component/IOLayout";
+} from "@/component/Buttons";
+import Config from "@/component/Config";
+import Card from "@/component/Card";
+import Editor from "@/component/Editor";
+import IOLayout from "@/component/IOLayout";
+import Container from "@/component/Container";
 
 const getLevelText = (level: number) => {
   return level === 1 ? "1 (最快)" : level === 9 ? "9 (最好)" : `${level}`;
@@ -52,7 +53,7 @@ export default function GZipCodec() {
     }
   });
   return (
-    <div class="flex h-full flex-1 flex-col gap-4">
+    <Container>
       {/* 配置 */}
       <Config.Card>
         {/* 操作配置 */}
@@ -116,7 +117,7 @@ export default function GZipCodec() {
         ]}
       />
 
-      <Container class="h-10 justify-center">
+      <Card class="h-10 justify-center">
         <span class="flex items-center justify-start gap-1 text-sm">
           <AudioWaveform size={16} />
           压缩率
@@ -124,7 +125,7 @@ export default function GZipCodec() {
             {(ratio() * 100).toFixed(2)}%
           </span>
         </span>
-      </Container>
-    </div>
+      </Card>
+    </Container>
   );
 }

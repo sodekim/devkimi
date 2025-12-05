@@ -4,17 +4,18 @@ import {
   decryptRsa,
   encryptRsa,
   generateRsaKeyPair,
-} from "../../command/crypto/rsa";
-import { KeyFormat } from "../../command/crypto/type";
+} from "@/command/crypto/rsa";
+import { KeyFormat } from "@/command/crypto/type";
 import {
   CopyButton,
   SaveButton,
   TextOperateButtons,
-} from "../../component/Buttons";
-import Config from "../../component/Config";
-import Container from "../../component/Container";
-import Editor from "../../component/Editor";
-import IOLayout from "../../component/IOLayout";
+} from "@/component/Buttons";
+import Config from "@/component/Config";
+import Container from "@/component/Container";
+import Card from "@/component/Card";
+import Editor from "@/component/Editor";
+import IOLayout from "@/component/IOLayout";
 
 const KEY_FORMAT_OPTIONS = [
   { value: "Pkcs8", label: "PKCS#8" },
@@ -71,7 +72,7 @@ export default function Rsa() {
   });
 
   return (
-    <div class="flex h-full flex-1 flex-col gap-4">
+    <Container>
       {/* 配置 */}
       <Config.Card>
         <Config.Option
@@ -119,7 +120,7 @@ export default function Rsa() {
       {/* 密钥对 */}
       <div class="flex h-0 max-h-100 flex-1 gap-4">
         {/*私钥*/}
-        <Container class="h-full w-0 flex-1">
+        <Card class="h-full w-0 flex-1">
           <div class="flex items-center justify-between">
             <span class="text-sm">私钥</span>
             <div class="flex items-center justify-center gap-2">
@@ -132,10 +133,10 @@ export default function Rsa() {
             onChange={setPrivateKey}
             placeholder="RSA 私钥"
           />
-        </Container>
+        </Card>
 
         {/*公钥*/}
-        <Container class="h-full w-0 flex-1">
+        <Card class="h-full w-0 flex-1">
           <div class="flex items-center justify-between">
             <span class="text-sm">公钥</span>
             <div class="flex items-center justify-center gap-2">
@@ -148,7 +149,7 @@ export default function Rsa() {
             onChange={setPublicKey}
             placeholder="RSA 公钥"
           />
-        </Container>
+        </Card>
       </div>
 
       <IOLayout
@@ -181,6 +182,6 @@ export default function Rsa() {
           </>,
         ]}
       />
-    </div>
+    </Container>
   );
 }

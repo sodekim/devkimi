@@ -1,9 +1,8 @@
-import { House, Settings } from "lucide-solid";
 import Logo from "../Logo";
-import Menu from "./Menu";
-import { createMemo } from "solid-js";
 import { useLocation } from "@solidjs/router";
-import { twMerge } from "tailwind-merge";
+import { House, Settings } from "lucide-solid";
+import { createMemo } from "solid-js";
+import Menu from "./Menu";
 
 export default function Sidebar() {
   const pathname = createMemo(() => useLocation().pathname);
@@ -22,14 +21,14 @@ export default function Sidebar() {
       ></label>
       <div class="flex w-full flex-1 flex-col items-start overflow-hidden">
         {/*所有工具*/}
-        <ul class="menu border-base-300 w-full border-b">
+        {/* <ul class="menu border-base-300 w-full border-b">
           <li>
             <a class="flex gap-4" href="/home">
               <House size={14} color="var(--color-primary)" />
               所有工具
             </a>
           </li>
-        </ul>
+        </ul> */}
 
         {/*菜单树*/}
         <Menu />

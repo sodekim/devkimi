@@ -13,6 +13,7 @@ const parseRegex = async (
   global: boolean,
   multiLine: boolean,
   caseInsensitive: boolean,
+  unicode: boolean,
 ) => {
   return invoke<Capture[]>("parse_regex", {
     text,
@@ -20,6 +21,7 @@ const parseRegex = async (
     global,
     multiLine,
     caseInsensitive,
+    unicode,
   });
 };
 

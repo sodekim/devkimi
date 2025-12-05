@@ -12,7 +12,7 @@ import {
   Save,
 } from "lucide-solid";
 import { createSignal } from "solid-js";
-import { openFile } from "../command/fs";
+import { openFile } from "@/command/fs";
 
 const CopyButton = (props: { value: string }) => {
   const [handle, setHandle] = createSignal<number | null>(null);
