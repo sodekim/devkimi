@@ -14,6 +14,7 @@ import {
 import Config from "../../component/Config";
 import Container from "../../component/Container";
 import Editor from "../../component/Editor";
+import IOLayout from "../../component/IOLayout";
 
 export default function QRCodeCodec() {
   const [image, setImage] = createSignal("");
@@ -44,8 +45,9 @@ export default function QRCodeCodec() {
       setImage("");
     }
   });
+
   return (
-    <div class="flex h-full flex-col gap-4">
+    <div class="flex h-full flex-1 flex-col gap-4">
       {/* 配置 */}
       <Config.Card>
         {/*操作配置*/}
@@ -63,82 +65,85 @@ export default function QRCodeCodec() {
         </Config.Option>
       </Config.Card>
 
-      {/*文本*/}
-      <Container class={encode() ? "order-2 h-0 flex-1" : "order-3 h-0 flex-1"}>
-        <div class="flex items-center justify-between">
-          <span class="text-sm">文本</span>
-          <div class="flex items-center justify-center gap-2">
-            {encode() && <TextOperateButtons callback={setText} />}
-            {decode() && (
-              <>
-                <CopyButton value={text()} />
-                <SaveButton value={text()} />
-              </>
+      <IOLayout
+        items={[
+          <>
+            <div class="flex items-center justify-between">
+              <span class="text-sm">文本</span>
+              <div class="flex items-center justify-center gap-2">
+                {encode() && <TextOperateButtons callback={setText} />}
+                {decode() && (
+                  <>
+                    <CopyButton value={text()} />
+                    <SaveButton value={text()} />
+                  </>
+                )}
+              </div>
+            </div>
+            {encode() ? (
+              <Editor
+                value={text()}
+                wordWrap="on"
+                onChange={setText}
+                placeholder="输入要编码的文本"
+              />
+            ) : (
+              <Editor value={text()} readOnly={true} wordWrap="on" />
             )}
-          </div>
-        </div>
-        {encode() ? (
-          <Editor
-            value={text()}
-            wordWrap="on"
-            onChange={setText}
-            placeholder="输入要编码的文本"
-          />
-        ) : (
-          <Editor value={text()} readOnly={true} wordWrap="on" />
-        )}
-      </Container>
+          </>,
+          <>
+            <div class="flex items-center justify-between">
+              <span class="text-sm">二维码</span>
+              <div class="flex items-center justify-center gap-2">
+                {/* 选择二维码 */}
+                <Show when={decode()}>
+                  <PickImageFileButton
+                    onPick={(file) => file && setImage(file)}
+                  />
+                </Show>
 
-      {/*二维码*/}
-      <Container class={encode() ? "order-3 h-0 flex-1" : "order-2 h-0 flex-1"}>
-        <div class="flex items-center justify-between">
-          <span class="text-sm">二维码</span>
-          <div class="flex items-center justify-center gap-2">
-            {/* 选择二维码 */}
-            <Show when={decode()}>
-              <PickImageFileButton onPick={(file) => file && setImage(file)} />
-            </Show>
+                {/* 保存二维码 */}
+                <Show when={encode()}>
+                  <button
+                    class="btn btn-sm"
+                    onClick={() => {
+                      open({
+                        title: "保存二维码",
+                        directory: true,
+                        multiple: false,
+                      }).then((dir) => {
+                        if (dir) {
+                          copyFile(image(), dir);
+                        }
+                      });
+                    }}
+                  >
+                    <Save size={16} />
+                    保存
+                  </button>
+                </Show>
 
-            {/* 保存二维码 */}
-            <Show when={encode()}>
-              <button
-                class="btn btn-sm"
-                onClick={() => {
-                  open({
-                    title: "保存二维码",
-                    directory: true,
-                    multiple: false,
-                  }).then((dir) => {
-                    if (dir) {
-                      copyFile(image(), dir);
-                    }
-                  });
-                }}
-              >
-                <Save size={16} />
-                保存
-              </button>
-            </Show>
-
-            {/* 打开文件 */}
-            <Show when={src()}>
-              <OpenFileButton path={image()} />
-            </Show>
-          </div>
-        </div>
-        <div class="border-base-content/20 flex flex-1 items-center justify-center overflow-hidden rounded-md border p-2">
-          {src() ? (
-            <img src={src()} class="size-full object-scale-down" />
-          ) : (
-            decode() && (
-              <span class="text-warning flex items-center justify-center gap-2 text-sm">
-                <Image size={16} />
-                未选择二维码
-              </span>
-            )
-          )}
-        </div>
-      </Container>
+                {/* 打开文件 */}
+                <Show when={src()}>
+                  <OpenFileButton path={image()} />
+                </Show>
+              </div>
+            </div>
+            <div class="border-base-content/20 flex flex-1 items-center justify-center overflow-hidden rounded-md border p-2">
+              {src() ? (
+                <img src={src()} class="size-full object-scale-down" />
+              ) : (
+                decode() && (
+                  <span class="text-warning flex items-center justify-center gap-2 text-sm">
+                    <Image size={16} />
+                    未选择二维码
+                  </span>
+                )
+              )}
+            </div>
+          </>,
+        ]}
+      />
     </div>
   );
 }

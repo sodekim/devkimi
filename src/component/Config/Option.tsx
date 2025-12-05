@@ -1,3 +1,4 @@
+import { LucideProps, Save } from "lucide-solid";
 import { children, JSX, Show } from "solid-js";
 
 export default function Option(props: {

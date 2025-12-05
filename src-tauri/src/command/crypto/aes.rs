@@ -1,6 +1,5 @@
 use super::block_mode::BlockMode;
 use super::padding::Padding;
-use crate::command::crypto::bit_size::BitSize;
 use crate::command::crypto::symmetric::Error;
 use crate::{
     decrypt_symmetric,
@@ -9,6 +8,14 @@ use crate::{
 };
 use aes::{Aes128, Aes192, Aes256};
 use crypto_common::{KeyInit, KeyIvInit};
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub enum BitSize {
+    Bits128,
+    Bits192,
+    Bits256,
+}
 
 #[tauri::command]
 pub fn generate_aes_key(bit_size: BitSize, encoding: Encoding) -> Result<String, Error> {

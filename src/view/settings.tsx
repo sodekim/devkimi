@@ -3,6 +3,7 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import {
   AudioLines,
   CaseSensitive,
+  LayoutTemplate,
   Link,
   OctagonAlert,
   Palette,
@@ -12,7 +13,7 @@ import { createEffect, createResource } from "solid-js";
 import { getSystemFonts } from "../command/font";
 import Config from "../component/Config";
 import Editor, { MonacoEditor } from "../component/Editor";
-import { useSettings, WordWrap } from "../store";
+import { IOLayout, useSettings, WordWrap } from "../store";
 //
 // 主题
 const THEMES = ["light", "dark"];
@@ -49,7 +50,7 @@ export default function Settings() {
   });
 
   return (
-    <div class="flex flex-col gap-4">
+    <div class="flex h-full flex-1 flex-col gap-4 overflow-auto">
       {/* 界面 */}
       <Config.Card label="界面" collapse={false}>
         {/* 主题 */}
@@ -63,6 +64,24 @@ export default function Settings() {
             value={settings.common.theme}
             class="w-30"
             onChange={(value) => setSettings("common", "theme", value)}
+          />
+        </Config.Option>
+
+        <Config.Option
+          label="输入输出布局"
+          icon={() => <LayoutTemplate size={16} />}
+          description="工具界面控制输入 / 输出区域的布局。"
+        >
+          <Config.Select
+            value={settings.common.ioLayout}
+            options={[
+              { label: "左右布局", value: "horizontal" },
+              { label: "上下布局", value: "vertical" },
+            ]}
+            onChange={(value) =>
+              setSettings("common", "ioLayout", value as IOLayout)
+            }
+            class="w-30"
           />
         </Config.Option>
 

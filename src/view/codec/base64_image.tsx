@@ -17,6 +17,7 @@ import {
 import Config from "../../component/Config";
 import Container from "../../component/Container";
 import Editor from "../../component/Editor";
+import IOLayout from "../../component/IOLayout";
 
 const BASE_MODE_OPTIONS = [
   { label: "Standard", value: "Standard" },
@@ -56,7 +57,7 @@ export default function Base64ImageCodec() {
     }
   });
   return (
-    <div class="flex h-full flex-col gap-4">
+    <div class="flex flex-1 flex-col gap-4">
       {/* 配置 */}
       <Config.Card>
         {/*操作配置*/}
@@ -88,82 +89,85 @@ export default function Base64ImageCodec() {
         </Config.Option>
       </Config.Card>
 
-      {/*图片*/}
-      <Container class={encode() ? "order-2 h-0 flex-1" : "order-3 h-0 flex-1"}>
-        <div class="flex items-center justify-between">
-          <span class="text-sm">图片</span>
-          <div class="flex items-center justify-center gap-2">
-            {/* 选择图片 */}
-            <Show when={encode()}>
-              <PickImageFileButton onPick={(file) => file && setImage(file)} />
-            </Show>
+      <IOLayout
+        items={[
+          <>
+            <div class="flex items-center justify-between">
+              <span class="text-sm">图片</span>
+              <div class="flex items-center justify-center gap-2">
+                {/* 选择图片 */}
+                <Show when={encode()}>
+                  <PickImageFileButton
+                    onPick={(file) => file && setImage(file)}
+                  />
+                </Show>
 
-            {/* 保存图片 */}
-            <Show when={decode()}>
-              <button
-                class="btn btn-sm"
-                onClick={() => {
-                  open({
-                    title: "保存图片",
-                    directory: true,
-                    multiple: false,
-                  }).then((dir) => {
-                    if (dir) {
-                      copyFile(image(), dir);
-                    }
-                  });
-                }}
-              >
-                <Save size={16} />
-                保存
-              </button>
-            </Show>
+                {/* 保存图片 */}
+                <Show when={decode()}>
+                  <button
+                    class="btn btn-sm"
+                    onClick={() => {
+                      open({
+                        title: "保存图片",
+                        directory: true,
+                        multiple: false,
+                      }).then((dir) => {
+                        if (dir) {
+                          copyFile(image(), dir);
+                        }
+                      });
+                    }}
+                  >
+                    <Save size={16} />
+                    保存
+                  </button>
+                </Show>
 
-            {/* 打开文件 */}
-            <Show when={src()}>
-              <OpenFileButton path={image()} />
-            </Show>
-          </div>
-        </div>
-        <div class="border-base-content/20 flex flex-1 items-center justify-center overflow-hidden rounded-md border p-2">
-          {src() ? (
-            <img src={src()} class="size-full object-scale-down" />
-          ) : (
-            encode() && (
-              <span class="text-warning flex items-center justify-center gap-2 text-sm">
-                <Image size={16} />
-                选择需要转换的图片
-              </span>
-            )
-          )}
-        </div>
-      </Container>
-
-      {/*Base64*/}
-      <Container class={encode() ? "order-3 h-0 flex-1" : "order-2 h-0 flex-1"}>
-        <div class="flex items-center justify-between">
-          <span class="text-sm">Base64</span>
-          <div class="flex items-center justify-center gap-2">
-            {encode() && (
-              <>
-                <CopyButton value={base64()} />
-                <SaveButton value={base64()} />
-              </>
+                {/* 打开文件 */}
+                <Show when={src()}>
+                  <OpenFileButton path={image()} />
+                </Show>
+              </div>
+            </div>
+            <div class="border-base-content/20 flex flex-1 items-center justify-center overflow-hidden rounded-md border p-2">
+              {src() ? (
+                <img src={src()} class="size-full object-scale-down" />
+              ) : (
+                encode() && (
+                  <span class="text-warning flex items-center justify-center gap-2 text-sm">
+                    <Image size={16} />
+                    选择需要转换的图片
+                  </span>
+                )
+              )}
+            </div>
+          </>,
+          <>
+            <div class="flex items-center justify-between">
+              <span class="text-sm">Base64</span>
+              <div class="flex items-center justify-center gap-2">
+                {encode() && (
+                  <>
+                    <CopyButton value={base64()} />
+                    <SaveButton value={base64()} />
+                  </>
+                )}
+                {decode() && <TextOperateButtons callback={setBase64} />}
+              </div>
+            </div>
+            {encode() ? (
+              <Editor value={base64()} readOnly={true} wordWrap="on" />
+            ) : (
+              <Editor
+                value={base64()}
+                wordWrap="on"
+                onChange={setBase64}
+                placeholder="输入要解码的Base64文本"
+              />
             )}
-            {decode() && <TextOperateButtons callback={setBase64} />}
-          </div>
-        </div>
-        {encode() ? (
-          <Editor value={base64()} readOnly={true} wordWrap="on" />
-        ) : (
-          <Editor
-            value={base64()}
-            wordWrap="on"
-            onChange={setBase64}
-            placeholder="输入要解码的Base64文本"
-          />
-        )}
-      </Container>
+          </>,
+        ]}
+      />
     </div>
   );
 }

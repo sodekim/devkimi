@@ -129,7 +129,7 @@ export default function JSONPath() {
     }
   });
   return (
-    <div class="flex h-full flex-col gap-4">
+    <div class="flex h-full flex-col gap-4 flex-1">
       {/*JSONPath*/}
       <Container>
         <div class="flex items-center justify-between">

@@ -23,12 +23,24 @@ import Container from "../../component/Container";
 import Editor from "../../component/Editor";
 
 const HASH_ALGORITHM_OPTIONS = [
+  { value: "Fsb160", label: "FSB-160" },
+  { value: "Fsb224", label: "FSB-224" },
+  { value: "Fsb256", label: "FSB-256" },
+  { value: "Fsb384", label: "FSB-384" },
+  { value: "Fsb512", label: "FSB-512" },
+  { value: "Md2", label: "MD2" },
+  { value: "Md4", label: "MD4" },
   { value: "Md5", label: "MD5" },
   { value: "Sm3", label: "SM3" },
   { value: "Sha1", label: "SHA-1" },
+  { value: "Sha224", label: "SHA-224" },
   { value: "Sha256", label: "SHA-256" },
   { value: "Sha384", label: "SHA-384" },
   { value: "Sha512", label: "SHA-512" },
+  { value: "Sha3_224", label: "SHA3-224" },
+  { value: "Sha3_256", label: "SHA3-256" },
+  { value: "Sha3_384", label: "SHA3-384" },
+  { value: "Sha3_512", label: "SHA3-512" },
 ];
 
 export default function HashGenerator() {
@@ -58,7 +70,7 @@ export default function HashGenerator() {
       .catch((e) => setOutput(e.toString()));
   });
   return (
-    <div class="flex h-full flex-col gap-4">
+    <div class="flex h-full flex-col gap-4 flex-1">
       {/* 配置 */}
       <Config.Card>
         {/*版本配置*/}
@@ -71,7 +83,7 @@ export default function HashGenerator() {
             value={algorithm()}
             options={HASH_ALGORITHM_OPTIONS}
             onChange={setAlgorithm}
-            class="w-20"
+            class="w-40"
           />
         </Config.Option>
 

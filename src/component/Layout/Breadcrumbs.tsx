@@ -9,7 +9,7 @@ export default function Breadcrumbs() {
   const breadcrumbs = createMemo(() =>
     matches().map((m) => (
       <li>
-        <span class="text-sm font-bold">
+        <span class="text-lg font-bold">
           {m.route.info?.icon && m.route.info.icon({ size: 14 })}
           {m.route.info?.label && m.route.info.label}
         </span>

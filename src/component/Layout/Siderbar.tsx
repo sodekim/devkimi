@@ -8,7 +8,7 @@ import { twMerge } from "tailwind-merge";
 export default function Sidebar() {
   const pathname = createMemo(() => useLocation().pathname);
   return (
-    <div class="drawer-side bg-base-100 flex w-70 flex-col overflow-visible">
+    <div class="drawer-side flex w-70 flex-col overflow-visible">
       {/* Logo */}
       <div class="flex h-12 w-full scale-65 items-center justify-start">
         <Logo />
@@ -35,7 +35,7 @@ export default function Sidebar() {
         <Menu />
 
         {/*所有工具*/}
-        <ul class="menu border-base-300 w-full border-t shadow-md">
+        <ul class="menu border-base-300 w-full border-t">
           <li>
             <a class="flex gap-4" href="/settings">
               <Settings size={14} color="var(--color-primary)" />

@@ -10,6 +10,11 @@ import {
 } from "solid-js";
 import { createStore, SetStoreFunction } from "solid-js/store";
 
+///
+/// 输入和输出布局
+///
+export type IOLayout = "horizontal" | "vertical";
+
 //
 // 编辑器自动换行类型
 //
@@ -23,6 +28,7 @@ export type Settings = {
   common: {
     theme: string;
     openConfigCollapse: boolean;
+    ioLayout: IOLayout;
   };
   // 编辑器配置
   editor: {
@@ -42,7 +48,7 @@ const APP_VERSION = await getVersion();
 const TAURI_VERSION = await getTauriVersion();
 
 const defaultSettings: Settings = {
-  common: { theme: "dark", openConfigCollapse: true },
+  common: { theme: "dark", openConfigCollapse: true, ioLayout: "horizontal" },
   editor: { wordWrap: "off", font: { family: "SansSerif", size: 14 } },
   version: {
     app: APP_VERSION,

@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 
 /// DES 密钥长度
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-pub enum DesBitSize {
+pub enum BitSize {
     /// DES - 64 bits (8 bytes)
     Bits64,
     /// 3DES (Triple DES) - 192 bits (24 bytes)
@@ -20,28 +20,28 @@ pub enum DesBitSize {
 }
 
 #[tauri::command]
-pub fn generate_des_key(bit_size: DesBitSize, encoding: Encoding) -> Result<String, Error> {
+pub fn generate_des_key(bit_size: BitSize, encoding: Encoding) -> Result<String, Error> {
     match bit_size {
-        DesBitSize::Bits64 => generate_key!(Des, encoding),
-        DesBitSize::Bits192 => generate_key!(TdesEde3, encoding),
+        BitSize::Bits64 => generate_key!(Des, encoding),
+        BitSize::Bits192 => generate_key!(TdesEde3, encoding),
     }
 }
 
 #[tauri::command]
 pub fn generate_des_iv(
-    bit_size: DesBitSize,
+    bit_size: BitSize,
     block_mode: BlockMode,
     encoding: Encoding,
 ) -> Result<String, Error> {
     match bit_size {
-        DesBitSize::Bits64 => generate_iv!(Des, block_mode, encoding),
-        DesBitSize::Bits192 => generate_iv!(TdesEde3, block_mode, encoding),
+        BitSize::Bits64 => generate_iv!(Des, block_mode, encoding),
+        BitSize::Bits192 => generate_iv!(TdesEde3, block_mode, encoding),
     }
 }
 
 #[tauri::command]
 pub fn encrypt_des(
-    bit_size: DesBitSize,
+    bit_size: BitSize,
     input: EncodingText,
     key: EncodingText,
     iv: Option<EncodingText>,
@@ -50,10 +50,10 @@ pub fn encrypt_des(
     encoding: Encoding,
 ) -> Result<String, Error> {
     match bit_size {
-        DesBitSize::Bits64 => {
+        BitSize::Bits64 => {
             encrypt_symmetric!(Des, input, key, iv, block_mode, padding, encoding, 64)
         }
-        DesBitSize::Bits192 => {
+        BitSize::Bits192 => {
             encrypt_symmetric!(TdesEde3, input, key, iv, block_mode, padding, encoding, 192)
         }
     }
@@ -61,7 +61,7 @@ pub fn encrypt_des(
 
 #[tauri::command]
 pub fn decrypt_des(
-    bit_size: DesBitSize,
+    bit_size: BitSize,
     input: EncodingText,
     key: EncodingText,
     iv: Option<EncodingText>,
@@ -70,10 +70,10 @@ pub fn decrypt_des(
     encoding: Encoding,
 ) -> Result<String, Error> {
     match bit_size {
-        DesBitSize::Bits64 => {
+        BitSize::Bits64 => {
             decrypt_symmetric!(Des, input, key, iv, block_mode, padding, encoding, 64)
         }
-        DesBitSize::Bits192 => {
+        BitSize::Bits192 => {
             decrypt_symmetric!(TdesEde3, input, key, iv, block_mode, padding, encoding, 192)
         }
     }

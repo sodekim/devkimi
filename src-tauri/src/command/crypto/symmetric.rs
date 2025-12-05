@@ -219,7 +219,7 @@ macro_rules! generate_iv {
             BlockMode::Ctr => $encoding
                 .encode(&ctr::Ctr32BE::<$ty>::generate_iv(&mut rng))
                 .map_err(Into::into),
-            BlockMode::Ecb => unreachable!("ECB mode is not supported for SM4"),
+            BlockMode::Ecb => unreachable!("ECB mode is not supported for generate iv!"),
         }
     }};
 }

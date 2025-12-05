@@ -10,8 +10,8 @@ import {
   TextOperateButtons,
 } from "../../component/Buttons";
 import Config from "../../component/Config";
-import Container from "../../component/Container";
 import Editor from "../../component/Editor";
+import IOLayout from "../../component/IOLayout";
 
 export default function YamlPropertiesConverter() {
   const [mode, setMode] = createSignal(true);
@@ -38,7 +38,7 @@ export default function YamlPropertiesConverter() {
   });
 
   return (
-    <div class="flex size-0 h-full w-full flex-col gap-4">
+    <div class="flex flex-1 flex-col gap-4">
       {/* 配置 */}
       <Config.Card>
         {/*操作配置*/}
@@ -57,54 +57,53 @@ export default function YamlPropertiesConverter() {
         </Config.Option>
       </Config.Card>
 
-      <div class="flex h-0 flex-1 gap-4">
-        {/*输入*/}
-        <Container class="h-full w-0 flex-1">
-          <div class="flex items-center justify-between">
-            <span class="text-sm">输入</span>
-            <div class="flex items-center justify-center gap-2">
-              <TextOperateButtons callback={setInput} />
+      <IOLayout
+        items={[
+          <>
+            <div class="flex items-center justify-between">
+              <span class="text-sm">输入</span>
+              <div class="flex items-center justify-center gap-2">
+                <TextOperateButtons callback={setInput} />
+              </div>
             </div>
-          </div>
-          <Show
-            when={mode()}
-            fallback={
+            <Show
+              when={mode()}
+              fallback={
+                <Editor
+                  value={input()}
+                  onChange={setInput}
+                  language="properties"
+                  placeholder="输入需要转换的 PROPERTIES 数据"
+                />
+              }
+            >
               <Editor
                 value={input()}
                 onChange={setInput}
-                language="properties"
-                placeholder="输入需要转换的 PROPERTIES 数据"
+                language="yaml"
+                placeholder="输入需要转换的 YAML 数据"
               />
-            }
-          >
-            <Editor
-              value={input()}
-              onChange={setInput}
-              language="yaml"
-              placeholder="输入需要转换的 YAML 数据"
-            />
-          </Show>
-        </Container>
-
-        {/*输出*/}
-        <Container class="h-full w-0 flex-1">
-          <div class="flex items-center justify-between">
-            <span class="text-sm">输出</span>
-            <div class="flex items-center justify-center gap-2">
-              <CopyButton value={output()} />
-              <SaveButton value={output()} />
+            </Show>
+          </>,
+          <>
+            <div class="flex items-center justify-between">
+              <span class="text-sm">输出</span>
+              <div class="flex items-center justify-center gap-2">
+                <CopyButton value={output()} />
+                <SaveButton value={output()} />
+              </div>
             </div>
-          </div>
-          <Show
-            when={mode()}
-            fallback={
-              <Editor value={output()} readOnly={true} language="yaml" />
-            }
-          >
-            <Editor value={output()} readOnly={true} language="properties" />
-          </Show>
-        </Container>
-      </div>
+            <Show
+              when={mode()}
+              fallback={
+                <Editor value={output()} readOnly={true} language="yaml" />
+              }
+            >
+              <Editor value={output()} readOnly={true} language="properties" />
+            </Show>
+          </>,
+        ]}
+      />
     </div>
   );
 }

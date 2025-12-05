@@ -1,12 +1,12 @@
 import { invoke } from "@tauri-apps/api/core";
-import { BitSize, BlockMode, Encoding, EncodingText, Padding } from "./type";
+import { AesBitSize, BlockMode, Encoding, EncodingText, Padding } from "./type";
 
-export function generateAesKey(bitSize: BitSize, encoding: Encoding) {
+export function generateAesKey(bitSize: AesBitSize, encoding: Encoding) {
   return invoke<string>("generate_aes_key", { bitSize, encoding });
 }
 
 export function generateAesIv(
-  bitSize: BitSize,
+  bitSize: AesBitSize,
   blockMode: BlockMode,
   encoding: Encoding,
 ) {
@@ -14,7 +14,7 @@ export function generateAesIv(
 }
 
 export function encryptAes(
-  bitSize: BitSize,
+  bitSize: AesBitSize,
   input: EncodingText,
   key: EncodingText,
   iv: EncodingText,
@@ -34,7 +34,7 @@ export function encryptAes(
 }
 
 export function decryptAes(
-  bitSize: BitSize,
+  bitSize: AesBitSize,
   input: EncodingText,
   key: EncodingText,
   iv: EncodingText,

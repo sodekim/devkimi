@@ -13,8 +13,8 @@ const Card = (props: {
   return (
     <div
       class={twMerge(
-        "bg-base-100 collapse",
-        _collapse() ? "collapse-arrow" : "collapse-open",
+        "from-base-100/95 to-base-100/80 border-base-content/10 collapse rounded-md border bg-linear-to-br backdrop-blur-sm",
+        _collapse() ? "collapse-arrow" : "collapse-open overflow-visible",
       )}
     >
       <input type="checkbox" checked={settings.common.openConfigCollapse} />

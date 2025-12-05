@@ -9,6 +9,7 @@ import {
 import Config from "../../component/Config";
 import Container from "../../component/Container";
 import Editor from "../../component/Editor";
+import IOLayout from "../../component/IOLayout";
 
 const INDENT_OPTIONS = [
   { value: "TwoSpace", label: "2个空格" },
@@ -38,7 +39,7 @@ export default function SqlFormatter() {
     }
   });
   return (
-    <div class="flex h-full flex-col gap-4">
+    <div class="flex h-full flex-1 flex-col gap-4">
       {/* 配置 */}
       <Config.Card>
         {/*缩进配置*/}
@@ -79,33 +80,34 @@ export default function SqlFormatter() {
         </Config.Option>
       </Config.Card>
 
-      {/*输入*/}
-      <Container class="h-0 flex-1">
-        <div class="flex items-center justify-between">
-          <span class="text-sm">输入</span>
-          <div class="flex items-center justify-center gap-2">
-            <TextOperateButtons callback={setInput} />
-          </div>
-        </div>
-        <Editor
-          value={input()}
-          onChange={(value) => setInput(value)}
-          language="sql"
-          placeholder="输入需要格式化的 SQL 语句"
-        />
-      </Container>
-
-      {/*输出*/}
-      <Container class="h-0 flex-1">
-        <div class="flex items-center justify-between">
-          <span class="text-sm">输出</span>
-          <div class="flex items-center justify-center gap-2">
-            <CopyButton value={output()} />
-            <SaveButton value={output()} />
-          </div>
-        </div>
-        <Editor value={output()} language="sql" readOnly={true} />
-      </Container>
+      <IOLayout
+        items={[
+          <>
+            <div class="flex items-center justify-between">
+              <span class="text-sm">输入</span>
+              <div class="flex items-center justify-center gap-2">
+                <TextOperateButtons callback={setInput} />
+              </div>
+            </div>
+            <Editor
+              value={input()}
+              onChange={(value) => setInput(value)}
+              language="sql"
+              placeholder="输入需要格式化的 SQL 语句"
+            />
+          </>,
+          <>
+            <div class="flex items-center justify-between">
+              <span class="text-sm">输出</span>
+              <div class="flex items-center justify-center gap-2">
+                <CopyButton value={output()} />
+                <SaveButton value={output()} />
+              </div>
+            </div>
+            <Editor value={output()} language="sql" readOnly={true} />
+          </>,
+        ]}
+      />
     </div>
   );
 }

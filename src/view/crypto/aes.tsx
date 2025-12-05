@@ -4,10 +4,10 @@ import {
   PanelLeftRightDashed,
   Ruler,
 } from "lucide-solid";
-import { createEffect, createSignal, Show } from "solid-js";
+import { createEffect, createMemo, createSignal, Show } from "solid-js";
 import {
   BIT_SIZE_OPTIONS,
-  BitSize,
+  AesBitSize,
   BLOCK_MODE_OPTIONS,
   BlockMode,
   createEncodingText,
@@ -26,24 +26,42 @@ import {
 import Config from "../../component/Config";
 import Container from "../../component/Container";
 import Editor from "../../component/Editor";
-import { EncodingInput, EncodingSelect } from "../../component/Encoding";
+import { EncodingTextInput, EncodingSelect } from "../../component/Encoding";
 import {
   decryptAes,
   encryptAes,
   generateAesIv,
   generateAesKey,
 } from "../../command/crypto/aes";
+import IOLayout from "../../component/IOLayout";
 
 export default function Aes() {
   const [encryption, setEncryption] = createSignal(true);
   const [blockMode, setBlockMode] = createSignal(BlockMode.Cbc);
-  const [bitSize, setBitSize] = createSignal(BitSize.Bit128);
+  const [bitSize, setBitSize] = createSignal(AesBitSize.Bit128);
   const [key, setKey] = createEncodingText();
   const [iv, setIv] = createEncodingText();
   const [input, setInput] = createEncodingText({ encoding: Encoding.Utf8 });
   const [padding, setPadding] = createSignal(Padding.Pkcs7);
   const [encoding, setEncoding] = createSignal(Encoding.Hex);
   const [output, setOutput] = createSignal("");
+  const inputEncodingExcludes = createMemo(() =>
+    encryption() ? [] : [Encoding.Utf8],
+  );
+  const outputEncodingExcludes = createMemo(() =>
+    encryption() ? [Encoding.Utf8] : [],
+  );
+
+  // 切换操作模式时 重置编码
+  createEffect(() => {
+    if (encryption()) {
+      setInput("encoding", Encoding.Utf8);
+      setEncoding(Encoding.Hex);
+    } else {
+      setInput("encoding", Encoding.Hex);
+      setEncoding(Encoding.Utf8);
+    }
+  });
 
   // 当 bitSize 或 key.encoding 变化时，重新生成密钥
   createEffect(() => {
@@ -54,9 +72,11 @@ export default function Aes() {
 
   // 当 bitSize、blockMode 或 iv.encoding 变化时，重新生成向量
   createEffect(() => {
-    generateAesIv(bitSize(), blockMode(), iv.encoding).then((value) =>
-      setIv("text", value),
-    );
+    if (blockMode() !== BlockMode.Ecb) {
+      generateAesIv(bitSize(), blockMode(), iv.encoding).then((value) =>
+        setIv("text", value),
+      );
+    }
   });
 
   createEffect(() => {
@@ -91,7 +111,7 @@ export default function Aes() {
     }
   });
   return (
-    <div class="flex h-full flex-col gap-4">
+    <div class="flex h-full flex-1 flex-col gap-4">
       {/* 配置 */}
       <Config.Card>
         {/* 转换类型 */}
@@ -112,11 +132,11 @@ export default function Aes() {
         <Config.Option
           label="密钥长度"
           icon={() => <Ruler size={16} />}
-          description="密钥和向量的长度"
+          description="选择密钥的长度，单位为位，一个字节为8位。"
         >
           <Config.Select
             value={bitSize()}
-            onChange={(value) => setBitSize(value as BitSize)}
+            onChange={(value) => setBitSize(value as AesBitSize)}
             options={BIT_SIZE_OPTIONS}
             class="w-30"
           />
@@ -169,7 +189,11 @@ export default function Aes() {
             <ClearButton onClick={() => setKey("text", "")} />
           </div>
         </div>
-        <EncodingInput value={key} setStore={setKey} placeholder="请输入密钥" />
+        <EncodingTextInput
+          value={key}
+          setValue={setKey}
+          placeholder="请输入密钥"
+        />
       </Container>
 
       {/* 向量 */}
@@ -189,47 +213,60 @@ export default function Aes() {
               <ClearButton onClick={() => setIv("text", "")} />
             </div>
           </div>
-          <EncodingInput value={iv} setStore={setIv} placeholder="请输入向量" />
+          <EncodingTextInput
+            value={iv}
+            setValue={setIv}
+            placeholder="请输入向量"
+          />
         </Container>
       </Show>
 
-      {/*输入*/}
-      <Container class="h-0 flex-1">
-        <div class="flex items-center justify-between">
-          <span class="text-sm">输入</span>
-          <div class="flex items-center justify-center gap-2">
-            <EncodingSelect
-              value={input.encoding}
-              onChange={(value) => setInput("encoding", value)}
+      <IOLayout
+        items={[
+          <>
+            {" "}
+            <div class="flex items-center justify-between">
+              <span class="text-sm">输入</span>
+              <div class="flex items-center justify-center gap-2">
+                <EncodingSelect
+                  label="编码"
+                  value={input.encoding}
+                  onChange={(value) => setInput("encoding", value)}
+                  exclude={inputEncodingExcludes()}
+                />
+                <TextOperateButtons
+                  callback={(value) => setInput("text", value)}
+                />
+              </div>
+            </div>
+            <Editor
+              value={input.text}
+              onChange={(value) => setInput("text", value)}
+              placeholder={
+                encryption() ? "输入要加密的数据" : "输入要解密的数据"
+              }
             />
-            <TextOperateButtons callback={(value) => setInput("text", value)} />
-          </div>
-        </div>
-        <Editor
-          value={input.text}
-          onChange={(value) => setInput("text", value)}
-          placeholder={encryption() ? "输入要加密的数据" : "输入要解密的数据"}
-        />
-      </Container>
-
-      {/*输出*/}
-      <Container class="h-0 flex-1">
-        <div class="flex items-center justify-between">
-          <span class="flex items-center justify-center gap-4 text-sm">
-            输出
-          </span>
-          <div class="flex items-center justify-center gap-2">
-            <EncodingSelect
-              exclude={[Encoding.Utf8] as const}
-              value={encoding()}
-              onChange={(value) => setEncoding(value)}
-            />
-            <CopyButton value={output()} />
-            <SaveButton value={output()} />
-          </div>
-        </div>
-        <Editor value={output()} readOnly={true} />
-      </Container>
+          </>,
+          <>
+            <div class="flex items-center justify-between">
+              <span class="flex items-center justify-center gap-4 text-sm">
+                输出
+              </span>
+              <div class="flex items-center justify-center gap-2">
+                <EncodingSelect
+                  label="编码"
+                  exclude={outputEncodingExcludes()}
+                  value={encoding()}
+                  onChange={(value) => setEncoding(value)}
+                />
+                <CopyButton value={output()} />
+                <SaveButton value={output()} />
+              </div>
+            </div>
+            <Editor value={output()} readOnly={true} />
+          </>,
+        ]}
+      />
     </div>
   );
 }

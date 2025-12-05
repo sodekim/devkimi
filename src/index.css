@@ -12,6 +12,16 @@
     height: 100%;
     overflow: hidden;
   }
+
+  /* 统一渐变背景样式 */
+  .bg-gradient-content {
+    background: linear-gradient(
+      to bottom right,
+      color-mix(in oklch, var(--color-primary) 12%, transparent),
+      var(--color-base-100),
+      color-mix(in oklch, var(--color-accent) 12%, transparent)
+    );
+  }
 }
 
 /* 自定义滚动条样式 */

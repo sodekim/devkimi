@@ -27,7 +27,7 @@ export default function UuidGenerator() {
       .catch((e) => setOutput(e.toString()));
   });
   return (
-    <div class="flex h-full flex-col gap-4">
+    <div class="flex h-full flex-col gap-4 flex-1">
       {/* 配置 */}
       <Config.Card>
         {/*版本配置*/}

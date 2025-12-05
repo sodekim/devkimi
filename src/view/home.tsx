@@ -17,12 +17,12 @@ export default function Home() {
                 <span class="text-primary">
                   {meta.icon && meta.icon({ size: 14 })}
                 </span>
-                <span class="text-sm font-bold">{meta.label}</span>
+                <span class="text-base font-bold">{meta.label}</span>
               </div>
               <div class="flex w-full flex-wrap gap-4">
                 {children.map((child) => (
                   <button
-                    class="btn h-20 w-60 items-center justify-center gap-2"
+                    class="btn items-center justify-center gap-2"
                     onClick={() => navigate(`${meta.path}${child.path}`)}
                   >
                     <Show when={child.icon} fallback={<span></span>}>

@@ -1,6 +1,6 @@
 import { createStore } from "solid-js/store";
 
-export enum BitSize {
+export enum AesBitSize {
   Bit128 = "Bits128",
   Bit192 = "Bits192",
   Bit256 = "Bits256",

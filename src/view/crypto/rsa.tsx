@@ -14,6 +14,7 @@ import {
 import Config from "../../component/Config";
 import Container from "../../component/Container";
 import Editor from "../../component/Editor";
+import IOLayout from "../../component/IOLayout";
 
 const KEY_FORMAT_OPTIONS = [
   { value: "Pkcs8", label: "PKCS#8" },
@@ -35,6 +36,15 @@ export default function Rsa() {
   const [publicKey, setPublicKey] = createSignal("");
   const [input, setInput] = createSignal("");
   const [output, setOutput] = createSignal("");
+
+  // 当操作模式变化时，清空输入和输出
+  createEffect(() => {
+    const _ = encryption();
+    setInput("");
+    setOutput("");
+  });
+
+  // 当配置变化时，重新生成密钥对
   createEffect(() => {
     generateRsaKeyPair(keyFormat(), bitSize()).then(
       ([private_key, public_key]) => {
@@ -61,7 +71,7 @@ export default function Rsa() {
   });
 
   return (
-    <div class="flex h-full flex-col gap-4">
+    <div class="flex h-full flex-1 flex-col gap-4">
       {/* 配置 */}
       <Config.Card>
         <Config.Option
@@ -78,7 +88,11 @@ export default function Rsa() {
         </Config.Option>
 
         {/* 密钥长度 */}
-        <Config.Option label="密钥长度" icon={() => <Ruler size={16} />}>
+        <Config.Option
+          label="密钥长度"
+          icon={() => <Ruler size={16} />}
+          description="选择密钥的长度，单位为位，一个字节为8位。"
+        >
           <Config.Select
             value={`${bitSize()}`}
             options={BIT_SIZE_OPTIONS}
@@ -91,6 +105,7 @@ export default function Rsa() {
         <Config.Option
           label="密钥格式"
           icon={() => <PanelLeftRightDashed size={16} />}
+          description="选择私钥和公钥的编码格式"
         >
           <Config.Select
             value={keyFormat()}
@@ -136,34 +151,36 @@ export default function Rsa() {
         </Container>
       </div>
 
-      {/* 输入 */}
-      <Container class="h-0 flex-1">
-        <div class="flex items-center justify-between">
-          <span class="text-sm">输入</span>
-          <div class="flex items-center justify-center gap-2">
-            <TextOperateButtons callback={setInput} />
-          </div>
-        </div>
-        <Editor
-          value={input()}
-          onChange={setInput}
-          placeholder={
-            encryption() ? "输入需要加密的数据" : "输入需要解密的数据"
-          }
-        />
-      </Container>
-
-      {/* 输出 */}
-      <Container class="h-0 flex-1">
-        <div class="flex items-center justify-between">
-          <span class="text-sm">输出</span>
-          <div class="flex items-center justify-center gap-2">
-            <CopyButton value={output()} />
-            <SaveButton value={output()} />
-          </div>
-        </div>
-        <Editor value={output()} readOnly={true} />
-      </Container>
+      <IOLayout
+        items={[
+          <>
+            {" "}
+            <div class="flex items-center justify-between">
+              <span class="text-sm">输入</span>
+              <div class="flex items-center justify-center gap-2">
+                <TextOperateButtons callback={setInput} />
+              </div>
+            </div>
+            <Editor
+              value={input()}
+              onChange={setInput}
+              placeholder={
+                encryption() ? "输入需要加密的数据" : "输入需要解密的数据"
+              }
+            />
+          </>,
+          <>
+            <div class="flex items-center justify-between">
+              <span class="text-sm">输出</span>
+              <div class="flex items-center justify-center gap-2">
+                <CopyButton value={output()} />
+                <SaveButton value={output()} />
+              </div>
+            </div>
+            <Editor value={output()} readOnly={true} />
+          </>,
+        ]}
+      />
     </div>
   );
 }

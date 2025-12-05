@@ -4,7 +4,7 @@ import Sidebar from "./Siderbar";
 
 export default function Layout(props: { children?: JSX.Element }) {
   return (
-    <div class="drawer drawer-open bg-base-100 h-full">
+    <div class="drawer drawer-open bg-gradient-content h-full">
       <input
         id="sidebar"
         type="checkbox"

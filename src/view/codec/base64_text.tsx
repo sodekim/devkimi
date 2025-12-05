@@ -13,6 +13,7 @@ import Config from "../../component/Config";
 import ConfigSwitch from "../../component/Config/Switch";
 import Container from "../../component/Container";
 import Editor from "../../component/Editor";
+import IOLayout from "../../component/IOLayout";
 
 const BASE_MODE_OPTIONS = [
   { label: "Standard", value: "Standard" },
@@ -47,7 +48,7 @@ export default function Base64TextCodec() {
     }
   });
   return (
-    <div class="flex h-full flex-col gap-4">
+    <div class="flex flex-1 flex-col gap-4">
       {/* 配置 */}
       <Config.Card>
         {/*操作配置*/}
@@ -79,32 +80,33 @@ export default function Base64TextCodec() {
         </Config.Option>
       </Config.Card>
 
-      {/*输入*/}
-      <Container class="h-0 flex-1">
-        <div class="flex items-center justify-between">
-          <span class="text-sm">输入</span>
-          <div class="flex items-center justify-center gap-2">
-            <TextOperateButtons callback={setInput} />
-          </div>
-        </div>
-        <Editor
-          value={input()}
-          onChange={(value) => setInput(value)}
-          placeholder={encode() ? "输入要编码的文本" : "输入要解码的文本"}
-        />
-      </Container>
-
-      {/*输出*/}
-      <Container class="h-0 flex-1">
-        <div class="flex items-center justify-between">
-          <span class="text-sm">输出</span>
-          <div class="flex items-center justify-center gap-2">
-            <CopyButton value={output()} />
-            <SaveButton value={output()} />
-          </div>
-        </div>
-        <Editor value={output()} language="base64" readOnly={true} />
-      </Container>
+      <IOLayout
+        items={[
+          <>
+            <div class="flex items-center justify-between">
+              <span class="text-sm">输入</span>
+              <div class="flex items-center justify-center gap-2">
+                <TextOperateButtons callback={setInput} />
+              </div>
+            </div>
+            <Editor
+              value={input()}
+              onChange={(value) => setInput(value)}
+              placeholder={encode() ? "输入要编码的文本" : "输入要解码的文本"}
+            />
+          </>,
+          <>
+            <div class="flex items-center justify-between">
+              <span class="text-sm">输出</span>
+              <div class="flex items-center justify-center gap-2">
+                <CopyButton value={output()} />
+                <SaveButton value={output()} />
+              </div>
+            </div>
+            <Editor value={output()} language="base64" readOnly={true} />
+          </>,
+        ]}
+      />
     </div>
   );
 }
