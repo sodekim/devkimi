@@ -1,19 +1,19 @@
-import { trackStore } from "@solid-primitives/deep";
-import { openUrl } from "@tauri-apps/plugin-opener";
-import {
-  AudioLines,
-  CaseSensitive,
-  LayoutTemplate,
-  Link,
-  OctagonAlert,
-  Palette,
-  TextWrap,
-} from "lucide-solid";
-import { createEffect, createResource } from "solid-js";
 import { getSystemFonts } from "@/command/font";
 import Config from "@/component/Config";
 import Editor, { MonacoEditor } from "@/component/Editor";
+import Link from "@/component/Link";
 import { IOLayout, useSettings, WordWrap } from "@/store";
+import { trackStore } from "@solid-primitives/deep";
+import {
+  AudioLines,
+  CaseSensitive,
+  ExternalLink,
+  LayoutTemplate,
+  OctagonAlert,
+  Palette,
+  TextWrap
+} from "lucide-solid";
+import { createEffect, createResource } from "solid-js";
 //
 // 主题
 const THEMES = ["light", "dark", "dracula"];
@@ -160,22 +160,13 @@ export default function Settings() {
       </Config.Card>
 
       <Config.Card label="关于" collapse={false}>
-        <Config.Option label="链接" icon={() => <Link size={16} />}>
+        <Config.Option label="链接" icon={() => <ExternalLink size={16} />}>
           <div class="join gap-2">
-            <a
-              class="link link-primary"
-              onClick={() => openUrl("https://github.com/sodekim/devkimi.git")}
-            >
-              源代码
-            </a>
-            <a
-              class="link link-primary"
-              onClick={() =>
-                openUrl("https://github.com/sodekim/devkimi/blob/main/LICENSE")
-              }
-            >
-              许可证
-            </a>
+            <Link label="源代码" href="https://github.com/sodekim/devkimi" />
+            <Link
+              label="许可证"
+              href="https://github.com/sodekim/devkimi/blob/main/LICENSE"
+            />
           </div>
         </Config.Option>
         <Config.Option label="Devkimi" icon={() => <OctagonAlert size={16} />}>
