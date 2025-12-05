@@ -8,6 +8,7 @@ import {
 import Container from "@/component/Container";
 import Card from "@/component/Card";
 import Editor from "@/component/Editor";
+import Title from "@/component/Title";
 
 const JsonPathGrammars: Array<{ expression: string; description: string }> = [
   {
@@ -134,7 +135,7 @@ export default function JSONPath() {
       {/*JSONPath*/}
       <Card>
         <div class="flex items-center justify-between">
-          <span class="text-sm">JSONPath</span>
+          <Title value="JSONPath" />
           <div class="flex items-center justify-center gap-2">
             <PasteButton onRead={setPattern} />
             <ClearButton onClick={() => setPattern("")} />
@@ -151,7 +152,7 @@ export default function JSONPath() {
       {/*JSON*/}
       <Card class="h-0 flex-1">
         <div class="flex items-center justify-between">
-          <span class="text-sm">JSON</span>
+          <Title value="JSON" />
           <div class="flex items-center justify-center gap-2">
             <TextOperateButtons callback={setText} />
           </div>
@@ -168,7 +169,7 @@ export default function JSONPath() {
         {/*匹配信息*/}
         <Card class="h-full flex-1 overflow-x-hidden">
           <div class="flex items-center justify-between">
-            <span class="text-sm">结果</span>
+            <Title value="结果" />
           </div>
           <Editor language="json" value={output()} readOnly={true} />
         </Card>
@@ -176,7 +177,7 @@ export default function JSONPath() {
         {/*速查表*/}
         <Card class="h-full flex-1 overflow-x-hidden">
           <div class="flex items-center justify-between">
-            <span class="text-sm">速查表</span>
+            <Title value="速查表" />
           </div>
           <div class="size-full overflow-x-auto">
             <table class="table-pin-rows table-sm table">

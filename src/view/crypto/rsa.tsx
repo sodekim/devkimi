@@ -16,6 +16,7 @@ import Container from "@/component/Container";
 import Card from "@/component/Card";
 import Editor from "@/component/Editor";
 import IOLayout from "@/component/IOLayout";
+import Title from "@/component/Title";
 
 const KEY_FORMAT_OPTIONS = [
   { value: "Pkcs8", label: "PKCS#8" },
@@ -122,7 +123,7 @@ export default function Rsa() {
         {/*私钥*/}
         <Card class="h-full w-0 flex-1">
           <div class="flex items-center justify-between">
-            <span class="text-sm">私钥</span>
+            <Title value="私钥" />
             <div class="flex items-center justify-center gap-2">
               <TextOperateButtons callback={setPrivateKey} />
               <CopyButton value={privateKey()} />
@@ -138,7 +139,7 @@ export default function Rsa() {
         {/*公钥*/}
         <Card class="h-full w-0 flex-1">
           <div class="flex items-center justify-between">
-            <span class="text-sm">公钥</span>
+            <Title value="公钥" />
             <div class="flex items-center justify-center gap-2">
               <TextOperateButtons callback={setPublicKey} />
               <CopyButton value={publicKey()} />
@@ -157,7 +158,7 @@ export default function Rsa() {
           <>
             {" "}
             <div class="flex items-center justify-between">
-              <span class="text-sm">输入</span>
+              <Title value="输入" />
               <div class="flex items-center justify-center gap-2">
                 <TextOperateButtons callback={setInput} />
               </div>
@@ -172,7 +173,7 @@ export default function Rsa() {
           </>,
           <>
             <div class="flex items-center justify-between">
-              <span class="text-sm">输出</span>
+              <Title value="输出" />
               <div class="flex items-center justify-center gap-2">
                 <CopyButton value={output()} />
                 <SaveButton value={output()} />

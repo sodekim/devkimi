@@ -12,6 +12,7 @@ import Card from "@/component/Card";
 import Editor from "@/component/Editor";
 import IOLayout from "@/component/IOLayout";
 import Container from "@/component/Container";
+import Title from "@/component/Title";
 
 const getLevelText = (level: number) => {
   return level === 1 ? "1 (最快)" : level === 9 ? "9 (最好)" : `${level}`;
@@ -91,7 +92,7 @@ export default function GZipCodec() {
         items={[
           <>
             <div class="flex items-center justify-between">
-              <span class="text-sm">输入</span>
+              <Title value="输入" />
               <div class="flex items-center justify-center gap-2">
                 <TextOperateButtons callback={setInput} />
               </div>
@@ -104,9 +105,7 @@ export default function GZipCodec() {
           </>,
           <>
             <div class="flex items-center justify-between">
-              <span class="flex items-center justify-center gap-4 text-sm">
-                输出
-              </span>
+              <Title value="输出" />
               <div class="flex items-center justify-center gap-2">
                 <CopyButton value={output()} />
                 <SaveButton value={output()} />

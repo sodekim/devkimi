@@ -16,6 +16,7 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Card from "@/component/Card";
 import Editor from "@/component/Editor";
+import Title from "@/component/Title";
 
 const RegexGrammars: Array<{ grammar: string; description: string }> = [
   // 🔹 基础字符匹配
@@ -130,7 +131,7 @@ export default function RegexTest() {
       {/*正则表达式*/}
       <Card>
         <div class="flex items-center justify-between">
-          <span class="text-sm">正则表达式</span>
+          <Title value="正则表达式" />
           <div class="flex items-center justify-center gap-2">
             <PasteButton onRead={setPattern} />
             <ClearButton onClick={() => setPattern("")} />
@@ -147,7 +148,7 @@ export default function RegexTest() {
       {/*文本*/}
       <Card class="h-0 flex-1">
         <div class="flex items-center justify-between">
-          <span class="text-sm">文本</span>
+          <Title value="文本" />
           <div class="flex items-center justify-center gap-2">
             <TextOperateButtons callback={setText} />
           </div>
@@ -163,7 +164,7 @@ export default function RegexTest() {
         {/*匹配信息*/}
         <Card class="h-full flex-1 overflow-x-hidden">
           <div class="flex items-center justify-between">
-            <span class="text-sm">匹配信息</span>
+            <Title value="匹配信息" />
           </div>
           <div class="size-full overflow-x-auto">
             <table class="table-pin-rows table-sm table">
@@ -199,7 +200,7 @@ export default function RegexTest() {
         {/*速查表*/}
         <Card class="h-full flex-1 overflow-x-hidden">
           <div class="flex items-center justify-between">
-            <span class="text-sm">速查表</span>
+            <Title value="速查表" />
           </div>
           <div class="size-full overflow-x-auto">
             <table class="table-pin-rows table-sm table">

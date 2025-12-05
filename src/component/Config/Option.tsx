@@ -1,4 +1,3 @@
-import { LucideProps, Save } from "lucide-solid";
 import { children, JSX, Show } from "solid-js";
 
 export default function Option(props: {
@@ -9,7 +8,7 @@ export default function Option(props: {
 }) {
   const _children = children(() => props.children);
   return (
-    <div class="border-base-content/20 flex h-14 w-full items-center justify-between gap-2 rounded-md border p-4">
+    <div class="border-base-content/15 flex h-14 w-full items-center justify-between gap-2 rounded-md border p-4">
       <span class="inline-flex items-center gap-4 text-sm">
         {props.icon()}
         <div class="flex flex-col gap-1">

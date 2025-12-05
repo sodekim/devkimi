@@ -8,6 +8,7 @@ import {
 import Container from "@/component/Container";
 import Card from "@/component/Card";
 import Editor from "@/component/Editor";
+import Title from "@/component/Title";
 import hljs from "highlight.js";
 import "./a11y-dark.css";
 
@@ -30,7 +31,7 @@ export default function MarkdownPreview() {
       {/*输入*/}
       <Card class="h-full w-0 flex-1">
         <div class="flex items-center justify-between">
-          <span class="text-sm">Markdown</span>
+          <Title value="Markdown" />
           <div class="flex items-center justify-center gap-2">
             <CopyButton value={markdown()} />
             <SaveButton value={markdown()} />
@@ -47,14 +48,14 @@ export default function MarkdownPreview() {
       {/*输出*/}
       <Card class="h-full w-0 flex-1">
         <div class="flex items-center justify-between">
-          <span class="text-sm">预览</span>
+          <Title value="预览" />
           <div class="flex items-center justify-center gap-2">
             <button class="btn btn-sm btn-ghost"></button>
           </div>
         </div>
         <div
           id="preview"
-          class="prose dark:prose-invert size-full max-w-full overflow-auto rounded-md px-2"
+          class="prose dark:prose-invert size-full max-w-full overflow-auto rounded-md border border-base-content/20 p-2"
           innerHTML={html()}
         ></div>
       </Card>

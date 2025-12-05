@@ -28,6 +28,7 @@ import {
 } from "@/command/crypto/sm4";
 import { EncodingTextInput, EncodingSelect } from "@/component/Encoding";
 import IOLayout from "@/component/IOLayout";
+import Title from "@/component/Title";
 
 export default function Sm4() {
   const [encryption, setEncryption] = createSignal(true);
@@ -139,7 +140,7 @@ export default function Sm4() {
       {/* 密钥 */}
       <Card>
         <div class="flex items-center justify-between">
-          <span class="text-sm">密钥</span>
+          <Title value="密钥" />
           <div class="flex items-center justify-center gap-2">
             <GenerateButton
               onGenerate={() =>
@@ -163,7 +164,7 @@ export default function Sm4() {
       <Show when={blockMode() !== "Ecb"}>
         <Card>
           <div class="flex items-center justify-between">
-            <span class="text-sm">向量</span>
+            <Title value="向量" />
             <div class="flex items-center justify-center gap-2">
               <GenerateButton
                 onGenerate={() =>
@@ -189,7 +190,7 @@ export default function Sm4() {
           <>
             {" "}
             <div class="flex items-center justify-between">
-              <span class="text-sm">输入</span>
+              <Title value="输入" />
               <div class="flex items-center justify-center gap-2">
                 <EncodingSelect
                   label="编码"
@@ -212,9 +213,7 @@ export default function Sm4() {
           </>,
           <>
             <div class="flex items-center justify-between">
-              <span class="flex items-center justify-center gap-4 text-sm">
-                输出
-              </span>
+              <Title value="输出" />
               <div class="flex items-center justify-center gap-2">
                 <EncodingSelect
                   label="编码"

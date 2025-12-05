@@ -18,6 +18,7 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import IOLayout from "@/component/IOLayout";
+import Title from "@/component/Title";
 
 const BASE_MODE_OPTIONS = [
   { label: "Standard", value: "Standard" },
@@ -93,7 +94,7 @@ export default function Base64ImageCodec() {
         items={[
           <>
             <div class="flex items-center justify-between">
-              <span class="text-sm">图片</span>
+              <Title value="图片" />
               <div class="flex items-center justify-center gap-2">
                 {/* 选择图片 */}
                 <Show when={encode()}>
@@ -129,7 +130,7 @@ export default function Base64ImageCodec() {
                 </Show>
               </div>
             </div>
-            <div class="border-base-content/20 flex flex-1 items-center justify-center overflow-hidden rounded-md border p-2">
+            <div class="border-base-content/20 flex flex-1 items-center justify-center overflow-hidden rounded-md border p-2 bg-base-100">
               {src() ? (
                 <img src={src()} class="size-full object-scale-down" />
               ) : (
@@ -144,7 +145,7 @@ export default function Base64ImageCodec() {
           </>,
           <>
             <div class="flex items-center justify-between">
-              <span class="text-sm">Base64</span>
+              <Title value="Base64" />
               <div class="flex items-center justify-center gap-2">
                 {encode() && (
                   <>

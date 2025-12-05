@@ -19,6 +19,7 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Card from "@/component/Card";
 import Editor from "@/component/Editor";
+import Title from "@/component/Title";
 
 const HASH_ALGORITHM_OPTIONS = [
   { value: "Fsb160", label: "FSB-160" },
@@ -127,7 +128,7 @@ export default function HashGenerator() {
               <div class="flex items-center justify-end gap-2">
                 <PickFileButton onPick={(file) => file && setFile(file)} />
               </div>
-              <div class="border-base-content/20 flex h-full flex-col items-center justify-center gap-2 rounded-md border">
+              <div class="border-base-content/15 flex h-full flex-col items-center justify-center gap-2 rounded-md border">
                 <span
                   class={twMerge(
                     "flex items-center justify-center gap-1 text-sm",
@@ -146,7 +147,7 @@ export default function HashGenerator() {
       {/*哈希值*/}
       <Card>
         <div class="flex items-center justify-between">
-          <span class="text-sm">哈希值</span>
+          <Title value="哈希值" />
           <div class="flex items-center justify-center gap-2">
             <CopyButton value={output()} />
             <SaveButton value={output()} />
@@ -162,8 +163,8 @@ export default function HashGenerator() {
       {/*校验哈希值*/}
       <Card>
         <div class="flex items-center justify-between">
-          <span class="flex items-center justify-center gap-4 text-sm">
-            校验哈希值
+          <Title value="校验哈希值" />
+          <div class="flex items-center justify-center gap-2">
             <Show when={target()}>
               <Switch>
                 <Match when={matched()}>
@@ -180,8 +181,6 @@ export default function HashGenerator() {
                 </Match>
               </Switch>
             </Show>
-          </span>
-          <div class="flex items-center justify-center gap-2">
             <PasteButton onRead={setTarget} />
           </div>
         </div>

@@ -15,6 +15,7 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import IOLayout from "@/component/IOLayout";
+import Title from "@/component/Title";
 
 export default function QRCodeCodec() {
   const [image, setImage] = createSignal("");
@@ -69,7 +70,7 @@ export default function QRCodeCodec() {
         items={[
           <>
             <div class="flex items-center justify-between">
-              <span class="text-sm">文本</span>
+              <Title value="文本" />
               <div class="flex items-center justify-center gap-2">
                 {encode() && <TextOperateButtons callback={setText} />}
                 {decode() && (
@@ -93,7 +94,7 @@ export default function QRCodeCodec() {
           </>,
           <>
             <div class="flex items-center justify-between">
-              <span class="text-sm">二维码</span>
+              <Title value="二维码" />
               <div class="flex items-center justify-center gap-2">
                 {/* 选择二维码 */}
                 <Show when={decode()}>
@@ -129,7 +130,7 @@ export default function QRCodeCodec() {
                 </Show>
               </div>
             </div>
-            <div class="border-base-content/20 flex flex-1 items-center justify-center overflow-hidden rounded-md border p-2">
+            <div class="border-base-content/20 flex flex-1 items-center justify-center overflow-hidden rounded-md border p-2 bg-base-100">
               {src() ? (
                 <img src={src()} class="size-full object-scale-down" />
               ) : (

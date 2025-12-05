@@ -12,7 +12,7 @@ export default function Card(props: {
     <div
       id={id}
       class={twMerge(
-        "from-base-100/95 to-base-100/80 border-base-content/10 flex flex-col gap-2 rounded-md border bg-linear-to-br px-4 py-2 backdrop-blur-sm",
+        "flex flex-col gap-2 px-4 py-2",
         props.class,
       )}
     >

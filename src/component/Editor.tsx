@@ -45,7 +45,7 @@ monaco.editor.defineTheme("light", {
   inherit: true,
   rules: [],
   colors: {
-    "editor.background": "#ffffff",
+    "editor.background": "#fdffff",
   },
 });
 

@@ -7,6 +7,7 @@ import ConfigSwitch from "@/component/Config/Switch";
 import Container from "@/component/Container";
 import Card from "@/component/Card";
 import Editor from "@/component/Editor";
+import Title from "@/component/Title";
 
 const UUID_VERSION_OPTIONS = [
   { value: "V1", label: "v1" },
@@ -82,7 +83,7 @@ export default function UuidGenerator() {
       {/*输出*/}
       <Card class="h-0 flex-1">
         <div class="flex items-center justify-between">
-          <span class="text-sm">输出</span>
+          <Title value="输出" />
           <div class="flex items-center justify-center gap-2">
             <button class="btn btn-sm" onClick={() => setN(n() + 1)}>
               <RefreshCcw size={16} />

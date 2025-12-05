@@ -11,6 +11,7 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Card from "@/component/Card";
 import Editor from "@/component/Editor";
+import Title from "@/component/Title";
 
 export default function CronConverter() {
   const [cron, setCron] = createSignal("* * * * * *");
@@ -60,7 +61,7 @@ export default function CronConverter() {
       {/*CRON表达式*/}
       <Card>
         <div class="flex items-center justify-between">
-          <span class="text-sm">CRON表达式</span>
+          <Title value="CRON表达式" />
           <div class="flex items-center justify-center gap-2">
             <PasteButton onRead={setCron} />
             <ClearButton onClick={() => setCron("")} />
@@ -76,7 +77,7 @@ export default function CronConverter() {
       {/*计划时间*/}
       <Card class="h-0 flex-1">
         <div class="flex items-center justify-between">
-          <span class="text-sm">计划执行时间</span>
+          <Title value="计划执行时间" />
           <div class="flex items-center justify-center gap-2">
             <button class="btn btn-sm" onClick={() => setN(n() + 1)}>
               <RefreshCcw size={16} />

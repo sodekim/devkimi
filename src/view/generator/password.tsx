@@ -15,6 +15,7 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Card from "@/component/Card";
 import Editor from "@/component/Editor";
+import Title from "@/component/Title";
 
 export default function PasswordGenerator() {
   const [length, setLength] = createSignal(16);
@@ -124,7 +125,7 @@ export default function PasswordGenerator() {
       {/*输出*/}
       <Card class="h-0 flex-1">
         <div class="flex items-center justify-between">
-          <span class="text-sm">输出</span>
+          <Title value="输出" />
           <div class="flex items-center justify-center gap-2">
             <button class="btn btn-sm" onClick={() => setN(n() + 1)}>
               <RefreshCcw size={16} />

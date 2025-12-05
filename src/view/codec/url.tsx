@@ -12,6 +12,7 @@ import Card from "@/component/Card";
 import Editor from "@/component/Editor";
 import IOLayout from "@/component/IOLayout";
 import Container from "@/component/Container";
+import Title from "@/component/Title";
 
 export default function UrlCodec() {
   const [encode, setEncode] = createSignal(true);
@@ -56,7 +57,7 @@ export default function UrlCodec() {
         items={[
           <>
             <div class="flex items-center justify-between">
-              <span class="text-sm">输入</span>
+              <Title value="输入" />
               <div class="flex items-center justify-center gap-2">
                 <PasteButton onRead={setInput} />
                 <ClearButton onClick={() => setInput("")} />
@@ -70,7 +71,7 @@ export default function UrlCodec() {
           </>,
           <>
             <div class="flex items-center justify-between">
-              <span class="text-sm">输出</span>
+              <Title value="输出" />
               <div class="flex items-center justify-center gap-2">
                 <CopyButton value={output()} />
                 <SaveButton value={output()} />
