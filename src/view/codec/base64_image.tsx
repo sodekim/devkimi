@@ -12,7 +12,8 @@ import {
   OpenFileButton,
   PickImageFileButton,
   SaveButton,
-  TextOperateButtons,
+  TextReadButtons,
+  TextWriteButtons,
 } from "@/component/Buttons";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
@@ -130,7 +131,7 @@ export default function Base64ImageCodec() {
                 </Show>
               </div>
             </div>
-            <div class="border-base-content/20 flex flex-1 items-center justify-center overflow-hidden rounded-md border p-2 bg-base-100">
+            <div class="border-base-content/20 bg-base-100 flex flex-1 items-center justify-center overflow-hidden rounded-md border p-2">
               {src() ? (
                 <img src={src()} class="size-full object-scale-down" />
               ) : (
@@ -146,15 +147,8 @@ export default function Base64ImageCodec() {
           <>
             <div class="flex items-center justify-between">
               <Title value="Base64" />
-              <div class="flex items-center justify-center gap-2">
-                {encode() && (
-                  <>
-                    <CopyButton value={base64()} />
-                    <SaveButton value={base64()} />
-                  </>
-                )}
-                {decode() && <TextOperateButtons callback={setBase64} />}
-              </div>
+              {encode() && <TextReadButtons value={base64()} />}
+              {decode() && <TextWriteButtons callback={setBase64} />}
             </div>
             {encode() ? (
               <Editor value={base64()} readOnly={true} wordWrap="on" />

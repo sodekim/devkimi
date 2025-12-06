@@ -14,6 +14,8 @@ import {
   PasteButton,
   PickFileButton,
   SaveButton,
+  TextReadButtons,
+  TextWriteButtons,
 } from "@/component/Buttons";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
@@ -148,10 +150,7 @@ export default function HashGenerator() {
       <Card>
         <div class="flex items-center justify-between">
           <Title value="哈希值" />
-          <div class="flex items-center justify-center gap-2">
-            <CopyButton value={output()} />
-            <SaveButton value={output()} />
-          </div>
+          <TextReadButtons value={output()} />
         </div>
         <input
           class="input input-md w-full outline-none"
@@ -163,26 +162,26 @@ export default function HashGenerator() {
       {/*校验哈希值*/}
       <Card>
         <div class="flex items-center justify-between">
-          <Title value="校验哈希值" />
-          <div class="flex items-center justify-center gap-2">
+          <div class="join gap-4">
+            <Title value="校验哈希值" />
             <Show when={target()}>
               <Switch>
                 <Match when={matched()}>
                   <span class="flex items-center justify-center gap-1 text-sm">
                     <CircleCheckBig size={16} color="var(--color-success)" />
-                    哈希值匹配
+                    校验成功
                   </span>
                 </Match>
                 <Match when={!matched()}>
                   <span class="flex items-center justify-center gap-1 text-sm">
                     <CircleX size={16} color="var(--color-error)" />
-                    哈希值不匹配
+                    校验失败
                   </span>
                 </Match>
               </Switch>
             </Show>
-            <PasteButton onRead={setTarget} />
           </div>
+          <TextWriteButtons callback={setTarget} />
         </div>
         <input
           class="input input-md w-full outline-none"

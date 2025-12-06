@@ -6,7 +6,8 @@ import {
 import {
   CopyButton,
   SaveButton,
-  TextOperateButtons,
+  TextReadButtons,
+  TextWriteButtons,
 } from "@/component/Buttons";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
@@ -60,9 +61,7 @@ export default function JsonYamlConverter() {
           <>
             <div class="flex items-center justify-between">
               <Title value="输入" />
-              <div class="flex items-center justify-center gap-2">
-                <TextOperateButtons callback={setInput} />
-              </div>
+              <TextWriteButtons callback={setInput} />
             </div>
             <Show
               when={mode()}
@@ -86,10 +85,7 @@ export default function JsonYamlConverter() {
           <>
             <div class="flex items-center justify-between">
               <Title value="输出" />
-              <div class="flex items-center justify-center gap-2">
-                <CopyButton value={output()} />
-                <SaveButton value={output()} />
-              </div>
+              <TextReadButtons value={output()} />
             </div>
             <Show
               when={mode()}

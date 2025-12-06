@@ -10,7 +10,7 @@ export default function Container(props: {
   return (
     <div
       class={twMerge(
-        "flex size-full gap-4",
+        "flex size-full gap-4 overflow-y-auto",
         (props.direction ?? "column") == "column" ? "flex-col" : "flex-row",
         props.class,
       )}

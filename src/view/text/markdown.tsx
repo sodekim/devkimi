@@ -3,7 +3,8 @@ import { parseMarkdown } from "@/command/text/markdown";
 import {
   CopyButton,
   SaveButton,
-  TextOperateButtons,
+  TextReadButtons,
+  TextWriteButtons,
 } from "@/component/Buttons";
 import Container from "@/component/Container";
 import Card from "@/component/Card";
@@ -32,10 +33,9 @@ export default function MarkdownPreview() {
       <Card class="h-full w-0 flex-1">
         <div class="flex items-center justify-between">
           <Title value="Markdown" />
-          <div class="flex items-center justify-center gap-2">
-            <CopyButton value={markdown()} />
-            <SaveButton value={markdown()} />
-            <TextOperateButtons callback={setMarkdown} />
+          <div class="join gap-2">
+            <TextReadButtons value={markdown()} />
+            <TextWriteButtons callback={setMarkdown} />
           </div>
         </div>
         <Editor
@@ -55,7 +55,7 @@ export default function MarkdownPreview() {
         </div>
         <div
           id="preview"
-          class="prose dark:prose-invert size-full max-w-full overflow-auto rounded-md border border-base-content/20 p-2"
+          class="prose dark:prose-invert border-base-content/20 size-full max-w-full overflow-auto rounded-md border p-2"
           innerHTML={html()}
         ></div>
       </Card>

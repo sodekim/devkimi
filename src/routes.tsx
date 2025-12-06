@@ -1,6 +1,7 @@
 import { RouteSectionProps } from "@solidjs/router";
 import {
   ArrowLeftRight,
+  Badge,
   BadgePlus,
   Braces,
   Bubbles,
@@ -27,7 +28,7 @@ import {
   ShieldPlus,
   SquareAsterisk,
   SquareChartGantt,
-  Turntable
+  Turntable,
 } from "lucide-solid";
 import { Component, JSX, lazy } from "solid-js";
 
@@ -109,6 +110,13 @@ const routeMetas: RouteMeta[] = [
         keywords: ["codec", "qrcode"],
         component: lazy(() => import("./view/codec/qrcode")),
         icon: QrCode,
+      },
+      {
+        label: "JWT",
+        path: "/jwt",
+        keywords: ["codec", "jwt"],
+        component: lazy(() => import("./view/codec/jwt")),
+        icon: Badge,
       },
     ],
   },
@@ -248,4 +256,3 @@ const routeMetas: RouteMeta[] = [
 
 export { routeMetas };
 export type { RouteMeta };
-

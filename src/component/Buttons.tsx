@@ -11,7 +11,7 @@ import {
   File,
   Save,
 } from "lucide-solid";
-import { createSignal } from "solid-js";
+import { children, createSignal, JSX } from "solid-js";
 import { openFile } from "@/command/fs";
 
 const CopyButton = (props: { value: string }) => {
@@ -167,20 +167,43 @@ const SaveButton = (props: { value: string }) => {
   );
 };
 
-const TextOperateButtons = (props: { callback: (value: string) => void }) => {
+const TextWriteButtons = (props: {
+  callback: (value: string) => void;
+  children?: JSX.Element;
+  position?: "before" | "after";
+}) => {
+  const _children = children(() => props.children);
   return (
-    <>
+    <div class="flex items-center justify-center gap-2">
+      {props.position === "before" && _children()}
       <PickTextFileButton onPick={props.callback} />
       <PasteButton onRead={props.callback} />
       <ClearButton onClick={() => props.callback("")} />
-    </>
+      {props.position !== "before" && _children()}
+    </div>
   );
 };
 
-const GenerateButton = (props: { onGenerate: () => void }) => {
+const TextReadButtons = (props: {
+  value: string;
+  children?: JSX.Element;
+  position?: "before" | "after";
+}) => {
+  const _children = children(() => props.children);
+  return (
+    <div class="flex items-center justify-center gap-2">
+      {props.position === "before" && _children()}
+      <CopyButton value={props.value} />
+      <SaveButton value={props.value} />
+      {props.position !== "before" && _children()}
+    </div>
+  );
+};
+
+const GenerateButton = (props: { onGenerate: () => void; label?: string }) => {
   return (
     <button class="btn btn-sm" onClick={props.onGenerate}>
-      <Dices size={16} /> 生成
+      <Dices size={16} /> {props.label || "重新生成"}
     </button>
   );
 };
@@ -195,6 +218,6 @@ export {
   PickImageFileButton,
   PickTextFileButton,
   SaveButton,
-  TextOperateButtons
+  TextWriteButtons,
+  TextReadButtons,
 };
-

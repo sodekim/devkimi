@@ -10,7 +10,8 @@ import {
   CopyButton,
   GenerateButton,
   SaveButton,
-  TextOperateButtons,
+  TextReadButtons,
+  TextWriteButtons,
 } from "@/component/Buttons";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
@@ -102,7 +103,7 @@ export default function Sm2() {
         <Card class="h-full w-0 flex-1">
           <div class="flex items-center justify-between">
             <Title value="私钥" />
-            <div class="flex items-center justify-center gap-2">
+            <TextWriteButtons callback={setPrivateKey} position="before">
               <GenerateButton
                 onGenerate={() =>
                   generateSm2KeyPair(keyFormat()).then(
@@ -113,9 +114,8 @@ export default function Sm2() {
                   )
                 }
               />
-              <TextOperateButtons callback={setPrivateKey} />
               <CopyButton value={privateKey()} />
-            </div>
+            </TextWriteButtons>
           </div>
           <Editor
             value={privateKey()}
@@ -128,10 +128,9 @@ export default function Sm2() {
         <Card class="h-full w-0 flex-1">
           <div class="flex items-center justify-between">
             <Title value="公钥" />
-            <div class="flex items-center justify-center gap-2">
-              <TextOperateButtons callback={setPublicKey} />
+            <TextWriteButtons callback={setPublicKey}>
               <CopyButton value={publicKey()} />
-            </div>
+            </TextWriteButtons>
           </div>
           <Editor
             value={publicKey()}
@@ -147,9 +146,7 @@ export default function Sm2() {
             {" "}
             <div class="flex items-center justify-between">
               <Title value="输入" />
-              <div class="flex items-center justify-center gap-2">
-                <TextOperateButtons callback={setInput} />
-              </div>
+              <TextWriteButtons callback={setInput} />
             </div>
             <Editor
               value={input()}
@@ -162,10 +159,7 @@ export default function Sm2() {
           <>
             <div class="flex items-center justify-between">
               <Title value="输出" />
-              <div class="flex items-center justify-center gap-2">
-                <CopyButton value={output()} />
-                <SaveButton value={output()} />
-              </div>
+              <TextReadButtons value={output()} />
             </div>
             <Editor value={output()} readOnly={true} />
           </>,

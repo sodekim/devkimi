@@ -1,10 +1,10 @@
 import { children, JSX, Show } from "solid-js";
 
 export default function Option(props: {
-  children: JSX.Element;
   icon: () => JSX.Element;
   label: string;
   description?: string;
+  children?: JSX.Element;
 }) {
   const _children = children(() => props.children);
   return (

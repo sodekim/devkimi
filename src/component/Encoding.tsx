@@ -3,8 +3,8 @@ import { SetStoreFunction } from "solid-js/store";
 import { Encoding, EncodingText } from "@/command/crypto/type";
 import { Match, Show } from "solid-js";
 
-const ENCODING_OPTIONS = [  
-  { value: "Utf8", label: "Utf8" },
+const ENCODING_OPTIONS = [
+  { value: "Utf8", label: "UTF-8" },
   { value: "Hex", label: "Hex" },
   { value: "Base64", label: "Base64" },
 ];
@@ -35,7 +35,7 @@ export function EncodingSelect(props: {
   );
   return (
     <Show when={props.label} fallback={select()}>
-      <label class="select select-sm outline-none">
+      <label class="select select-sm outline-none rounded-md">
         <span class="label text-base-content text-sm">{props.label}</span>
         {select()}
       </label>
@@ -50,7 +50,7 @@ export function EncodingTextInput(props: {
 }) {
   return (
     <div class="join gap-2">
-      <label class="select select-md rounded-md outline-none w-40">
+      <label class="select select-md w-40 rounded-md outline-none">
         <span class="label text-base-content text-sm">编码</span>
         <select
           class="select select-md rounded-md"

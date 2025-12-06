@@ -68,9 +68,9 @@ export enum Encoding {
 export type EncodingText = { text: string; encoding: Encoding };
 
 export function createEncodingText(params?: Partial<EncodingText>) {
-  const { text, encoding } = params ?? { text: "", encoding: Encoding.Hex };
+  const { text, encoding } = params ?? { text: "", encoding: Encoding.Utf8 };
   return createStore<EncodingText>({
     text: text ?? "",
-    encoding: encoding ?? Encoding.Hex,
+    encoding: encoding ?? Encoding.Utf8,
   });
 }

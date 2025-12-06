@@ -198,7 +198,12 @@ macro_rules! generate_key {
     ($ty:ty, $encoding:expr) => {{
         let mut rng = rand::thread_rng();
         let key = <$ty as crypto_common::KeyInit>::generate_key(&mut rng);
-        $encoding.encode(&key).map_err(Into::into)
+        match $encoding {
+            Encoding::Utf8 => Encoding::Hex
+                .encode(&key[0..key.len() / 2])
+                .map_err(Into::into),
+            _ => $encoding.encode(&key).map_err(Into::into),
+        }
     }};
 }
 
@@ -206,20 +211,18 @@ macro_rules! generate_key {
 macro_rules! generate_iv {
     ($ty:ty, $block_mode:expr, $encoding:expr) => {{
         let mut rng = rand::thread_rng();
-        match $block_mode {
-            BlockMode::Cbc => $encoding
-                .encode(&cbc::Encryptor::<$ty>::generate_iv(&mut rng))
-                .map_err(Into::into),
-            BlockMode::Cfb => $encoding
-                .encode(&cfb_mode::Encryptor::<$ty>::generate_iv(&mut rng))
-                .map_err(Into::into),
-            BlockMode::Ofb => $encoding
-                .encode(&ofb::Ofb::<$ty>::generate_iv(&mut rng))
-                .map_err(Into::into),
-            BlockMode::Ctr => $encoding
-                .encode(&ctr::Ctr32BE::<$ty>::generate_iv(&mut rng))
-                .map_err(Into::into),
+        let key = match $block_mode {
+            BlockMode::Cbc => cbc::Encryptor::<$ty>::generate_iv(&mut rng).to_vec(),
+            BlockMode::Cfb => cfb_mode::Encryptor::<$ty>::generate_iv(&mut rng).to_vec(),
+            BlockMode::Ofb => ofb::Ofb::<$ty>::generate_iv(&mut rng).to_vec(),
+            BlockMode::Ctr => ctr::Ctr32BE::<$ty>::generate_iv(&mut rng).to_vec(),
             BlockMode::Ecb => unreachable!("ECB mode is not supported for generate iv!"),
+        };
+        match $encoding {
+            Encoding::Utf8 => Encoding::Hex
+                .encode(&key[0..key.len() / 2])
+                .map_err(Into::into),
+            _ => $encoding.encode(&key).map_err(Into::into),
         }
     }};
 }

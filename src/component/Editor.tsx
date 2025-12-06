@@ -38,6 +38,7 @@ type EditorProps = Omit<
   value?: string;
   class?: string;
   placeholder?: string;
+  readonly?: boolean;
 };
 
 monaco.editor.defineTheme("light", {
@@ -77,6 +78,7 @@ export default function Editor(props: EditorProps) {
     "value",
     "class",
     "placeholder",
+    "readOnly",
   ]);
 
   // 初始化编辑器
@@ -105,7 +107,10 @@ export default function Editor(props: EditorProps) {
 
     // 监听占位符变化
     createEffect(() => {
-      editor?.updateOptions({ placeholder: local.placeholder });
+      editor?.updateOptions({
+        placeholder: local.placeholder,
+        readOnly: local.readOnly,
+      });
     });
 
     // 监听内容变化

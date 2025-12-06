@@ -10,7 +10,7 @@ import { Capture, parseRegex } from "@/command/text/regex";
 import {
   ClearButton,
   PasteButton,
-  TextOperateButtons,
+  TextWriteButtons,
 } from "@/component/Buttons";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
@@ -150,7 +150,7 @@ export default function RegexTest() {
         <div class="flex items-center justify-between">
           <Title value="文本" />
           <div class="flex items-center justify-center gap-2">
-            <TextOperateButtons callback={setText} />
+            <TextWriteButtons callback={setText} />
           </div>
         </div>
         <Editor

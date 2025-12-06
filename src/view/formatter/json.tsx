@@ -1,10 +1,11 @@
 import { ArrowDownAZ, Space } from "lucide-solid";
 import { createEffect, createSignal } from "solid-js";
-import { formatJson } from "@/command/formatter/json";
+import { formatJson, Ident } from "@/command/formatter/json";
 import {
   CopyButton,
   SaveButton,
-  TextOperateButtons,
+  TextReadButtons,
+  TextWriteButtons,
 } from "@/component/Buttons";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
@@ -13,14 +14,14 @@ import IOLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
 
 const INDENT_OPTIONS = [
-  { value: "TwoSpace", label: "2个空格" },
-  { value: "FourSpace", label: "4个空格" },
-  { value: "Tab", label: "1个制表符" },
-  { value: "None", label: "精简" },
+  { value: Ident.TwoSpace, label: "2个空格" },
+  { value: Ident.FourSpace, label: "4个空格" },
+  { value: Ident.Tab, label: "1个制表符" },
+  { value: Ident.None, label: "精简" },
 ];
 
 export default function JsonFormatter() {
-  const [indent, setIndent] = createSignal("TwoSpace");
+  const [indent, setIndent] = createSignal<Ident>(Ident.TwoSpace);
   const [sortable, setSortable] = createSignal(false);
   const [input, setInput] = createSignal("");
   const [output, setOutput] = createSignal("");
@@ -67,9 +68,7 @@ export default function JsonFormatter() {
             {" "}
             <div class="flex items-center justify-between">
               <Title value="输入" />
-              <div class="flex items-center justify-center gap-2">
-                <TextOperateButtons callback={setInput} />
-              </div>
+              <TextWriteButtons callback={setInput} />
             </div>
             <Editor
               value={input()}
@@ -84,10 +83,7 @@ export default function JsonFormatter() {
           <>
             <div class="flex items-center justify-between">
               <Title value="输出" />
-              <div class="flex items-center justify-center gap-2">
-                <CopyButton value={output()} />
-                <SaveButton value={output()} />
-              </div>
+              <TextReadButtons value={output()} />
             </div>
             <Editor value={output()} language="json" readOnly={true} />
           </>,

@@ -14,7 +14,8 @@ import {
   GenerateButton,
   PasteButton,
   SaveButton,
-  TextOperateButtons,
+  TextReadButtons,
+  TextWriteButtons,
 } from "@/component/Buttons";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
@@ -191,17 +192,17 @@ export default function Sm4() {
             {" "}
             <div class="flex items-center justify-between">
               <Title value="输入" />
-              <div class="flex items-center justify-center gap-2">
+              <TextWriteButtons
+                callback={(value) => setInput("text", value)}
+                position="before"
+              >
                 <EncodingSelect
                   label="编码"
                   value={input.encoding}
                   onChange={(value) => setInput("encoding", value)}
                   exclude={inputEncodingExcludes()}
                 />
-                <TextOperateButtons
-                  callback={(value) => setInput("text", value)}
-                />
-              </div>
+              </TextWriteButtons>
             </div>
             <Editor
               value={input.text}
@@ -214,16 +215,14 @@ export default function Sm4() {
           <>
             <div class="flex items-center justify-between">
               <Title value="输出" />
-              <div class="flex items-center justify-center gap-2">
+              <TextReadButtons value={output()} position="before">
                 <EncodingSelect
                   label="编码"
                   exclude={outputEncodingExcludes()}
                   value={encoding()}
                   onChange={(value) => setEncoding(value)}
                 />
-                <CopyButton value={output()} />
-                <SaveButton value={output()} />
-              </div>
+              </TextReadButtons>
             </div>
             <Editor value={output()} readOnly={true} />
           </>,

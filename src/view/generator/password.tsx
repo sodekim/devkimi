@@ -10,7 +10,7 @@ import {
 } from "lucide-solid";
 import { createEffect, createSignal } from "solid-js";
 import { generatePassword } from "@/command/generate/password";
-import { CopyButton, SaveButton } from "@/component/Buttons";
+import { CopyButton, SaveButton, TextReadButtons } from "@/component/Buttons";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Card from "@/component/Card";
@@ -126,14 +126,12 @@ export default function PasswordGenerator() {
       <Card class="h-0 flex-1">
         <div class="flex items-center justify-between">
           <Title value="输出" />
-          <div class="flex items-center justify-center gap-2">
+          <TextReadButtons value={output()} position="before">
             <button class="btn btn-sm" onClick={() => setN(n() + 1)}>
               <RefreshCcw size={16} />
               重新生成
             </button>
-            <CopyButton value={output()} />
-            <SaveButton value={output()} />
-          </div>
+          </TextReadButtons>
         </div>
         <Editor value={output()} language="plaintext" readOnly={true} />
       </Card>

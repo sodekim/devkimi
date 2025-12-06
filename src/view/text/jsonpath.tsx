@@ -3,7 +3,7 @@ import { parseJsonPath } from "@/command/text/jsonpath";
 import {
   ClearButton,
   PasteButton,
-  TextOperateButtons,
+  TextWriteButtons,
 } from "@/component/Buttons";
 import Container from "@/component/Container";
 import Card from "@/component/Card";
@@ -154,7 +154,7 @@ export default function JSONPath() {
         <div class="flex items-center justify-between">
           <Title value="JSON" />
           <div class="flex items-center justify-center gap-2">
-            <TextOperateButtons callback={setText} />
+            <TextWriteButtons callback={setText} />
           </div>
         </div>
         <Editor

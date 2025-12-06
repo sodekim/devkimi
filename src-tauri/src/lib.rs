@@ -24,6 +24,8 @@ pub fn run() {
             command::codec::base64_text::decode_text_base64,
             command::codec::base64_image::encode_image_base64,
             command::codec::base64_image::decode_image_base64,
+            command::codec::jwt::encode_jwt,
+            command::codec::jwt::decode_jwt,
             command::codec::gzip::encode_gzip,
             command::codec::gzip::decode_gzip,
             command::codec::url::encode_url,

@@ -9,7 +9,8 @@ import {
   OpenFileButton,
   PickImageFileButton,
   SaveButton,
-  TextOperateButtons,
+  TextReadButtons,
+  TextWriteButtons,
 } from "@/component/Buttons";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
@@ -72,13 +73,8 @@ export default function QRCodeCodec() {
             <div class="flex items-center justify-between">
               <Title value="文本" />
               <div class="flex items-center justify-center gap-2">
-                {encode() && <TextOperateButtons callback={setText} />}
-                {decode() && (
-                  <>
-                    <CopyButton value={text()} />
-                    <SaveButton value={text()} />
-                  </>
-                )}
+                {encode() && <TextWriteButtons callback={setText} />}
+                {decode() && <TextReadButtons value={text()} />}
               </div>
             </div>
             {encode() ? (
@@ -130,7 +126,7 @@ export default function QRCodeCodec() {
                 </Show>
               </div>
             </div>
-            <div class="border-base-content/20 flex flex-1 items-center justify-center overflow-hidden rounded-md border p-2 bg-base-100">
+            <div class="border-base-content/20 bg-base-100 flex flex-1 items-center justify-center overflow-hidden rounded-md border p-2">
               {src() ? (
                 <img src={src()} class="size-full object-scale-down" />
               ) : (

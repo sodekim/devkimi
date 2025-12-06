@@ -6,6 +6,7 @@ import {
   CopyButton,
   PasteButton,
   SaveButton,
+  TextReadButtons,
 } from "@/component/Buttons";
 import Config from "@/component/Config";
 import Card from "@/component/Card";
@@ -72,10 +73,7 @@ export default function UrlCodec() {
           <>
             <div class="flex items-center justify-between">
               <Title value="输出" />
-              <div class="flex items-center justify-center gap-2">
-                <CopyButton value={output()} />
-                <SaveButton value={output()} />
-              </div>
+              <TextReadButtons value={output()} />
             </div>
             <Editor value={output()} readOnly={true} />
           </>,

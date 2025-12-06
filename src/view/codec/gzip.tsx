@@ -5,7 +5,8 @@ import { decodeGZip, encodeGZip } from "@/command/codec/gzip";
 import {
   CopyButton,
   SaveButton,
-  TextOperateButtons,
+  TextReadButtons,
+  TextWriteButtons,
 } from "@/component/Buttons";
 import Config from "@/component/Config";
 import Card from "@/component/Card";
@@ -93,9 +94,7 @@ export default function GZipCodec() {
           <>
             <div class="flex items-center justify-between">
               <Title value="输入" />
-              <div class="flex items-center justify-center gap-2">
-                <TextOperateButtons callback={setInput} />
-              </div>
+              <TextWriteButtons callback={setInput} />
             </div>
             <Editor
               value={input()}
@@ -106,10 +105,7 @@ export default function GZipCodec() {
           <>
             <div class="flex items-center justify-between">
               <Title value="输出" />
-              <div class="flex items-center justify-center gap-2">
-                <CopyButton value={output()} />
-                <SaveButton value={output()} />
-              </div>
+              <TextReadButtons value={output()} />
             </div>
             <Editor value={output()} readOnly={true} />
           </>,
