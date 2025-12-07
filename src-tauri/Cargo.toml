@@ -37,10 +37,11 @@ getrandom = "0.3"
 hex = "0.4"
 hex-literal = "*"
 hmac = "0.12"
+html-escape = "0.2"
 image = "0.25"
 inout = { version = "0.1", features = ["std"] }
 jsonpath-rust = "1.0"
-jwt = "0.16"
+jwt = { version = "0.16", features = ["openssl"] }
 log = "0.4"
 markdown = "1.0"
 md-5 = "0.10"
@@ -48,6 +49,7 @@ md2 = "0.10"
 md4 = "0.10"
 ofb = "0.6"
 open = "5.3"
+openssl = { version = "0.10", features = ["vendored"] }
 pem = "3.0"
 pkcs1 = "0.7"
 pkcs8 = { version = "0.10", features = ["encryption"] }

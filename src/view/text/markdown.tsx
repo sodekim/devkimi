@@ -33,7 +33,7 @@ export default function MarkdownPreview() {
       <Card class="h-full w-0 flex-1">
         <div class="flex items-center justify-between">
           <Title value="Markdown" />
-          <div class="join gap-2">
+          <div class="flex items-center justify-center gap-2">
             <TextReadButtons value={markdown()} />
             <TextWriteButtons callback={setMarkdown} />
           </div>

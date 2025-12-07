@@ -1,19 +1,17 @@
+import { decodeGZip, encodeGZip } from "@/command/codec/gzip";
+import {
+  TextReadButtons,
+  TextWriteButtons
+} from "@/component/Buttons";
+import Card from "@/component/Card";
+import Config from "@/component/Config";
+import Container from "@/component/Container";
+import Editor from "@/component/Editor";
+import IOLayout from "@/component/IOLayout";
+import Title from "@/component/Title";
 import { range } from "lodash";
 import { ArrowLeftRight, AudioWaveform, Blend } from "lucide-solid";
 import { createEffect, createSignal, Show } from "solid-js";
-import { decodeGZip, encodeGZip } from "@/command/codec/gzip";
-import {
-  CopyButton,
-  SaveButton,
-  TextReadButtons,
-  TextWriteButtons,
-} from "@/component/Buttons";
-import Config from "@/component/Config";
-import Card from "@/component/Card";
-import Editor from "@/component/Editor";
-import IOLayout from "@/component/IOLayout";
-import Container from "@/component/Container";
-import Title from "@/component/Title";
 
 const getLevelText = (level: number) => {
   return level === 1 ? "1 (最快)" : level === 9 ? "9 (最好)" : `${level}`;

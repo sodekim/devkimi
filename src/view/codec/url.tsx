@@ -1,19 +1,16 @@
-import { ArrowLeftRight } from "lucide-solid";
-import { createEffect, createSignal } from "solid-js";
 import { decodeURL, encodeURL } from "@/command/codec/url";
 import {
   ClearButton,
-  CopyButton,
   PasteButton,
-  SaveButton,
-  TextReadButtons,
+  TextReadButtons
 } from "@/component/Buttons";
 import Config from "@/component/Config";
-import Card from "@/component/Card";
+import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import IOLayout from "@/component/IOLayout";
-import Container from "@/component/Container";
 import Title from "@/component/Title";
+import { ArrowLeftRight } from "lucide-solid";
+import { createEffect, createSignal } from "solid-js";
 
 export default function UrlCodec() {
   const [encode, setEncode] = createSignal(true);

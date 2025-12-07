@@ -51,7 +51,7 @@ export function EncodingTextInput(props: {
   return (
     <div class="join gap-2">
       <label class="select select-md w-40 rounded-md outline-none">
-        <span class="label text-base-content text-sm">编码</span>
+        <span class="label text-base-content text-sm">格式</span>
         <select
           class="select select-md rounded-md"
           value={props.value.encoding}

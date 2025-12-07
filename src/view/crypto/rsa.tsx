@@ -26,10 +26,10 @@ const KEY_FORMAT_OPTIONS = [
 ];
 
 const BIT_SIZE_OPTIONS = [
-  { value: "1024", label: "1024" },
-  { value: "2048", label: "2048" },
-  { value: "3072", label: "3072" },
-  { value: "4096", label: "4096" },
+  { value: 1024, label: "1024" },
+  { value: 2048, label: "2048" },
+  { value: 3072, label: "3072" },
+  { value: 4096, label: "4096" },
 ];
 
 export default function Rsa() {
@@ -46,16 +46,6 @@ export default function Rsa() {
     const _ = encryption();
     setInput("");
     setOutput("");
-  });
-
-  // 当配置变化时，重新生成密钥对
-  createEffect(() => {
-    generateRsaKeyPair(keyFormat(), bitSize()).then(
-      ([privateKey, publicKey]) => {
-        setPrivateKey(privateKey);
-        setPublicKey(publicKey);
-      },
-    );
   });
 
   createEffect(() => {
@@ -98,9 +88,9 @@ export default function Rsa() {
           description="选择密钥的长度，单位为位，一个字节为8位。"
         >
           <Config.Select
-            value={`${bitSize()}`}
+            value={bitSize()}
             options={BIT_SIZE_OPTIONS}
-            onChange={(value) => setBitSize(parseInt(value))}
+            onChange={setBitSize}
             class="w-30"
           />
         </Config.Option>
@@ -128,6 +118,7 @@ export default function Rsa() {
             <Title value="私钥" />
             <TextWriteButtons callback={setPrivateKey} position="before">
               <GenerateButton
+                label="生成密钥对"
                 onGenerate={() =>
                   generateRsaKeyPair(keyFormat(), bitSize()).then(
                     ([privateKey, publicKey]) => {
@@ -143,7 +134,7 @@ export default function Rsa() {
           <Editor
             value={privateKey()}
             onChange={setPrivateKey}
-            placeholder="RSA 私钥"
+            placeholder="输入 RSA 私钥"
           />
         </Card>
 
@@ -158,7 +149,7 @@ export default function Rsa() {
           <Editor
             value={publicKey()}
             onChange={setPublicKey}
-            placeholder="RSA 公钥"
+            placeholder="输入 RSA 公钥"
           />
         </Card>
       </div>

@@ -1,20 +1,18 @@
-import { ArrowLeftRight } from "lucide-solid";
-import { createEffect, createSignal, Show } from "solid-js";
 import {
   convertPropertiesToYaml,
   convertYamlToProperties,
 } from "@/command/converter/yaml_properties";
 import {
-  CopyButton,
-  SaveButton,
   TextReadButtons,
-  TextWriteButtons,
+  TextWriteButtons
 } from "@/component/Buttons";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import IOLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
+import { ArrowLeftRight } from "lucide-solid";
+import { createEffect, createSignal, Show } from "solid-js";
 
 export default function YamlPropertiesConverter() {
   const [mode, setMode] = createSignal(true);

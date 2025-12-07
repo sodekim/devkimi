@@ -60,20 +60,6 @@ export default function Sm4() {
     setOutput("");
   });
 
-  // 当 key.encoding 变化时，重新生成密钥
-  createEffect(() => {
-    generateSm4Key(key.encoding).then((value) => setKey("text", value));
-  });
-
-  // 当 blockMode 或 iv.encoding 变化时，重新生成向量
-  createEffect(() => {
-    if (blockMode() !== BlockMode.Ecb) {
-      generateSm4Iv(blockMode(), iv.encoding).then((value) =>
-        setIv("text", value),
-      );
-    }
-  });
-
   createEffect(() => {
     if (input.text.length > 0) {
       if (encryption()) {
@@ -157,7 +143,7 @@ export default function Sm4() {
         <EncodingTextInput
           value={key}
           setValue={setKey}
-          placeholder="请输入密钥"
+          placeholder="输入密钥"
         />
       </Card>
 
@@ -168,6 +154,7 @@ export default function Sm4() {
             <Title value="向量" />
             <div class="flex items-center justify-center gap-2">
               <GenerateButton
+                label="生成向量"
                 onGenerate={() =>
                   generateSm4Iv(blockMode(), iv.encoding).then((value) =>
                     setIv("text", value),
@@ -181,7 +168,7 @@ export default function Sm4() {
           <EncodingTextInput
             value={iv}
             setValue={setIv}
-            placeholder="请输入向量"
+            placeholder="输入向量"
           />
         </Card>
       </Show>
@@ -208,7 +195,7 @@ export default function Sm4() {
               value={input.text}
               onChange={(value) => setInput("text", value)}
               placeholder={
-                encryption() ? "输入要加密的文本" : "输入要解密的文本"
+                encryption() ? "输入要加密的数据" : "输入要解密的数据"
               }
             />
           </>,

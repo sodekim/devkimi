@@ -1,14 +1,10 @@
-import { ArrowLeftRight, Layers } from "lucide-solid";
-import { createEffect, createSignal } from "solid-js";
 import {
   decodeTextBase64,
   encodeTextBase64,
 } from "@/command/codec/base64_text";
 import {
-  CopyButton,
-  SaveButton,
   TextReadButtons,
-  TextWriteButtons,
+  TextWriteButtons
 } from "@/component/Buttons";
 import Config from "@/component/Config";
 import ConfigSwitch from "@/component/Config/Switch";
@@ -16,6 +12,8 @@ import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import IOLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
+import { ArrowLeftRight, Layers } from "lucide-solid";
+import { createEffect, createSignal } from "solid-js";
 
 const BASE_MODE_OPTIONS = [
   { label: "Standard", value: "Standard" },

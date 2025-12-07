@@ -8,12 +8,14 @@ import {
   CirclePercent,
   CodeXml,
   Database,
+  DecimalsArrowRight,
   Dices,
   FileArchive,
   FileBracesCorner,
   FileText,
   GitCompareArrows,
   Hash,
+  Heading,
   History,
   House,
   Image,
@@ -118,6 +120,13 @@ const routeMetas: RouteMeta[] = [
         component: lazy(() => import("./view/codec/jwt")),
         icon: Badge,
       },
+      {
+        label: "HTML",
+        path: "/html",
+        keywords: ["codec", "html"],
+        component: lazy(() => import("./view/codec/html")),
+        icon: Heading,
+      }
     ],
   },
   {
@@ -199,6 +208,12 @@ const routeMetas: RouteMeta[] = [
         component: lazy(() => import("./view/converter/yaml_properties")),
         icon: FileBracesCorner,
       },
+      {
+        label: "数字进制",
+        path: "/number",
+        component: lazy(() => import("./view/converter/number")),
+        icon: DecimalsArrowRight,
+      }
     ],
   },
   {

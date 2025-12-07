@@ -66,22 +66,6 @@ export default function Aes() {
     }
   });
 
-  // 当 bitSize 或 key.encoding 变化时，重新生成密钥
-  createEffect(() => {
-    generateAesKey(bitSize(), key.encoding).then((value) =>
-      setKey("text", value),
-    );
-  });
-
-  // 当 bitSize、blockMode 或 iv.encoding 变化时，重新生成向量
-  createEffect(() => {
-    if (blockMode() !== BlockMode.Ecb) {
-      generateAesIv(bitSize(), blockMode(), iv.encoding).then((value) =>
-        setIv("text", value),
-      );
-    }
-  });
-
   createEffect(() => {
     if (input.text.length > 0) {
       if (encryption()) {
@@ -195,7 +179,7 @@ export default function Aes() {
         <EncodingTextInput
           value={key}
           setValue={setKey}
-          placeholder="请输入密钥"
+          placeholder="输入密钥"
         />
       </Card>
 
@@ -206,6 +190,7 @@ export default function Aes() {
             <Title value="向量" />
             <div class="flex items-center justify-center gap-2">
               <GenerateButton
+                label="生成向量"
                 onGenerate={() =>
                   generateAesIv(bitSize(), blockMode(), iv.encoding).then(
                     (value) => setIv("text", value),
@@ -219,7 +204,7 @@ export default function Aes() {
           <EncodingTextInput
             value={iv}
             setValue={setIv}
-            placeholder="请输入向量"
+            placeholder="输入向量"
           />
         </Card>
       </Show>

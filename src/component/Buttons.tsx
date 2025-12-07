@@ -70,7 +70,7 @@ const PickFileButton = (props: {
       class="btn btn-sm"
       onClick={() => {
         open({
-          title: props.label || "选择文件",
+          title: props.label || "导入文件",
           filters: props.filters,
           multiple: props.multiple,
         })
@@ -79,7 +79,7 @@ const PickFileButton = (props: {
       }}
     >
       <File size={16} />
-      {props.label || "选择文件"}
+      {props.label || "导入文件"}
     </button>
   );
 };
@@ -203,7 +203,7 @@ const TextReadButtons = (props: {
 const GenerateButton = (props: { onGenerate: () => void; label?: string }) => {
   return (
     <button class="btn btn-sm" onClick={props.onGenerate}>
-      <Dices size={16} /> {props.label || "重新生成"}
+      <Dices size={16} /> {props.label || "生成密钥"}
     </button>
   );
 };

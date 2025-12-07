@@ -21,14 +21,23 @@ export type Header = {
 export function encodeJwt(
   header: Header,
   payload: string,
-  secret: EncodingText,
+  key: EncodingText,
 ) {
-  return invoke<string>("encode_jwt", { header, payload, secret });
+  return invoke<string>("encode_jwt", { header, payload, key });
 }
 
-export function decodeJwt(token: string, secret: EncodingText) {
+export function decodeJwt(token: string, key: EncodingText) {
   return invoke<[Header, string, boolean | null]>("decode_jwt", {
     token,
-    secret,
+    key,
   });
+}
+
+
+export function generateJwtEcdsaKeyPair(algorithm: Algorithm) {
+  return invoke<[string, string]>("generate_jwt_ecdsa_key_pair", { algorithm });
+}
+
+export function generateJwtRsaKeyPair(bitSize: number) {
+  return invoke<[string, string]>("generate_jwt_rsa_key_pair", { bitSize });
 }

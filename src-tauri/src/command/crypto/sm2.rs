@@ -1,4 +1,5 @@
 use base64::{prelude::BASE64_STANDARD, Engine};
+use rand::{thread_rng, Rng};
 use serde::{Deserialize, Serialize};
 use sm2::elliptic_curve::pkcs8::{
     DecodePrivateKey, DecodePublicKey, EncodePrivateKey, EncodePublicKey, LineEnding,
@@ -26,18 +27,18 @@ struct Sm2Rng;
 impl sm2::elliptic_curve::rand_core::RngCore for Sm2Rng {
     fn next_u32(&mut self) -> u32 {
         let mut buf = [0u8; 4];
-        getrandom::fill(&mut buf).expect("getrandom failed");
+        thread_rng().fill(&mut buf);
         u32::from_le_bytes(buf)
     }
 
     fn next_u64(&mut self) -> u64 {
         let mut buf = [0u8; 8];
-        getrandom::fill(&mut buf).expect("getrandom failed");
+        thread_rng().fill(&mut buf);
         u64::from_le_bytes(buf)
     }
 
     fn fill_bytes(&mut self, dest: &mut [u8]) {
-        getrandom::fill(dest).expect("getrandom failed");
+        thread_rng().fill(dest);
     }
 }
 
@@ -47,29 +48,28 @@ impl sm2::elliptic_curve::rand_core::CryptoRng for Sm2Rng {}
 pub fn generate_sm2_key_pair(key_format: KeyFormat) -> Result<(String, String), Error> {
     let secret_key = SecretKey::try_from_rng(&mut Sm2Rng).expect("Failed to generate secret key");
     let public_key = secret_key.public_key();
-
     match key_format {
         KeyFormat::Sec1 => {
             // 私钥转换为 SEC1 PEM 格式
             let sk_pem = secret_key
-                .to_sec1_pem(LineEnding::LF)
+                .to_sec1_pem(LineEnding::CRLF)
                 .map_err(|e| Error::Pem(e.to_string()))?
                 .to_string();
             // 公钥转换为 SPKI PEM 格式
             let pk_pem = public_key
-                .to_public_key_pem(LineEnding::LF)
+                .to_public_key_pem(LineEnding::CRLF)
                 .map_err(|e| Error::Pem(e.to_string()))?;
             Ok((sk_pem, pk_pem))
         }
         KeyFormat::Pkcs8 => {
             // 私钥转换为 PKCS#8 PEM 格式
             let sk_pem = secret_key
-                .to_pkcs8_pem(LineEnding::LF)
+                .to_pkcs8_pem(LineEnding::CRLF)
                 .map_err(|e| Error::Pem(e.to_string()))?
                 .to_string();
             // 公钥转换为 SPKI PEM 格式
             let pk_pem = public_key
-                .to_public_key_pem(LineEnding::LF)
+                .to_public_key_pem(LineEnding::CRLF)
                 .map_err(|e| Error::Pem(e.to_string()))?;
             Ok((sk_pem, pk_pem))
         }

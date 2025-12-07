@@ -5,3 +5,4 @@ pub mod gzip;
 pub mod jwt;
 pub mod qrcode;
 pub mod url;
+pub mod html;

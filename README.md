@@ -23,6 +23,8 @@ devkimi 包含以下六大功能模块：
 - Base64 图片编解码
 - GZip 压缩与解压缩
 - URL 编解码
+- HTML 编解码
+- JWT 编解码（支持 HS256/RS256/ES256 等多种算法）
 - 二维码生成与解析
 
 ### 🎨 格式化工具 (Formatter)
@@ -48,6 +50,7 @@ devkimi 包含以下六大功能模块：
 - Cron 表达式解析
 - JSON/YAML 互转
 - YAML/Properties 互转
+- 进制转换（十六进制/十进制/八进制/二进制）
 
 ### 🔐 加密 & 解密 (Crypto)
 

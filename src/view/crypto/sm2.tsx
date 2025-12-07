@@ -41,14 +41,6 @@ export default function Sm2() {
     setOutput("");
   });
 
-  // 当配置变化时，重新生成密钥对
-  createEffect(() => {
-    generateSm2KeyPair(keyFormat()).then(([private_key, public_key]) => {
-      setPrivateKey(private_key);
-      setPublicKey(public_key);
-    });
-  });
-
   createEffect(() => {
     if (input().length > 0) {
       if (encryption()) {
@@ -105,6 +97,7 @@ export default function Sm2() {
             <Title value="私钥" />
             <TextWriteButtons callback={setPrivateKey} position="before">
               <GenerateButton
+              label="生成密钥对"
                 onGenerate={() =>
                   generateSm2KeyPair(keyFormat()).then(
                     ([private_key, public_key]) => {
@@ -120,7 +113,7 @@ export default function Sm2() {
           <Editor
             value={privateKey()}
             onChange={setPrivateKey}
-            placeholder="SM2 私钥"
+            placeholder="输入 SM2 私钥"
           />
         </Card>
 
@@ -135,7 +128,7 @@ export default function Sm2() {
           <Editor
             value={publicKey()}
             onChange={setPublicKey}
-            placeholder="SM2 公钥"
+            placeholder="输入 SM2 公钥"
           />
         </Card>
       </div>
