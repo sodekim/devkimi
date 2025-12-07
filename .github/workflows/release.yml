@@ -22,9 +22,6 @@ jobs:
           - os: ubuntu-latest
             args: ""
 
-          - os: ubuntu-latest
-            args: ""
-
           - os: macos-latest
             args: "--target aarch64-apple-darwin"
 
@@ -32,7 +29,6 @@ jobs:
             args: "--target x86_64-apple-darwin"
 
           - os: windows-latest
-            rustflags: -C target-feature=+crt-static
             args: ""
 
     runs-on: ${{ matrix.os }}
