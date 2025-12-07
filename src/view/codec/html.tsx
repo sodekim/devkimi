@@ -1,8 +1,7 @@
 import { decodeHtml, encodeHtml } from "@/command/codec/html";
 import {
-    ClearButton,
-    PasteButton,
-    TextReadButtons
+    TextReadButtons,
+    TextWriteButtons
 } from "@/component/Buttons";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
@@ -56,10 +55,7 @@ export default function HTMLCodec() {
                     <>
                         <div class="flex items-center justify-between">
                             <Title value="输入" />
-                            <div class="flex items-center justify-center gap-2">
-                                <PasteButton onRead={setInput} />
-                                <ClearButton onClick={() => setInput("")} />
-                            </div>
+                            <TextWriteButtons callback={setInput} />
                         </div>
                         <Editor
                             value={input()}
