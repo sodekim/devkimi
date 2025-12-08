@@ -3,8 +3,7 @@
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/sodekim/devkimi)
 
-devkimi 是一个基于 Tauri 和 SolidJS 构建的多功能开发者工具集，提供各种常用的开发辅助工具。项目灵感来自于 [DevToys](https://github.com/DevToys-app/DevToys.git)。
-
+devkimi 是一个基于 Tauri 和 SolidJS 构建的多功能开发者工具集，提供各种常用的开发辅助工具。
 ## 界面截图
 
 ![screenshot-1](./screenshot/screenshot-1.png)

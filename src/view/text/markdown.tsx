@@ -49,9 +49,6 @@ export default function MarkdownPreview() {
       <Card class="h-full w-0 flex-1">
         <div class="flex items-center justify-between">
           <Title value="预览" />
-          <div class="flex items-center justify-center gap-2">
-            <button class="btn btn-sm btn-ghost"></button>
-          </div>
         </div>
         <div
           id="preview"

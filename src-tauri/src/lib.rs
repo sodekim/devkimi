@@ -39,6 +39,8 @@ pub fn run() {
             command::text::markdown::parse_markdown,
             command::text::regex::parse_regex,
             command::text::jsonpath::parse_jsonpath,
+            command::text::escape::escape_text,
+            command::text::escape::unescape_text,
             command::converter::cron::parse_cron,
             command::converter::json_yaml::convert_json_to_yaml,
             command::converter::json_yaml::convert_yaml_to_json,

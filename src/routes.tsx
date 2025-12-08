@@ -30,7 +30,10 @@ import {
   ShieldPlus,
   SquareAsterisk,
   SquareChartGantt,
+  Timer,
+  ToolCase,
   Turntable,
+  Type,
 } from "lucide-solid";
 import { Component, JSX, lazy } from "solid-js";
 
@@ -126,7 +129,7 @@ const routeMetas: RouteMeta[] = [
         keywords: ["codec", "html"],
         component: lazy(() => import("./view/codec/html")),
         icon: Heading,
-      }
+      },
     ],
   },
   {
@@ -154,6 +157,13 @@ const routeMetas: RouteMeta[] = [
         keywords: ["text", "json", "path"],
         component: lazy(() => import("./view/text/jsonpath")),
         icon: FileBracesCorner,
+      },
+      {
+        label: "转义 / 反转义",
+        path: "/escape",
+        keywords: ["text", "escape"],
+        component: lazy(() => import("./view/text/escape")),
+        icon: Type,
       },
     ],
   },
@@ -213,7 +223,13 @@ const routeMetas: RouteMeta[] = [
         path: "/number",
         component: lazy(() => import("./view/converter/number")),
         icon: DecimalsArrowRight,
-      }
+      },
+      {
+        label: "时间",
+        path: "/time",
+        component: lazy(() => import("./view/converter/time")),
+        icon: Timer,
+      },
     ],
   },
   {
