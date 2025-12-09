@@ -138,7 +138,7 @@ export default function RegexTest() {
           </div>
         </div>
         <input
-          class="input input-md w-full rounded-md outline-none"
+          class="input input-md w-full rounded-md font-mono font-bold outline-none"
           placeholder="输入正则表达式"
           value={pattern()}
           onInput={(e) => setPattern(e.target.value)}

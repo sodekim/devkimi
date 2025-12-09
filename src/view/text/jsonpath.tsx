@@ -142,7 +142,7 @@ export default function JSONPath() {
           </div>
         </div>
         <input
-          class="input input-md w-full rounded-md outline-none"
+          class="input input-md w-full rounded-md font-mono font-bold outline-none"
           placeholder="输入 JSONPath 表达式"
           value={pattern()}
           onInput={(e) => setPattern(e.target.value)}

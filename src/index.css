@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "air-datepicker/air-datepicker.css";
 
 @plugin "@tailwindcss/typography";
 @plugin "daisyui" {
@@ -25,25 +26,27 @@
 }
 
 /* 自定义滚动条样式 */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(128, 128, 128, 0.3) transparent;
-}
+@media (prefers-color-scheme: dark) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(128, 128, 128, 0.3) transparent;
+  }
 
-*::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
 
-*::-webkit-scrollbar-track {
-  background: transparent;
-}
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
 
-*::-webkit-scrollbar-thumb {
-  background: rgba(128, 128, 128, 0.3);
-  border-radius: 0;
-}
+  *::-webkit-scrollbar-thumb {
+    background: rgba(128, 128, 128, 0.3);
+    border-radius: 0;
+  }
 
-*::-webkit-scrollbar-thumb:hover {
-  background: rgba(128, 128, 128, 0.5);
+  *::-webkit-scrollbar-thumb:hover {
+    background: rgba(128, 128, 128, 0.5);
+  }
 }

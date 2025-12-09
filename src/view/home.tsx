@@ -1,6 +1,5 @@
 import Container from "@/component/Container";
 import Logo from "@/component/Logo";
-import { Github } from "lucide-solid";
 
 export default function Home() {
   return (

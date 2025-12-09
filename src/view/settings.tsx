@@ -11,7 +11,7 @@ import {
   LayoutTemplate,
   OctagonAlert,
   Palette,
-  TextWrap
+  TextWrap,
 } from "lucide-solid";
 import { createEffect, createResource } from "solid-js";
 //

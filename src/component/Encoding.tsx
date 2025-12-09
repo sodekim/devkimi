@@ -35,7 +35,7 @@ export function EncodingSelect(props: {
   );
   return (
     <Show when={props.label} fallback={select()}>
-      <label class="select select-sm outline-none rounded-md">
+      <label class="select select-sm rounded-md outline-none">
         <span class="label text-base-content text-sm">{props.label}</span>
         {select()}
       </label>
@@ -60,7 +60,9 @@ export function EncodingTextInput(props: {
           }
         >
           {ENCODING_OPTIONS.map((option) => (
-            <option value={option.value}>{option.label}</option>
+            <option value={option.value}>
+              {option.label}
+            </option>
           ))}
         </select>
       </label>

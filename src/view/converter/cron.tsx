@@ -69,7 +69,7 @@ export default function CronConverter() {
           </div>
         </div>
         <input
-          class="input input-md w-full rounded-md outline-none"
+          class="input input-md w-full rounded-md font-mono font-bold outline-none"
           value={cron()}
           onInput={(e) => setCron(e.target.value)}
         />

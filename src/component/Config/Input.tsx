@@ -7,7 +7,10 @@ export function Input(props: {
 }) {
   return (
     <input
-      class={twMerge("input input-sm outline-none", props.class)}
+      class={twMerge(
+        "input input-sm font-mono font-bold outline-none",
+        props.class,
+      )}
       value={props.value}
       onInput={(e) => props.onInput?.(e.target.value)}
     />
@@ -26,7 +29,10 @@ export function NumberInput(props: {
     <input
       type="number"
       placeholder={props.placeholder}
-      class={twMerge("input input-sm rounded-md outline-none", props.class)}
+      class={twMerge(
+        "input input-sm rounded-md font-mono font-bold outline-none",
+        props.class,
+      )}
       value={props.value}
       min={props.min}
       max={props.max}
