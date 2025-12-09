@@ -9,7 +9,7 @@ import AirDatepicker from "air-datepicker";
 import "air-datepicker/air-datepicker.css";
 import localeZh from "air-datepicker/locale/zh";
 import dayjs from "dayjs";
-import timeZone from "dayjs/plugin/timeZone";
+import timeZone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { CircleCheckBig } from "lucide-solid";
 import {
