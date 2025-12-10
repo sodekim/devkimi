@@ -9,6 +9,7 @@ pub enum Version {
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret)]
 pub fn generate_uuid(size: u16, version: Version, uppercase: bool, hyphen: bool) -> Vec<String> {
     let mut uuids = Vec::with_capacity(size as usize);
     for _ in 0..size {

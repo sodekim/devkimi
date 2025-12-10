@@ -19,6 +19,7 @@ use std::collections::BTreeMap;
 type Claims = BTreeMap<String, serde_json::Value>;
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn generate_jwt_rsa_key_pair(bit_size: u32) -> Result<(String, String), Error> {
     let rsa = Rsa::generate(bit_size)?;
     let private_key = rsa.private_key_to_pem()?;
@@ -30,6 +31,7 @@ pub fn generate_jwt_rsa_key_pair(bit_size: u32) -> Result<(String, String), Erro
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn generate_jwt_ecdsa_key_pair(algorithm: AlgorithmType) -> Result<(String, String), Error> {
     let ec_group = match algorithm {
         AlgorithmType::Es256 => EcGroup::from_curve_name(Nid::X9_62_PRIME256V1),
@@ -47,6 +49,7 @@ pub fn generate_jwt_ecdsa_key_pair(algorithm: AlgorithmType) -> Result<(String, 
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn encode_jwt(header: Header, payload: String, key: EncodingText) -> Result<String, Error> {
     let payload = serde_json::from_str::<Claims>(&payload)?;
     let algorithm = header.algorithm;
@@ -67,6 +70,7 @@ pub fn encode_jwt(header: Header, payload: String, key: EncodingText) -> Result<
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn decode_jwt(
     token: &str,
     key: Option<EncodingText>,

@@ -5,7 +5,7 @@ const generatePassword = async (
   length: number,
   lowercase: boolean,
   uppercase: boolean,
-  numberic: boolean,
+  numeric: boolean,
   special: boolean,
   excludes: string,
 ) => {
@@ -14,7 +14,7 @@ const generatePassword = async (
     length,
     lowercase,
     uppercase,
-    numberic,
+    numeric,
     special,
     excludes,
   });

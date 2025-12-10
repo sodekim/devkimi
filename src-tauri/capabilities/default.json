@@ -9,11 +9,11 @@
     "core:default",
     "clipboard-manager:allow-write-text",
     "clipboard-manager:allow-read-text",
-    "dialog:allow-open",
     "dialog:allow-save",
     "fs:allow-read-text-file",
     "fs:allow-write-text-file",
     "fs:allow-copy-file",
+    "fs:allow-open",
     "store:allow-load",
     "store:allow-save",
     "store:allow-get",
@@ -32,6 +32,14 @@
       "allow": [
         {
           "url": "*"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:allow-open",
+      "allow": [
+        {
+          "path": "$APPDATA/**"
         }
       ]
     }

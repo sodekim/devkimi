@@ -1,22 +1,33 @@
+import { openDevtools } from "@/command/devtools";
 import { getSystemFonts } from "@/command/font";
+import { openFile } from "@/command/fs";
 import Config from "@/component/Config";
 import Editor, { MonacoEditor } from "@/component/Editor";
 import Link from "@/component/Link";
 import { IOLayout, useSettings, WordWrap } from "@/store";
 import { trackStore } from "@solid-primitives/deep";
+import { BaseDirectory, open } from "@tauri-apps/plugin-fs";
+import { openPath } from "@tauri-apps/plugin-opener";
 import {
   AudioLines,
   CaseSensitive,
   ExternalLink,
+  FolderOpen,
   LayoutTemplate,
   OctagonAlert,
   Palette,
+  RectangleEllipsis,
+  SquareTerminal,
   TextWrap,
 } from "lucide-solid";
 import { createEffect, createResource } from "solid-js";
 //
 // 主题
 const THEMES = ["light", "dark", "dracula"];
+
+///
+// 日志级别
+const LOG_LEVEL = ["trace", "debug", "info", "warn", "error"] as const;
 
 export default function Settings() {
   const editors = [] as MonacoEditor[];
@@ -157,6 +168,35 @@ export default function Settings() {
             onSetup={(editor) => editors.push(editor)}
           />
         </div>
+      </Config.Card>
+
+      <Config.Card label="调试" collapse={false}>
+        <Config.Option
+          label="日志级别"
+          icon={() => <RectangleEllipsis size={16} />}
+          description="控制日志输出的级别，修改后需要重启生效。"
+        >
+          <Config.Select
+            class="w-40"
+            value={settings.debug.level}
+            options={LOG_LEVEL.map((level) => ({ label: level, value: level }))}
+            onChange={(value) => setSettings("debug", "level", value)}
+          ></Config.Select>
+        </Config.Option>
+        <Config.Option
+          label="控制台"
+          icon={() => <SquareTerminal size={16} />}
+          description="打开Webview控制台，调试接口和界面。"
+        >
+          <Link label="打开" onClick={() => openDevtools()} />
+        </Config.Option>
+        <Config.Option
+          label="日志目录"
+          icon={() => <FolderOpen size={16} />}
+          description="打开日志目录，查看应用日志文件。"
+        >
+          <Link label="打开" onClick={() => openFile("$APPDATA/logs")} />
+        </Config.Option>
       </Config.Card>
 
       <Config.Card label="关于" collapse={false}>

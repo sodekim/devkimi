@@ -4,6 +4,7 @@ use serde_json::Value;
 use crate::command_error;
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn parse_jsonpath(text: &str, pattern: &str) -> Result<String, Error> {
     let value = serde_json::from_str::<Value>(text)?;
     let refs = js_path(&pattern, &value)?;

@@ -1,0 +1,73 @@
+use crate::command;
+use tauri::{Builder, Runtime};
+
+pub trait TauriBuilderExt: Sized {
+    fn with_handler(self) -> Self;
+    fn run(self) -> tauri::Result<()>;
+}
+
+impl<R: Runtime> TauriBuilderExt for Builder<R> {
+    fn with_handler(self) -> Self {
+        self.invoke_handler(tauri::generate_handler![
+            command::devtools::open_devtools,
+            command::fs::open_file,
+            command::fs::copy_file,
+            command::font::get_system_fonts,
+            command::formatter::json::format_json,
+            command::formatter::xml::format_xml,
+            command::formatter::sql::format_sql,
+            command::generator::uuid::generate_uuid,
+            command::generator::password::generate_password,
+            command::generator::hash::generate_text_hash,
+            command::generator::hash::generate_file_hash,
+            command::codec::base64_text::encode_text_base64,
+            command::codec::base64_text::decode_text_base64,
+            command::codec::base64_image::encode_image_base64,
+            command::codec::base64_image::decode_image_base64,
+            command::codec::jwt::encode_jwt,
+            command::codec::jwt::decode_jwt,
+            command::codec::jwt::generate_jwt_rsa_key_pair,
+            command::codec::jwt::generate_jwt_ecdsa_key_pair,
+            command::codec::gzip::encode_gzip,
+            command::codec::gzip::decode_gzip,
+            command::codec::url::encode_url,
+            command::codec::url::decode_url,
+            command::codec::qrcode::encode_qrcode,
+            command::codec::qrcode::decode_qrcode,
+            command::codec::html::encode_html,
+            command::codec::html::decode_html,
+            command::text::markdown::parse_markdown,
+            command::text::regex::parse_regex,
+            command::text::jsonpath::parse_jsonpath,
+            command::text::escape::escape_text,
+            command::text::escape::unescape_text,
+            command::converter::cron::parse_cron,
+            command::converter::json_yaml::convert_json_to_yaml,
+            command::converter::json_yaml::convert_yaml_to_json,
+            command::converter::yaml_properties::convert_yaml_to_properties,
+            command::converter::yaml_properties::convert_properties_to_yaml,
+            command::crypto::rsa::generate_rsa_key_pair,
+            command::crypto::rsa::encrypt_rsa,
+            command::crypto::rsa::decrypt_rsa,
+            command::crypto::sm2::generate_sm2_key_pair,
+            command::crypto::sm2::encrypt_sm2,
+            command::crypto::sm2::decrypt_sm2,
+            command::crypto::sm4::encrypt_sm4,
+            command::crypto::sm4::decrypt_sm4,
+            command::crypto::sm4::generate_sm4_key,
+            command::crypto::sm4::generate_sm4_iv,
+            command::crypto::aes::encrypt_aes,
+            command::crypto::aes::decrypt_aes,
+            command::crypto::aes::generate_aes_key,
+            command::crypto::aes::generate_aes_iv,
+            command::crypto::des::encrypt_des,
+            command::crypto::des::decrypt_des,
+            command::crypto::des::generate_des_key,
+            command::crypto::des::generate_des_iv,
+        ])
+    }
+
+    fn run(self) -> tauri::Result<()> {
+        self.run(tauri::generate_context!())
+    }
+}

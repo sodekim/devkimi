@@ -7,16 +7,19 @@ use crypto_common::{KeyInit, KeyIvInit};
 use sm4::Sm4;
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn generate_sm4_key(encoding: Encoding) -> Result<String, Error> {
     generate_key!(Sm4, encoding)
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn generate_sm4_iv(block_mode: BlockMode, encoding: Encoding) -> Result<String, Error> {
     generate_iv!(Sm4, block_mode, encoding)
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn encrypt_sm4(
     input: EncodingText,
     key: EncodingText,
@@ -29,6 +32,7 @@ pub fn encrypt_sm4(
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn decrypt_sm4(
     input: EncodingText,
     key: EncodingText,

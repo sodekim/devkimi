@@ -5,6 +5,7 @@ use std::path::PathBuf;
 use uuid::Uuid;
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn encode_qrcode(text: &str) -> Result<PathBuf, Error> {
     let code = QrCode::new(text)?;
     let image = code.render::<Luma<u8>>().build();
@@ -16,6 +17,7 @@ pub fn encode_qrcode(text: &str) -> Result<PathBuf, Error> {
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn decode_qrcode(image: &str) -> Result<String, Error> {
     let image = image::open(image)?.into_luma8();
     let mut decoder = quircs::Quirc::default();

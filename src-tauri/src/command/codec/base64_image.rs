@@ -5,12 +5,14 @@ use std::{fs::read, io::Cursor, path::PathBuf};
 use uuid::Uuid;
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn encode_image_base64(image: &str, mode: Base64Mode) -> Result<String, Error> {
     let bytes = read(image)?;
     Ok(mode.encode(&bytes))
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn decode_image_base64(base64: &str, mode: Base64Mode) -> Result<PathBuf, Error> {
     let bytes = mode.decode(base64)?;
     let image = ImageReader::new(Cursor::new(&bytes)).with_guessed_format()?;

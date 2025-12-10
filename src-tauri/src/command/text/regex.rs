@@ -30,6 +30,7 @@ impl<'a> From<regex::Match<'a>> for Match {
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn parse_regex(
     text: &str,
     pattern: &str,

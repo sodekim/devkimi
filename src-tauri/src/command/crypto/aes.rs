@@ -18,6 +18,7 @@ pub enum BitSize {
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn generate_aes_key(bit_size: BitSize, encoding: Encoding) -> Result<String, Error> {
     match bit_size {
         BitSize::Bits128 => generate_key!(Aes128, encoding),
@@ -27,6 +28,7 @@ pub fn generate_aes_key(bit_size: BitSize, encoding: Encoding) -> Result<String,
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn generate_aes_iv(
     bit_size: BitSize,
     block_mode: BlockMode,
@@ -40,6 +42,7 @@ pub fn generate_aes_iv(
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn encrypt_aes(
     bit_size: BitSize,
     input: EncodingText,
@@ -63,6 +66,7 @@ pub fn encrypt_aes(
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn decrypt_aes(
     bit_size: BitSize,
     input: EncodingText,

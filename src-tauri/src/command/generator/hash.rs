@@ -30,11 +30,13 @@ pub enum Algorithm {
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret)]
 pub fn generate_text_hash(text: &str, algorithm: Algorithm, uppercase: bool) -> String {
     digest(text.as_bytes(), algorithm, uppercase)
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret)]
 pub fn generate_file_hash(
     file: &str,
     algorithm: Algorithm,

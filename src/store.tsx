@@ -38,6 +38,10 @@ export type Settings = {
       size: number;
     };
   };
+  // 调试配置
+  debug: {
+    level: string;
+  };
   version: {
     app: string;
     tauri: string;
@@ -50,6 +54,7 @@ const TAURI_VERSION = await getTauriVersion();
 const defaultSettings: Settings = {
   common: { theme: "dark", openConfigCollapse: true, ioLayout: "horizontal" },
   editor: { wordWrap: "off", font: { family: "SansSerif", size: 14 } },
+  debug: { level: "info" },
   version: {
     app: APP_VERSION,
     tauri: TAURI_VERSION,

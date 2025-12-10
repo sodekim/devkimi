@@ -1,11 +1,16 @@
-import _ from "lodash";
 import * as monaco from "monaco-editor";
 import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import cssWorker from "monaco-editor/esm/vs/language/css/css.worker?worker";
 import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
 import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
 import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
-import { createEffect, onCleanup, onMount, splitProps } from "solid-js";
+import {
+  createEffect,
+  createUniqueId,
+  onCleanup,
+  onMount,
+  splitProps,
+} from "solid-js";
 import { twMerge } from "tailwind-merge";
 import { useSettings } from "@/store";
 
@@ -69,7 +74,7 @@ monaco.editor.defineTheme("dracula", {
 });
 
 export default function Editor(props: EditorProps) {
-  const id = _.uniqueId("editor-");
+  const id = createUniqueId();
   let editor: MonacoEditor | null = null;
   const [settings] = useSettings();
   const [local, options] = splitProps(props, [

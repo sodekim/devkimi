@@ -84,6 +84,7 @@ pub fn generate_sm2_key_pair(key_format: KeyFormat) -> Result<(String, String), 
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn encrypt_sm2(key_format: KeyFormat, public_key: &str, text: &str) -> Result<String, Error> {
     let public_key = match key_format {
         KeyFormat::Sec1 | KeyFormat::Pkcs8 => {
@@ -109,6 +110,7 @@ pub fn encrypt_sm2(key_format: KeyFormat, public_key: &str, text: &str) -> Resul
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn decrypt_sm2(key_format: KeyFormat, private_key: &str, text: &str) -> Result<String, Error> {
     let secret_key = match key_format {
         KeyFormat::Sec1 => {

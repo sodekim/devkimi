@@ -1,11 +1,10 @@
 import { Title } from "@solidjs/meta";
 import { useCurrentMatches } from "@solidjs/router";
-import { last } from "lodash";
 import { createMemo } from "solid-js";
 
 export default function Breadcrumbs() {
   const matches = useCurrentMatches();
-  const title = createMemo(() => last(matches())?.route.info?.label);
+  const title = createMemo(() => matches().at(-1)?.route.info?.label);
   const breadcrumbs = createMemo(() =>
     matches().map((m) => (
       <li>

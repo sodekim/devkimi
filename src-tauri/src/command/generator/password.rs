@@ -1,17 +1,18 @@
 use rand::Rng;
 
-const NUMBERIC_CHARS: &str = "0123456789";
+const NUMERIC_CHARS: &str = "0123456789";
 const LOWERCASE_CHARS: &str = "abcdefghijklmnopqrstuvwxyz";
 const UPPERCASE_CHARS: &str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const SPECIAL_CHARS: &str = "!@#$%^&*()_+-=[]{}|;':\",./<>?";
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret)]
 pub fn generate_password(
     size: u16,
     length: u16,
     uppercase: bool,
     lowercase: bool,
-    numberic: bool,
+    numeric: bool,
     special: bool,
     excludes: &str,
 ) -> Vec<String> {
@@ -27,7 +28,7 @@ pub fn generate_password(
     }
 
     let mut chars = String::with_capacity(
-        UPPERCASE_CHARS.len() + LOWERCASE_CHARS.len() + NUMBERIC_CHARS.len() + SPECIAL_CHARS.len(),
+        UPPERCASE_CHARS.len() + LOWERCASE_CHARS.len() + NUMERIC_CHARS.len() + SPECIAL_CHARS.len(),
     );
     if uppercase {
         chars.push_str(UPPERCASE_CHARS);
@@ -35,8 +36,8 @@ pub fn generate_password(
     if lowercase {
         chars.push_str(LOWERCASE_CHARS);
     }
-    if numberic {
-        chars.push_str(NUMBERIC_CHARS);
+    if numeric {
+        chars.push_str(NUMERIC_CHARS);
     }
     if special {
         chars.push_str(SPECIAL_CHARS);

@@ -3,13 +3,20 @@ import { twMerge } from "tailwind-merge";
 
 export default function Link(props: {
   label: string;
-  href: string;
+  onClick?: () => void;
+  href?: string;
   class?: string;
 }) {
   return (
     <a
       class={twMerge("link link-primary text-sm font-bold", props.class)}
-      onClick={() => openUrl(props.href)}
+      onClick={() => {
+        if (props.href) {
+          openUrl(props.href);
+        } else if (props.onClick) {
+          props.onClick();
+        }
+      }}
     >
       {props.label}
     </a>

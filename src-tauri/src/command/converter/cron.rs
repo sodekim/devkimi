@@ -4,6 +4,7 @@ use cron::Schedule;
 use std::str::FromStr;
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn parse_cron(cron: &str, pattern: &str, size: usize) -> Result<Vec<String>, Error> {
     let items = StrftimeItems::new(pattern).parse()?;
     let schedule = Schedule::from_str(cron)?;

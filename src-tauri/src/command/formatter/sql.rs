@@ -16,6 +16,7 @@ pub enum Dialect {
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret)]
 pub fn format_sql(input: &str, indent: Indent, dialect: Dialect, uppercase: bool) -> String {
     let options = FormatOptions {
         indent: match indent {

@@ -20,6 +20,7 @@ pub enum BitSize {
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn generate_des_key(bit_size: BitSize, encoding: Encoding) -> Result<String, Error> {
     match bit_size {
         BitSize::Bits64 => generate_key!(Des, encoding),
@@ -28,6 +29,7 @@ pub fn generate_des_key(bit_size: BitSize, encoding: Encoding) -> Result<String,
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn generate_des_iv(
     bit_size: BitSize,
     block_mode: BlockMode,
@@ -40,6 +42,7 @@ pub fn generate_des_iv(
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn encrypt_des(
     bit_size: BitSize,
     input: EncodingText,
@@ -60,6 +63,7 @@ pub fn encrypt_des(
 }
 
 #[tauri::command]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
 pub fn decrypt_des(
     bit_size: BitSize,
     input: EncodingText,

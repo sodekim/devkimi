@@ -10,7 +10,7 @@ import {
 } from "lucide-solid";
 import { createEffect, createSignal } from "solid-js";
 import { generatePassword } from "@/command/generate/password";
-import { CopyButton, SaveButton, TextReadButtons } from "@/component/Buttons";
+import { TextReadButtons } from "@/component/Buttons";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Card from "@/component/Card";
@@ -21,7 +21,7 @@ export default function PasswordGenerator() {
   const [length, setLength] = createSignal(16);
   const [uppercase, setUppercase] = createSignal(true);
   const [lowercase, setLowercase] = createSignal(true);
-  const [numberic, setNumberic] = createSignal(true);
+  const [numeric, setNumeric] = createSignal(true);
   const [special, setSpecial] = createSignal(false);
   const [size, setSize] = createSignal(10);
   const [excludes, setExcludes] = createSignal("");
@@ -32,14 +32,14 @@ export default function PasswordGenerator() {
     const flag =
       size() > 0 &&
       length() > 0 &&
-      (uppercase() || lowercase() || numberic() || special());
+      (uppercase() || lowercase() || numeric() || special());
     if (flag) {
       generatePassword(
         size(),
         length(),
         lowercase(),
         uppercase(),
-        numberic(),
+        numeric(),
         special(),
         excludes(),
       )
@@ -88,7 +88,7 @@ export default function PasswordGenerator() {
           description="使用数字字符 (0123456789)"
           icon={() => <Binary size={16} />}
         >
-          <Config.Switch value={numberic()} onChange={setNumberic} />
+          <Config.Switch value={numeric()} onChange={setNumeric} />
         </Config.Option>
 
         <Config.Option
