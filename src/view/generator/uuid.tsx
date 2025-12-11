@@ -1,13 +1,13 @@
-import { CaseUpper, Minus, RefreshCcw, Settings2, Sigma } from "lucide-solid";
-import { createEffect, createSignal } from "solid-js";
 import { generateUuid } from "@/command/generate/uuid";
-import { CopyButton, SaveButton, TextReadButtons } from "@/component/Buttons";
+import { TextReadButtons } from "@/component/Buttons";
+import Card from "@/component/Card";
 import Config from "@/component/Config";
 import ConfigSwitch from "@/component/Config/Switch";
 import Container from "@/component/Container";
-import Card from "@/component/Card";
 import Editor from "@/component/Editor";
 import Title from "@/component/Title";
+import { CaseUpper, Minus, RefreshCcw, Settings2, Sigma } from "lucide-solid";
+import { createEffect, createSignal } from "solid-js";
 
 const UUID_VERSION_OPTIONS = [
   { value: "V1", label: "v1" },

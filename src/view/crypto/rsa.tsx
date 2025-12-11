@@ -1,5 +1,3 @@
-import { ArrowLeftRight, PanelLeftRightDashed, Ruler } from "lucide-solid";
-import { createEffect, createSignal } from "solid-js";
 import {
   decryptRsa,
   encryptRsa,
@@ -9,16 +7,17 @@ import { KeyFormat } from "@/command/crypto/type";
 import {
   CopyButton,
   GenerateButton,
-  SaveButton,
   TextReadButtons,
   TextWriteButtons,
 } from "@/component/Buttons";
+import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
-import Card from "@/component/Card";
 import Editor from "@/component/Editor";
 import IOLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
+import { ArrowLeftRight, PanelLeftRightDashed, Ruler } from "lucide-solid";
+import { batch, createEffect, createSignal } from "solid-js";
 
 const KEY_FORMAT_OPTIONS = [
   { value: "Pkcs8", label: "PKCS#8" },
@@ -33,20 +32,20 @@ const BIT_SIZE_OPTIONS = [
 ];
 
 export default function Rsa() {
-  const [encryption, setEncryption] = createSignal(true);
+  const [encryption, _setEncryption] = createSignal(true);
   const [keyFormat, setKeyFormat] = createSignal<KeyFormat>(KeyFormat.Pkcs8);
   const [bitSize, setBitSize] = createSignal(1024);
   const [privateKey, setPrivateKey] = createSignal("");
   const [publicKey, setPublicKey] = createSignal("");
   const [input, setInput] = createSignal("");
   const [output, setOutput] = createSignal("");
-
-  // 当操作模式变化时，清空输入和输出
-  createEffect(() => {
-    const _ = encryption();
-    setInput("");
-    setOutput("");
-  });
+  const setEncryption = (value: boolean) => {
+    batch(() => {
+      setInput("");
+      setOutput("");
+      _setEncryption(value);
+    });
+  };
 
   createEffect(() => {
     if (input().length > 0) {

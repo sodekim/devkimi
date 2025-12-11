@@ -1,23 +1,22 @@
 use crate::command_error;
-use image::{ImageError, Luma};
+use base64::{prelude::BASE64_STANDARD, Engine};
+use image::{codecs::png::PngEncoder, ImageError, Luma};
 use qrcode::{types::QrError, QrCode};
-use std::path::PathBuf;
-use uuid::Uuid;
 
 #[tauri::command]
-#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
-pub fn encode_qrcode(text: &str) -> Result<PathBuf, Error> {
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::ERROR))]
+pub fn encode_qrcode(text: &str) -> Result<(String, String), Error> {
     let code = QrCode::new(text)?;
     let image = code.render::<Luma<u8>>().build();
-    let tempdir = tempfile::tempdir()?.keep();
-    let filename = format!("{}.png", Uuid::new_v4().simple());
-    let tempfile = tempdir.join(filename);
-    image.save_with_format(&tempfile, image::ImageFormat::Png)?;
-    Ok(tempfile)
+    let mut bytes = Vec::with_capacity(image.len());
+    let encoder = PngEncoder::new(&mut bytes);
+    image.write_with_encoder(encoder)?;
+    let base64 = BASE64_STANDARD.encode(&bytes);
+    Ok((base64, "png".to_string()))
 }
 
 #[tauri::command]
-#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::ERROR))]
 pub fn decode_qrcode(image: &str) -> Result<String, Error> {
     let image = image::open(image)?.into_luma8();
     let mut decoder = quircs::Quirc::default();
@@ -38,4 +37,5 @@ command_error! {
     (Extract, "qrcode extract error: {0}", #[from] quircs::ExtractError),
     (Decode, "qrcode decode error: {0}", #[from] quircs::DecodeError),
     (Utf8, "utf8 error: {0}", #[from] std::string::FromUtf8Error),
+    (Runtime, "runtime error: {0}", #[from] tauri::Error)
 }

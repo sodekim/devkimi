@@ -5,13 +5,13 @@ use crate::command_error;
 use super::base64_helper::Base64Mode;
 
 #[tauri::command]
-#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::ERROR))]
 pub fn encode_text_base64(text: &str, mode: Base64Mode) -> Result<String, Error> {
     Ok(mode.encode(text.as_bytes()))
 }
 
 #[tauri::command]
-#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::ERROR))]
 pub fn decode_text_base64(base64: &str, mode: Base64Mode) -> Result<String, Error> {
     let bytes = mode.decode(base64)?;
     String::from_utf8(bytes).map_err(Into::into)

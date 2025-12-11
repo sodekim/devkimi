@@ -1,4 +1,11 @@
-import { Algorithm, decodeJwt, encodeJwt, generateJwtEcdsaKeyPair, generateJwtRsaKeyPair, Header } from "@/command/codec/jwt";
+import {
+  Algorithm,
+  decodeJwt,
+  encodeJwt,
+  generateJwtEcdsaKeyPair,
+  generateJwtRsaKeyPair,
+  Header,
+} from "@/command/codec/jwt";
 import { createEncodingText, Encoding } from "@/command/crypto/type";
 import { formatJson } from "@/command/formatter/json";
 import {
@@ -22,6 +29,7 @@ import {
   SquareLibrary,
 } from "lucide-solid";
 import {
+  batch,
   createEffect,
   createMemo,
   createSignal,
@@ -46,14 +54,14 @@ const ALGORITHM_OPTIONS = [
 const RSA_BIT_SIZE_OPTIONS = [
   { value: 2048, label: "2048" },
   { value: 3072, label: "3072" },
-  { value: 4096, label: "4096" }
+  { value: 4096, label: "4096" },
 ];
 
 const defaultHeader: Header = { alg: Algorithm.HS256, typ: "JWT" };
 
 export default function Jwt() {
   const [algorithm, setAlgorithm] = createSignal<Algorithm>(Algorithm.HS256);
-  const [encode, setEncode] = createSignal(true);
+  const [encode, _setEncode] = createSignal(true);
   const [header, setHeader] = createSignal<Header>(defaultHeader);
   const [payload, setPayload] = createSignal("{}");
   const [secret, setSecret] = createEncodingText();
@@ -69,11 +77,8 @@ export default function Jwt() {
         algorithm(),
       ),
   );
-  const isRsaKeyPair = createMemo(
-    () =>
-      [Algorithm.RS256, Algorithm.RS384, Algorithm.RS512].includes(
-        algorithm(),
-      ),
+  const isRsaKeyPair = createMemo(() =>
+    [Algorithm.RS256, Algorithm.RS384, Algorithm.RS512].includes(algorithm()),
   );
 
   // 密钥
@@ -89,23 +94,27 @@ export default function Jwt() {
       case Algorithm.ES256:
       case Algorithm.ES384:
       case Algorithm.ES512:
-        return { encoding: Encoding.Utf8, text: encode() ? privateKey() : publicKey() };
+        return {
+          encoding: Encoding.Utf8,
+          text: encode() ? privateKey() : publicKey(),
+        };
     }
   });
 
-  // 操作模式发生变化时清空所有数据
-  createEffect(() => {
-    const _ = encode();
-    setHeader({ alg: Algorithm.HS256, typ: "JWT" });
-    setPayload("{}");
-    setToken("");
-    setVerified(null);
-    setPrivateKey("");
-    setPublicKey("");
-    setSecret({ text: "", encoding: Encoding.Utf8 });
-    setAlgorithm(Algorithm.HS256);
-    setRsaBitSize(2048);
-  });
+  const setEncode = (value: boolean) => {
+    batch(() => {
+      setHeader({ alg: Algorithm.HS256, typ: "JWT" });
+      setPayload("{}");
+      setToken("");
+      setVerified(null);
+      setPrivateKey("");
+      setPublicKey("");
+      setSecret({ text: "", encoding: Encoding.Utf8 });
+      setAlgorithm(Algorithm.HS256);
+      setRsaBitSize(2048);
+      _setEncode(value);
+    });
+  };
 
   // 更新算法
   createEffect(() => {
@@ -253,33 +262,39 @@ export default function Jwt() {
       <Switch>
         <Match when={useKeyPair()}>
           {/* 密钥对 */}
-          <div class="flex h-0 flex-1 gap-4 order-3">
+          <div class="order-3 flex h-0 flex-1 gap-4">
             {/*私钥*/}
             <Card class="h-full w-0 flex-1">
               <div class="flex items-center justify-between">
                 <Title value="私钥" />
                 <TextWriteButtons callback={setPrivateKey} position="before">
-                  <GenerateButton onGenerate={() => {
-                    switch (algorithm()) {
-                      case Algorithm.RS256:
-                      case Algorithm.RS384:
-                      case Algorithm.RS512:
-                        generateJwtRsaKeyPair(rsaBitSize()).then(([privateKey, publicKey]) => {
-                          setPublicKey(publicKey);
-                          setPrivateKey(privateKey);
-                        })
-                        break;
-                      case Algorithm.ES256:
-                      case Algorithm.ES384:
-                      case Algorithm.ES512:
-                        generateJwtEcdsaKeyPair(algorithm()).then(([privateKey, publicKey]) => {
-                          setPublicKey(publicKey);
-                          setPrivateKey(privateKey);
-                        })
-                        break;
-                    }
-
-                  }} label="生成密钥对" />
+                  <GenerateButton
+                    onGenerate={() => {
+                      switch (algorithm()) {
+                        case Algorithm.RS256:
+                        case Algorithm.RS384:
+                        case Algorithm.RS512:
+                          generateJwtRsaKeyPair(rsaBitSize()).then(
+                            ([privateKey, publicKey]) => {
+                              setPublicKey(publicKey);
+                              setPrivateKey(privateKey);
+                            },
+                          );
+                          break;
+                        case Algorithm.ES256:
+                        case Algorithm.ES384:
+                        case Algorithm.ES512:
+                          generateJwtEcdsaKeyPair(algorithm()).then(
+                            ([privateKey, publicKey]) => {
+                              setPublicKey(publicKey);
+                              setPrivateKey(privateKey);
+                            },
+                          );
+                          break;
+                      }
+                    }}
+                    label="生成密钥对"
+                  />
                   <CopyButton value={privateKey()} />
                 </TextWriteButtons>
               </div>

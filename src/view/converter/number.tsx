@@ -4,7 +4,7 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Title from "@/component/Title";
 import { PaintRoller } from "lucide-solid";
-import { createMemo, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
 
 type Radix = 2 | 8 | 10 | 16;
 

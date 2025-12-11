@@ -7,9 +7,13 @@
   ],
   "permissions": [
     "core:default",
+    "core:window:allow-hide",
+    "core:window:allow-destroy",
+    "core:window:allow-close",
     "clipboard-manager:allow-write-text",
     "clipboard-manager:allow-read-text",
     "dialog:allow-save",
+    "dialog:allow-open",
     "fs:allow-read-text-file",
     "fs:allow-write-text-file",
     "fs:allow-copy-file",
@@ -23,15 +27,7 @@
       "identifier": "opener:allow-open-path",
       "allow": [
         {
-          "path": "$TEMP/**"
-        }
-      ]
-    },
-    {
-      "identifier": "opener:allow-open-url",
-      "allow": [
-        {
-          "url": "*"
+          "path": "$APPDATA/**"
         }
       ]
     },
@@ -40,6 +36,14 @@
       "allow": [
         {
           "path": "$APPDATA/**"
+        }
+      ]
+    },
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [
+        {
+          "url": "*"
         }
       ]
     }

@@ -1,17 +1,15 @@
-import { Space } from "lucide-solid";
-import { createEffect, createSignal } from "solid-js";
 import { formatXml } from "@/command/formatter/xml";
 import {
-  CopyButton,
-  SaveButton,
   TextReadButtons,
-  TextWriteButtons,
+  TextWriteButtons
 } from "@/component/Buttons";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import IOLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
+import { Space } from "lucide-solid";
+import { createEffect, createSignal } from "solid-js";
 
 const INDENT_OPTIONS = [
   { value: "TwoSpace", label: "2个空格" },

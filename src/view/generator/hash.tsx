@@ -1,3 +1,16 @@
+import { generateFileHash, generateTextHash } from "@/command/generate/hash";
+import {
+  ClearButton,
+  PasteButton,
+  PickFileButton,
+  TextReadButtons,
+  TextWriteButtons,
+} from "@/component/Buttons";
+import Card from "@/component/Card";
+import Config from "@/component/Config";
+import Container from "@/component/Container";
+import Editor from "@/component/Editor";
+import Title from "@/component/Title";
 import {
   CaseUpper,
   CircleCheckBig,
@@ -5,23 +18,15 @@ import {
   Paperclip,
   Settings2,
 } from "lucide-solid";
-import { createEffect, createSignal, Match, Show, Switch } from "solid-js";
-import { twMerge } from "tailwind-merge";
-import { generateFileHash, generateTextHash } from "@/command/generate/hash";
 import {
-  ClearButton,
-  CopyButton,
-  PasteButton,
-  PickFileButton,
-  SaveButton,
-  TextReadButtons,
-  TextWriteButtons,
-} from "@/component/Buttons";
-import Config from "@/component/Config";
-import Container from "@/component/Container";
-import Card from "@/component/Card";
-import Editor from "@/component/Editor";
-import Title from "@/component/Title";
+  batch,
+  createEffect,
+  createSignal,
+  Match,
+  Show,
+  Switch,
+} from "solid-js";
+import { twMerge } from "tailwind-merge";
 
 const HASH_ALGORITHM_OPTIONS = [
   { value: "Fsb160", label: "FSB-160" },
@@ -45,25 +50,28 @@ const HASH_ALGORITHM_OPTIONS = [
 ];
 
 export default function HashGenerator() {
-  const [text, setText] = createSignal("");
-  const [file, setFile] = createSignal("");
+  const [encode, setEncode] = createSignal(true);
+  const [text, _setText] = createSignal("");
+  const [file, _setFile] = createSignal("");
   const [algorithm, setAlgorithm] = createSignal("Md5");
   const [uppercase, setUppercase] = createSignal(false);
   const [output, setOutput] = createSignal("");
   const [target, setTarget] = createSignal("");
   const matched = () => target().toLowerCase() === output().toLowerCase();
-  const [mode, setMode] = createSignal(true);
+  const setFile = (value: string) => {
+    batch(() => {
+      setEncode(false);
+      _setFile(value);
+    });
+  };
+  const setText = (value: string) => {
+    batch(() => {
+      setEncode(true);
+      _setText(value);
+    });
+  };
   createEffect(() => {
-    const _ = file();
-    setMode(false);
-  });
-  createEffect(() => {
-    const _ = text();
-    setMode(true);
-  });
-  createEffect(() => {
-    console.log("mode: " + mode());
-    (mode()
+    (encode()
       ? generateTextHash(text(), algorithm(), uppercase())
       : generateFileHash(file(), algorithm(), uppercase())
     )

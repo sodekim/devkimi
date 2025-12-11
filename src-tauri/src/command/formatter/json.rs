@@ -11,7 +11,7 @@ pub enum Indent {
 }
 
 #[tauri::command]
-#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::ERROR))]
 pub fn format_json(input: &str, indent: Indent, sortable: bool) -> Result<String, Error> {
     let mut value = serde_json::from_str::<Value>(input)?;
     if sortable {

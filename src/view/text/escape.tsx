@@ -6,18 +6,19 @@ import Editor from "@/component/Editor";
 import IOLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
 import { ArrowLeftRight } from "lucide-solid";
-import { createEffect, createSignal } from "solid-js";
+import { batch, createEffect, createSignal } from "solid-js";
 
 export default function TextEscape() {
-  const [encode, setEncode] = createSignal(true);
+  const [encode, _setEncode] = createSignal(true);
   const [input, setInput] = createSignal("");
   const [output, setOutput] = createSignal("");
-
-  createEffect(() => {
-    const _ = encode();
-    setInput("");
-    setOutput("");
-  });
+  const setEncode = (value: boolean) => {
+    batch(() => {
+      setInput("");
+      setOutput("");
+      _setEncode(value);
+    });
+  };
 
   createEffect(() => {
     if (input().length > 0) {

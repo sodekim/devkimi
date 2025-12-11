@@ -32,7 +32,7 @@ const App: Component = () => {
       root={(props) => {
         return (
           <MetaProvider>
-            <Title>DevKimi</Title>
+            <Title>Devkimi</Title>
             <StoreProvider>
               <Layout>
                 <ErrorBoundary

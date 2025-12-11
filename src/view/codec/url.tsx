@@ -1,7 +1,5 @@
 import { decodeURL, encodeURL } from "@/command/codec/url";
 import {
-  ClearButton,
-  PasteButton,
   TextReadButtons,
   TextWriteButtons
 } from "@/component/Buttons";
@@ -11,18 +9,19 @@ import Editor from "@/component/Editor";
 import IOLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
 import { ArrowLeftRight } from "lucide-solid";
-import { createEffect, createSignal } from "solid-js";
+import { batch, createEffect, createSignal } from "solid-js";
 
 export default function UrlCodec() {
-  const [encode, setEncode] = createSignal(true);
   const [input, setInput] = createSignal("");
   const [output, setOutput] = createSignal("");
-
-  createEffect(() => {
-    const _ = encode();
-    setInput("");
-    setOutput("");
-  });
+  const [encode, _setEnocde] = createSignal(true);
+  const setEnocde = (value: boolean) => {
+    batch(() => {
+      setInput("");
+      setOutput("");
+      _setEnocde(value);
+    });
+  };
 
   createEffect(() => {
     if (input().length > 0) {
@@ -45,7 +44,7 @@ export default function UrlCodec() {
         >
           <Config.Switch
             value={encode()}
-            onChange={setEncode}
+            onChange={setEnocde}
             on="编码"
             off="解码"
           />

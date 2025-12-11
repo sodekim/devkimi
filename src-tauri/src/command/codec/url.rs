@@ -7,7 +7,7 @@ pub fn encode_url(input: &str) -> String {
 }
 
 #[tauri::command]
-#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::ERROR))]
 pub fn decode_url(input: &str) -> Result<String, Error> {
     urlencoding::decode(input)
         .map(|v| v.into_owned())

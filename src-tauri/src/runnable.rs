@@ -1,17 +1,22 @@
 use crate::command;
 use tauri::{Builder, Runtime};
 
-pub trait TauriBuilderExt: Sized {
+pub trait Runnable: Sized {
     fn with_handler(self) -> Self;
-    fn run(self) -> tauri::Result<()>;
+    fn run_with_default_context(self) -> tauri::Result<()>;
 }
 
-impl<R: Runtime> TauriBuilderExt for Builder<R> {
+impl<R: Runtime> Runnable for Builder<R> {
     fn with_handler(self) -> Self {
         self.invoke_handler(tauri::generate_handler![
+            command::tray::show_tray,
+            command::tray::hide_tray,
             command::devtools::open_devtools,
+            command::fs::open_base64_image,
+            command::fs::save_base64_image,
             command::fs::open_file,
             command::fs::copy_file,
+            command::fs::open_log_dir,
             command::font::get_system_fonts,
             command::formatter::json::format_json,
             command::formatter::xml::format_xml,
@@ -67,7 +72,7 @@ impl<R: Runtime> TauriBuilderExt for Builder<R> {
         ])
     }
 
-    fn run(self) -> tauri::Result<()> {
+    fn run_with_default_context(self) -> tauri::Result<()> {
         self.run(tauri::generate_context!())
     }
 }

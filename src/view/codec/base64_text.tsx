@@ -2,10 +2,7 @@ import {
   decodeTextBase64,
   encodeTextBase64,
 } from "@/command/codec/base64_text";
-import {
-  TextReadButtons,
-  TextWriteButtons
-} from "@/component/Buttons";
+import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
 import Config from "@/component/Config";
 import ConfigSwitch from "@/component/Config/Switch";
 import Container from "@/component/Container";
@@ -13,7 +10,7 @@ import Editor from "@/component/Editor";
 import IOLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
 import { ArrowLeftRight, Layers } from "lucide-solid";
-import { createEffect, createSignal } from "solid-js";
+import { batch, createEffect, createSignal } from "solid-js";
 
 const BASE_MODE_OPTIONS = [
   { label: "Standard", value: "Standard" },
@@ -24,15 +21,17 @@ const BASE_MODE_OPTIONS = [
 
 export default function Base64TextCodec() {
   const [mode, setMode] = createSignal("Standard");
-  const [encode, setEncode] = createSignal(true);
   const [input, setInput] = createSignal("");
   const [output, setOutput] = createSignal("");
+  const [encode, _setEncode] = createSignal(true);
 
-  createEffect(() => {
-    const _ = encode();
-    setInput("");
-    setOutput("");
-  });
+  const setEncode = (value: boolean) => {
+    batch(() => {
+      setInput("");
+      setOutput("");
+      _setEncode(value);
+    });
+  };
 
   createEffect(() => {
     if (input().length > 0) {

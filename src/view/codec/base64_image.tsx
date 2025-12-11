@@ -2,12 +2,12 @@ import {
   decodeImageBase64,
   encodeImageBase64,
 } from "@/command/codec/base64_image";
-import { copyFile } from "@/command/fs";
+import { saveBase64Image } from "@/command/fs";
 import {
-  OpenFileButton,
+  OpenBase64Image,
   PickImageFileButton,
   TextReadButtons,
-  TextWriteButtons
+  TextWriteButtons,
 } from "@/component/Buttons";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
@@ -17,7 +17,15 @@ import Title from "@/component/Title";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { ArrowLeftRight, Image, Layers, Save } from "lucide-solid";
-import { createEffect, createMemo, createSignal, Show } from "solid-js";
+import {
+  batch,
+  createEffect,
+  createMemo,
+  createSignal,
+  Match,
+  Show,
+  Switch,
+} from "solid-js";
 
 const BASE_MODE_OPTIONS = [
   { label: "Standard", value: "Standard" },
@@ -27,35 +35,51 @@ const BASE_MODE_OPTIONS = [
 ];
 
 export default function Base64ImageCodec() {
-  const [image, setImage] = createSignal("");
+  const [file, setFile] = createSignal("");
   const [base64, setBase64] = createSignal("");
+  const [base64Image, setBase64Image] = createSignal<{
+    base64: string;
+    extension: string;
+  }>();
   const [mode, setMode] = createSignal("Standard");
-  const [encode, setEncode] = createSignal(true);
-  const decode = () => !encode();
-  const src = createMemo(() => image() && convertFileSrc(image()));
+  const [encode, _setEncode] = createSignal(true);
+  const decode = createMemo(() => !encode());
 
-  createEffect(() => {
-    const _ = encode();
-    setImage("");
-    setBase64("");
-  });
+  const setEncode = (value: boolean) => {
+    batch(() => {
+      setFile("");
+      setBase64("");
+      setBase64Image();
+      _setEncode(value);
+    });
+  };
 
+  // 编码
   createEffect(() => {
-    if ((encode() && image()) || (decode() && base64())) {
-      if (encode()) {
-        encodeImageBase64(image(), mode())
+    if (encode()) {
+      if (file()) {
+        encodeImageBase64(file(), mode())
           .then(setBase64)
           .catch((e) => setBase64(e.toString()));
       } else {
-        decodeImageBase64(base64(), mode())
-          .then(setImage)
-          .catch((e) => setImage(""));
+        setBase64("");
       }
-    } else {
-      setBase64("");
-      setImage("");
     }
   });
+
+  // 解码
+  createEffect(() => {
+    if (decode()) {
+      if (base64()) {
+        decodeImageBase64(base64(), mode()).then(([base64, extension]) =>
+          setBase64Image({ base64, extension }),
+        );
+      } else {
+        setBase64Image();
+      }
+    }
+  });
+
   return (
     <Container>
       {/* 配置 */}
@@ -98,12 +122,12 @@ export default function Base64ImageCodec() {
                 {/* 选择图片 */}
                 <Show when={encode()}>
                   <PickImageFileButton
-                    onPick={(file) => file && setImage(file)}
+                    onPick={(file) => file && setFile(file)}
                   />
                 </Show>
 
                 {/* 保存图片 */}
-                <Show when={decode()}>
+                <Show when={decode() && base64Image()}>
                   <button
                     class="btn btn-sm"
                     onClick={() => {
@@ -113,7 +137,11 @@ export default function Base64ImageCodec() {
                         multiple: false,
                       }).then((dir) => {
                         if (dir) {
-                          copyFile(image(), dir);
+                          saveBase64Image(
+                            dir,
+                            base64Image()!.base64,
+                            base64Image()!.extension,
+                          );
                         }
                       });
                     }}
@@ -124,22 +152,49 @@ export default function Base64ImageCodec() {
                 </Show>
 
                 {/* 打开文件 */}
-                <Show when={src()}>
-                  <OpenFileButton path={image()} />
+                <Show when={base64Image()}>
+                  <OpenBase64Image
+                    base64={base64Image()!.base64}
+                    extension={base64Image()!.extension}
+                  />
                 </Show>
               </div>
             </div>
             <div class="border-base-content/20 bg-base-100 flex flex-1 items-center justify-center overflow-hidden rounded-md border p-2">
-              {src() ? (
-                <img src={src()} class="size-full object-scale-down" />
-              ) : (
-                encode() && (
-                  <span class="text-warning flex items-center justify-center gap-2 text-sm">
-                    <Image size={16} />
-                    选择需要转换的图片
-                  </span>
-                )
-              )}
+              <Switch>
+                <Match when={encode()}>
+                  <Show
+                    when={file()}
+                    fallback={
+                      <span class="text-warning flex items-center justify-center gap-2 text-sm">
+                        <Image size={16} />
+                        选择需要编码的图片
+                      </span>
+                    }
+                  >
+                    <img
+                      src={convertFileSrc(file())}
+                      class="size-full object-scale-down"
+                    />
+                  </Show>
+                </Match>
+                <Match when={decode()}>
+                  <Show
+                    when={base64Image()}
+                    fallback={
+                      <span class="text-warning flex items-center justify-center gap-2 text-sm">
+                        <Image size={16} />
+                        输入Base64生成图片
+                      </span>
+                    }
+                  >
+                    <img
+                      src={`data:image/${base64Image()!.extension};base64,${base64Image()!.base64}`}
+                      class="size-full object-scale-down"
+                    />
+                  </Show>
+                </Match>
+              </Switch>
             </div>
           </>,
           <>

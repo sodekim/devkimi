@@ -6,13 +6,13 @@ use std::collections::{BTreeMap, HashMap};
 type Properties = BTreeMap<String, String>;
 
 #[tauri::command]
-#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::ERROR))]
 pub fn convert_yaml_to_properties(yaml: &str) -> Result<String, Error> {
     yaml_to_properties(yaml).map(|properties| serialize_properties(&properties))
 }
 
 #[tauri::command]
-#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::ERROR))]
 pub fn convert_properties_to_yaml(properties: &str) -> Result<String, Error> {
     let properties = deserialize_properties(properties);
     let value = properties_to_yaml(properties)?;
@@ -173,7 +173,6 @@ fn insert_value(root: &mut Value, path: &[String], value: Value) -> Result<(), E
 fn serialize_properties(properties: &Properties) -> String {
     properties
         .iter()
-        .inspect(|(k, v)| println!("{}: {}", k, v))
         .map(|(key, value)| format!("{}={}", key, value))
         .collect::<Vec<_>>()
         .join("\n")

@@ -1,16 +1,14 @@
-import { createEffect, createSignal } from "solid-js";
 import { parseMarkdown } from "@/command/text/markdown";
 import {
-  CopyButton,
-  SaveButton,
   TextReadButtons,
-  TextWriteButtons,
+  TextWriteButtons
 } from "@/component/Buttons";
-import Container from "@/component/Container";
 import Card from "@/component/Card";
+import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Title from "@/component/Title";
 import hljs from "highlight.js";
+import { createEffect, createSignal } from "solid-js";
 import "./a11y-dark.css";
 
 export default function MarkdownPreview() {

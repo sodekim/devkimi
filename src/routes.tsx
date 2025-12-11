@@ -31,7 +31,6 @@ import {
   SquareAsterisk,
   SquareChartGantt,
   Timer,
-  ToolCase,
   Turntable,
   Type,
 } from "lucide-solid";

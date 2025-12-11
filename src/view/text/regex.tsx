@@ -1,22 +1,21 @@
-import {
-  ArrowLeftFromLine,
-  CaseSensitive,
-  Ellipsis,
-  SquareAsterisk,
-  Ungroup,
-} from "lucide-solid";
-import { createEffect, createSignal, For } from "solid-js";
 import { Capture, parseRegex } from "@/command/text/regex";
 import {
   ClearButton,
   PasteButton,
   TextWriteButtons,
 } from "@/component/Buttons";
+import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
-import Card from "@/component/Card";
 import Editor from "@/component/Editor";
 import Title from "@/component/Title";
+import {
+  ArrowLeftFromLine,
+  CaseSensitive,
+  SquareAsterisk,
+  Ungroup
+} from "lucide-solid";
+import { createEffect, createSignal, For } from "solid-js";
 
 const RegexGrammars: Array<{ grammar: string; description: string }> = [
   // 🔹 基础字符匹配

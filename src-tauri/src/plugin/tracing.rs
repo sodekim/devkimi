@@ -1,28 +1,21 @@
 use serde_json::Value;
 use std::str::FromStr;
-use tauri::{plugin::Plugin, Manager, Runtime};
+use tauri::{plugin::Plugin, AppHandle, Manager, Runtime};
 use tracing::Level;
 use tracing_appender::non_blocking::WorkerGuard;
 use tracing_subscriber::fmt::format::FmtSpan;
 
-#[derive(Default)]
-pub struct TracingPlugin {
-    worker_guard: Option<WorkerGuard>,
-}
-
-pub fn init() -> TracingPlugin {
-    TracingPlugin::default()
-}
+pub struct TracingPlugin(Option<WorkerGuard>);
 
 impl<R: Runtime> Plugin<R> for TracingPlugin {
     fn name(&self) -> &'static str {
-        "Tracing"
+        "devkimi-tracing"
     }
 
     fn initialize(
         &mut self,
-        app: &tauri::AppHandle<R>,
-        _: serde_json::Value,
+        app: &AppHandle<R>,
+        _: Value,
     ) -> Result<(), Box<dyn std::error::Error>> {
         let data_dir = app.path().app_data_dir()?;
         let path = data_dir.join("store.json");
@@ -48,15 +41,15 @@ impl<R: Runtime> Plugin<R> for TracingPlugin {
         };
 
         // 写入到日志文件
-        let logs = data_dir.join("logs");
+        let log_dir = app.path().app_log_dir()?;
         let file_name = "devkimi.log";
         let appender = tracing_appender::rolling::RollingFileAppender::new(
             tracing_appender::rolling::Rotation::DAILY,
-            &logs,
+            &log_dir,
             file_name,
         );
         let (wrapper, worker_guard) = tracing_appender::non_blocking(appender);
-        self.worker_guard = Some(worker_guard);
+        self.0 = Some(worker_guard);
 
         // 初始化
         tracing_subscriber::fmt()
@@ -72,4 +65,8 @@ impl<R: Runtime> Plugin<R> for TracingPlugin {
             .init();
         Ok(())
     }
+}
+
+pub fn init() -> TracingPlugin {
+    TracingPlugin(None)
 }

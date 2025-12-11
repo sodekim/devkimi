@@ -1,19 +1,18 @@
 import { openDevtools } from "@/command/devtools";
 import { getSystemFonts } from "@/command/font";
-import { openFile } from "@/command/fs";
+import { openLogDir } from "@/command/fs";
 import Config from "@/component/Config";
 import Editor, { MonacoEditor } from "@/component/Editor";
 import Link from "@/component/Link";
-import { IOLayout, useSettings, WordWrap } from "@/store";
+import { CloseBehavior, IOLayout, useSettings, WordWrap } from "@/store";
 import { trackStore } from "@solid-primitives/deep";
-import { BaseDirectory, open } from "@tauri-apps/plugin-fs";
-import { openPath } from "@tauri-apps/plugin-opener";
 import {
   AudioLines,
   CaseSensitive,
   ExternalLink,
   FolderOpen,
   LayoutTemplate,
+  MonitorX,
   OctagonAlert,
   Palette,
   RectangleEllipsis,
@@ -23,7 +22,20 @@ import {
 import { createEffect, createResource } from "solid-js";
 //
 // 主题
-const THEMES = ["light", "dark", "dracula"];
+const THEMES_OPTIONS = [
+  {
+    label: "Light",
+    value: "light",
+  },
+  {
+    label: "Dark",
+    value: "dark",
+  },
+  {
+    label: "Dracula",
+    value: "dracula",
+  },
+];
 
 ///
 // 日志级别
@@ -62,6 +74,26 @@ export default function Settings() {
 
   return (
     <div class="flex h-full flex-1 flex-col gap-4 overflow-auto">
+      <Config.Card label="系统" collapse={false}>
+        <Config.Option
+          label="关闭行为"
+          icon={() => <MonitorX size={16} />}
+          description="控制应用关闭时的行为"
+        >
+          <Config.Select
+            class="w-30"
+            value={settings.system.closeBehavior}
+            options={[
+              { label: "退出", value: "quit" },
+              { label: "系统托盘", value: "tray" },
+            ]}
+            onChange={(value) =>
+              setSettings("system", "closeBehavior", value as CloseBehavior)
+            }
+          ></Config.Select>
+        </Config.Option>
+      </Config.Card>
+
       {/* 界面 */}
       <Config.Card label="界面" collapse={false}>
         {/* 主题 */}
@@ -71,7 +103,7 @@ export default function Settings() {
           description="切换主界面的主题"
         >
           <Config.Select
-            options={THEMES.map((theme) => ({ label: theme, value: theme }))}
+            options={THEMES_OPTIONS}
             value={settings.common.theme}
             class="w-30"
             onChange={(value) => setSettings("common", "theme", value)}
@@ -184,9 +216,9 @@ export default function Settings() {
           ></Config.Select>
         </Config.Option>
         <Config.Option
-          label="控制台"
+          label="Web控制台"
           icon={() => <SquareTerminal size={16} />}
-          description="打开Webview控制台，调试接口和界面。"
+          description="打开Web控制台，调试接口和界面。"
         >
           <Link label="打开" onClick={() => openDevtools()} />
         </Config.Option>
@@ -195,7 +227,7 @@ export default function Settings() {
           icon={() => <FolderOpen size={16} />}
           description="打开日志目录，查看应用日志文件。"
         >
-          <Link label="打开" onClick={() => openFile("$APPDATA/logs")} />
+          <Link label="打开" onClick={() => openLogDir()} />
         </Config.Option>
       </Config.Card>
 

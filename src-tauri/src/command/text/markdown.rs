@@ -7,7 +7,7 @@ thread_local! {
 }
 
 #[tauri::command]
-#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::ERROR))]
 pub fn parse_markdown(markdown: &str) -> Result<String, String> {
     OPTIONS
         .with(|options| markdown::to_html_with_options(markdown, &options))

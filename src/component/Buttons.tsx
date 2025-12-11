@@ -12,7 +12,7 @@ import {
   Save,
 } from "lucide-solid";
 import { children, createSignal, JSX } from "solid-js";
-import { openFile } from "@/command/fs";
+import { openBase64Image, openFile } from "@/command/fs";
 
 const CopyButton = (props: { value: string }) => {
   const [handle, setHandle] = createSignal<number | null>(null);
@@ -133,15 +133,11 @@ const PickTextFileButton = (props: {
   );
 };
 
-const OpenFileButton = (props: { path: string }) => {
+const OpenBase64Image = (props: { base64: string; extension: string }) => {
   return (
     <button
       class="btn btn-sm"
-      onClick={() => {
-        openFile(props.path)
-          .then(() => console.log(`open file success: ${props.path}`))
-          .catch((e) => console.error(`open file error: ${props.path}`, e));
-      }}
+      onClick={() => openBase64Image(props.base64, props.extension)}
     >
       <Eye size={16} /> 查看
     </button>
@@ -212,7 +208,7 @@ export {
   ClearButton,
   CopyButton,
   GenerateButton,
-  OpenFileButton,
+  OpenBase64Image,
   PasteButton,
   PickFileButton,
   PickImageFileButton,

@@ -69,7 +69,11 @@ sm2 = { version = "=0.14.0-rc.1", features = ["arithmetic", "pke", "pem"] }
 sm3 = "0.4"
 sm4 = "0.5"
 sqlformat = "0.5"
-tauri = { version = "2.9.1", features = ["protocol-asset", "tray-icon"] }
+tauri = { version = "2.9.1", features = [
+    "protocol-asset",
+    "tray-icon",
+    "devtools",
+] }
 tauri-plugin-clipboard-manager = "2"
 tauri-plugin-dialog = "2"
 tauri-plugin-fs = "2"

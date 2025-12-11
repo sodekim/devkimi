@@ -12,7 +12,7 @@ pub enum Indent {
 }
 
 #[tauri::command]
-#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::ERROR))]
 pub fn format_xml(input: &str, indent: Indent) -> Result<String, Error> {
     let cursor = Cursor::new(Vec::with_capacity(128));
     let mut writer = match indent {

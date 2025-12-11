@@ -1,5 +1,9 @@
-import { ArrowLeftRight, Blend, PanelLeftRightDashed } from "lucide-solid";
-import { createEffect, createMemo, createSignal, Show } from "solid-js";
+import {
+  decryptSm4,
+  encryptSm4,
+  generateSm4Iv,
+  generateSm4Key,
+} from "@/command/crypto/sm4";
 import {
   BLOCK_MODE_OPTIONS,
   BlockMode,
@@ -10,29 +14,23 @@ import {
 } from "@/command/crypto/type";
 import {
   ClearButton,
-  CopyButton,
   GenerateButton,
   PasteButton,
-  SaveButton,
   TextReadButtons,
   TextWriteButtons,
 } from "@/component/Buttons";
+import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
-import Card from "@/component/Card";
 import Editor from "@/component/Editor";
-import {
-  decryptSm4,
-  encryptSm4,
-  generateSm4Iv,
-  generateSm4Key,
-} from "@/command/crypto/sm4";
-import { EncodingTextInput, EncodingSelect } from "@/component/Encoding";
+import { EncodingSelect, EncodingTextInput } from "@/component/Encoding";
 import IOLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
+import { ArrowLeftRight, Blend, PanelLeftRightDashed } from "lucide-solid";
+import { batch, createEffect, createMemo, createSignal, Show } from "solid-js";
 
 export default function Sm4() {
-  const [encryption, setEncryption] = createSignal(true);
+  const [encryption, _setEncryption] = createSignal(true);
   const [blockMode, setBlockMode] = createSignal(BlockMode.Cbc);
   const [key, setKey] = createEncodingText();
   const [iv, setIv] = createEncodingText();
@@ -46,19 +44,20 @@ export default function Sm4() {
   const outputEncodingExcludes = createMemo(() =>
     encryption() ? [Encoding.Utf8] : [],
   );
-
-  // 切换操作模式时 重置编码
-  createEffect(() => {
-    if (encryption()) {
-      setInput("encoding", Encoding.Utf8);
-      setEncoding(Encoding.Hex);
-    } else {
-      setInput("encoding", Encoding.Hex);
-      setEncoding(Encoding.Utf8);
-    }
-    setInput("text", "");
-    setOutput("");
-  });
+  const setEncryption = (value: boolean) => {
+    batch(() => {
+      if (value) {
+        setInput("encoding", Encoding.Utf8);
+        setEncoding(Encoding.Hex);
+      } else {
+        setInput("encoding", Encoding.Hex);
+        setEncoding(Encoding.Utf8);
+      }
+      setInput("text", "");
+      setOutput("");
+      _setEncryption(value);
+    });
+  };
 
   createEffect(() => {
     if (input.text.length > 0) {

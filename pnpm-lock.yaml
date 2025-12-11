@@ -35,9 +35,6 @@ importers:
       '@tauri-apps/plugin-store':
         specifier: ~2.4.1
         version: 2.4.1
-      '@types/lodash':
-        specifier: ^4.17.20
-        version: 4.17.20
       air-datepicker:
         specifier: ^3.6.0
         version: 3.6.0
@@ -48,11 +45,11 @@ importers:
         specifier: ^11.11.1
         version: 11.11.1
       lucide-solid:
-        specifier: ^0.554.0
-        version: 0.554.0(solid-js@1.9.10)
+        specifier: ^0.560.0
+        version: 0.560.0(solid-js@1.9.10)
       monaco-editor:
-        specifier: ^0.54.0
-        version: 0.54.0
+        specifier: ^0.55.1
+        version: 0.55.1
       solid-js:
         specifier: ^1.9.9
         version: 1.9.10
@@ -752,8 +749,8 @@ packages:
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
-  '@types/lodash@4.17.20':
-    resolution: {integrity: sha512-H3MHACvFUEiujabxhaI/ImO6gUrd8oOurg7LQtS7mbwIXA/cUqWrvBsaeJ23aZEPk1TAYkurjfMbSELfoCXlGA==}
+  '@types/trusted-types@2.0.7':
+    resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
 
   air-datepicker@3.6.0:
     resolution: {integrity: sha512-+txUkqa949rXBJDmkQAIb/GehZECJYF4rm9XJxVYtEX22C9WvBpE/XwCUQZBopKIkpg4ycAySJ9lH3JOg9qQTw==}
@@ -814,8 +811,8 @@ packages:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
 
-  dompurify@3.1.7:
-    resolution: {integrity: sha512-VaTstWtsneJY8xzy7DekmYWEOZcmzIe3Qb3zPd4STve1OBTa+e+WmS1ITQec1fZYXI3HCsOZZiSMpG6oxoWMWQ==}
+  dompurify@3.2.7:
+    resolution: {integrity: sha512-WhL/YuveyGXJaerVlMYGWhvQswa7myDG17P7Vu65EWC05o8vfeNbvNf4d/BOvH99+ZW+LlQsc1GDKMa1vNK6dw==}
 
   electron-to-chromium@1.5.249:
     resolution: {integrity: sha512-5vcfL3BBe++qZ5kuFhD/p8WOM1N9m3nwvJPULJx+4xf2usSlZFJ0qoNYO2fOX4hi3ocuDcmDobtA+5SFr4OmBg==}
@@ -959,8 +956,8 @@ packages:
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
-  lucide-solid@0.554.0:
-    resolution: {integrity: sha512-pt0KcZB7N/jVoLKng+kLpGTSoL3x03ByxbDVasMuTLvaZGVtio7rN946zlK9TrMZVwtAHuCvDn11+bEfKnMR3A==}
+  lucide-solid@0.560.0:
+    resolution: {integrity: sha512-0UuZeGuPTwEgoNaPzj07TfE4xMU05cFy+X8QOEbEijqhiUSVasDEPCN7awEjLFs5jo2FkaLq+jhzjOu1bXdsNQ==}
     peerDependencies:
       solid-js: ^1.4.7
 
@@ -976,8 +973,8 @@ packages:
     resolution: {integrity: sha512-eRtbOb1N5iyH0tkQDAoQ4Ipsp/5qSR79Dzrz8hEPxRX10RWWR/iQXdoKmBSRCThY1Fh5EhISDtpSc93fpxUniQ==}
     engines: {node: '>=12.13'}
 
-  monaco-editor@0.54.0:
-    resolution: {integrity: sha512-hx45SEUoLatgWxHKCmlLJH81xBo0uXP4sRkESUpmDQevfi+e7K1VuiSprK6UpQ8u4zOcKNiH0pMvHvlMWA/4cw==}
+  monaco-editor@0.55.1:
+    resolution: {integrity: sha512-jz4x+TJNFHwHtwuV9vA9rMujcZRb0CEilTEwG2rRSpe/A7Jdkuj8xPKttCgOh+v/lkHy7HsZ64oj+q3xoAFl9A==}
 
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
@@ -1755,7 +1752,8 @@ snapshots:
 
   '@types/estree@1.0.8': {}
 
-  '@types/lodash@4.17.20': {}
+  '@types/trusted-types@2.0.7':
+    optional: true
 
   air-datepicker@3.6.0: {}
 
@@ -1803,7 +1801,9 @@ snapshots:
 
   detect-libc@2.1.2: {}
 
-  dompurify@3.1.7: {}
+  dompurify@3.2.7:
+    optionalDependencies:
+      '@types/trusted-types': 2.0.7
 
   electron-to-chromium@1.5.249: {}
 
@@ -1923,7 +1923,7 @@ snapshots:
     dependencies:
       yallist: 3.1.1
 
-  lucide-solid@0.554.0(solid-js@1.9.10):
+  lucide-solid@0.560.0(solid-js@1.9.10):
     dependencies:
       solid-js: 1.9.10
 
@@ -1937,9 +1937,9 @@ snapshots:
     dependencies:
       is-what: 4.1.16
 
-  monaco-editor@0.54.0:
+  monaco-editor@0.55.1:
     dependencies:
-      dompurify: 3.1.7
+      dompurify: 3.2.7
       marked: 14.0.0
 
   ms@2.1.3: {}

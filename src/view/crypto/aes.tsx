@@ -1,13 +1,12 @@
 import {
-  ArrowLeftRight,
-  Blend,
-  PanelLeftRightDashed,
-  Ruler,
-} from "lucide-solid";
-import { createEffect, createMemo, createSignal, Show } from "solid-js";
+  decryptAes,
+  encryptAes,
+  generateAesIv,
+  generateAesKey,
+} from "@/command/crypto/aes";
 import {
-  BIT_SIZE_OPTIONS,
   AesBitSize,
+  BIT_SIZE_OPTIONS,
   BLOCK_MODE_OPTIONS,
   BlockMode,
   createEncodingText,
@@ -17,29 +16,28 @@ import {
 } from "@/command/crypto/type";
 import {
   ClearButton,
-  CopyButton,
   GenerateButton,
   PasteButton,
-  SaveButton,
   TextReadButtons,
   TextWriteButtons,
 } from "@/component/Buttons";
+import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
-import Card from "@/component/Card";
 import Editor from "@/component/Editor";
-import { EncodingTextInput, EncodingSelect } from "@/component/Encoding";
-import {
-  decryptAes,
-  encryptAes,
-  generateAesIv,
-  generateAesKey,
-} from "@/command/crypto/aes";
+import { EncodingSelect, EncodingTextInput } from "@/component/Encoding";
 import IOLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
+import {
+  ArrowLeftRight,
+  Blend,
+  PanelLeftRightDashed,
+  Ruler,
+} from "lucide-solid";
+import { batch, createEffect, createMemo, createSignal, Show } from "solid-js";
 
 export default function Aes() {
-  const [encryption, setEncryption] = createSignal(true);
+  const [encryption, _setEncryption] = createSignal(true);
   const [blockMode, setBlockMode] = createSignal(BlockMode.Cbc);
   const [bitSize, setBitSize] = createSignal(AesBitSize.Bit128);
   const [key, setKey] = createEncodingText();
@@ -54,17 +52,18 @@ export default function Aes() {
   const outputEncodingExcludes = createMemo(() =>
     encryption() ? [Encoding.Utf8] : [],
   );
-
-  // 切换操作模式时 重置编码
-  createEffect(() => {
-    if (encryption()) {
-      setInput("encoding", Encoding.Utf8);
-      setEncoding(Encoding.Hex);
-    } else {
-      setInput("encoding", Encoding.Hex);
-      setEncoding(Encoding.Utf8);
-    }
-  });
+  const setEncryption = (value: boolean) => {
+    batch(() => {
+      if (value) {
+        setInput("encoding", Encoding.Utf8);
+        setEncoding(Encoding.Hex);
+      } else {
+        setInput("encoding", Encoding.Hex);
+        setEncoding(Encoding.Utf8);
+      }
+      _setEncryption(value);
+    });
+  };
 
   createEffect(() => {
     if (input.text.length > 0) {

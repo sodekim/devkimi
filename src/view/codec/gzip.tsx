@@ -1,40 +1,39 @@
 import { decodeGZip, encodeGZip } from "@/command/codec/gzip";
-import {
-  TextReadButtons,
-  TextWriteButtons
-} from "@/component/Buttons";
+import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import IOLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
-import { range } from "lodash";
 import { ArrowLeftRight, AudioWaveform, Blend } from "lucide-solid";
-import { createEffect, createSignal, Show } from "solid-js";
+import { batch, createEffect, createSignal, Show } from "solid-js";
 
 const getLevelText = (level: number) => {
   return level === 1 ? "1 (最快)" : level === 9 ? "9 (最好)" : `${level}`;
 };
 
-const COMPRESS_LEVEL_OPTIONS = range(1, 10).map((level) => ({
-  label: getLevelText(level),
-  value: level.toString(),
-}));
+const COMPRESS_LEVEL_OPTIONS = Array.from({ length: 9 }, (_, i) => i + 1).map(
+  (level) => ({
+    label: getLevelText(level),
+    value: level.toString(),
+  }),
+);
 
 export default function GZipCodec() {
   const [ratio, setRatio] = createSignal(0);
   const [level, setLevel] = createSignal(1);
-  const [encode, setEncode] = createSignal(true);
   const [input, setInput] = createSignal("");
   const [output, setOutput] = createSignal("");
+  const [encode, _setEncode] = createSignal(true);
 
-  // 切换模式时重置输入和输出
-  createEffect(() => {
-    const _ = encode();
-    setInput("");
-    setOutput("");
-  });
+  const setEncode = (value: boolean) => {
+    batch(() => {
+      setInput("");
+      setOutput("");
+      _setEncode(value);
+    });
+  };
 
   createEffect(() => {
     if (input().length > 0) {

@@ -14,7 +14,7 @@ pub enum KeyFormat {
 }
 
 #[tauri::command(async)]
-#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::ERROR))]
 pub fn generate_rsa_key_pair(
     key_format: KeyFormat,
     bit_size: usize,
@@ -43,7 +43,7 @@ pub fn generate_rsa_key_pair(
 }
 
 #[tauri::command]
-#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::ERROR))]
 pub fn encrypt_rsa(key_format: KeyFormat, public_key: &str, text: &str) -> Result<String, Error> {
     let public_key = match key_format {
         KeyFormat::Pkcs1 => RsaPublicKey::from_pkcs1_pem(public_key)?,
@@ -59,7 +59,7 @@ pub fn encrypt_rsa(key_format: KeyFormat, public_key: &str, text: &str) -> Resul
 }
 
 #[tauri::command]
-#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::ERROR))]
 pub fn decrypt_rsa(key_format: KeyFormat, private_key: &str, text: &str) -> Result<String, Error> {
     let private_key = match key_format {
         KeyFormat::Pkcs1 => RsaPrivateKey::from_pkcs1_pem(private_key)?,

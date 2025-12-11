@@ -1,10 +1,10 @@
 import { decodeQrCode, encodeQrCode } from "@/command/codec/qrcode";
-import { copyFile } from "@/command/fs";
+import { saveBase64Image } from "@/command/fs";
 import {
-  OpenFileButton,
+  OpenBase64Image,
   PickImageFileButton,
   TextReadButtons,
-  TextWriteButtons
+  TextWriteButtons,
 } from "@/component/Buttons";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
@@ -14,35 +14,57 @@ import Title from "@/component/Title";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { ArrowLeftRight, Image, Save } from "lucide-solid";
-import { createEffect, createMemo, createSignal, Show } from "solid-js";
+import {
+  batch,
+  createEffect,
+  createSignal,
+  Match,
+  Show,
+  Switch,
+} from "solid-js";
 
 export default function QRCodeCodec() {
-  const [image, setImage] = createSignal("");
   const [text, setText] = createSignal("");
-  const [encode, setEncode] = createSignal(true);
+  const [file, setFile] = createSignal("");
+  const [base64Image, setBase64Image] = createSignal<{
+    base64: string;
+    extension: string;
+  }>();
+  const [encode, _setEncode] = createSignal(true);
   const decode = () => !encode();
-  const src = createMemo(() => image() && convertFileSrc(image()));
 
+  const setEncode = (value: boolean) => {
+    batch(() => {
+      setFile("");
+      setText("");
+      setBase64Image();
+      _setEncode(value);
+    });
+  };
+
+  // 编码
   createEffect(() => {
-    const _ = encode();
-    setImage("");
-    setText("");
+    if (encode()) {
+      if (text()) {
+        encodeQrCode(text())
+          .then(([base64, extension]) => setBase64Image({ base64, extension }))
+          .catch(() => setBase64Image());
+      } else {
+        setBase64Image();
+      }
+    }
   });
 
+  // 解码
   createEffect(() => {
-    if (text().length > 0 || image().length > 0) {
-      if (encode()) {
-        encodeQrCode(text())
-          .then(setImage)
-          .catch(() => setImage(""));
-      } else {
-        decodeQrCode(image())
+    if (decode()) {
+      if (file()) {
+        decodeQrCode(file())
           .then(setText)
           .catch((e) => setText(e.toString()));
+      } else {
+        setText("");
       }
-    } else {
-      setText("");
-      setImage("");
     }
   });
 
@@ -93,12 +115,12 @@ export default function QRCodeCodec() {
                 {/* 选择二维码 */}
                 <Show when={decode()}>
                   <PickImageFileButton
-                    onPick={(file) => file && setImage(file)}
+                    onPick={(file) => file && setFile(file)}
                   />
                 </Show>
 
                 {/* 保存二维码 */}
-                <Show when={encode()}>
+                <Show when={encode() && base64Image()}>
                   <button
                     class="btn btn-sm"
                     onClick={() => {
@@ -108,7 +130,11 @@ export default function QRCodeCodec() {
                         multiple: false,
                       }).then((dir) => {
                         if (dir) {
-                          copyFile(image(), dir);
+                          saveBase64Image(
+                            dir,
+                            base64Image()!.base64,
+                            base64Image()!.extension,
+                          );
                         }
                       });
                     }}
@@ -119,22 +145,49 @@ export default function QRCodeCodec() {
                 </Show>
 
                 {/* 打开文件 */}
-                <Show when={src()}>
-                  <OpenFileButton path={image()} />
+                <Show when={base64Image()}>
+                  <OpenBase64Image
+                    base64={base64Image()!.base64}
+                    extension={base64Image()!.extension}
+                  />
                 </Show>
               </div>
             </div>
             <div class="border-base-content/20 bg-base-100 flex flex-1 items-center justify-center overflow-hidden rounded-md border p-2">
-              {src() ? (
-                <img src={src()} class="size-full object-scale-down" />
-              ) : (
-                decode() && (
-                  <span class="text-warning flex items-center justify-center gap-2 text-sm">
-                    <Image size={16} />
-                    未选择二维码
-                  </span>
-                )
-              )}
+              <Switch>
+                <Match when={encode()}>
+                  <Show
+                    when={base64Image()}
+                    fallback={
+                      <span class="text-warning flex items-center justify-center gap-2 text-sm">
+                        <Image size={16} />
+                        输入文本生成二维码
+                      </span>
+                    }
+                  >
+                    <img
+                      src={`data:image/${base64Image()!.extension};base64,${base64Image()!.base64}`}
+                      class="size-full object-scale-down"
+                    />
+                  </Show>
+                </Match>
+                <Match when={decode()}>
+                  <Show
+                    when={file()}
+                    fallback={
+                      <span class="text-warning flex items-center justify-center gap-2 text-sm">
+                        <Image size={16} />
+                        选择需要解码的二维码
+                      </span>
+                    }
+                  >
+                    <img
+                      src={convertFileSrc(file())}
+                      class="size-full object-scale-down"
+                    />
+                  </Show>
+                </Match>
+              </Switch>
             </div>
           </>,
         ]}

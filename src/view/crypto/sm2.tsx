@@ -1,5 +1,5 @@
 import { ArrowLeftRight, PanelLeftRightDashed } from "lucide-solid";
-import { createEffect, createSignal } from "solid-js";
+import { batch, createEffect, createSignal } from "solid-js";
 import {
   decryptSm2,
   encryptSm2,
@@ -27,19 +27,19 @@ const KEY_FORMAT_OPTIONS = [
 ];
 
 export default function Sm2() {
-  const [encryption, setEncryption] = createSignal(true);
+  const [encryption, _setEncryption] = createSignal(true);
   const [keyFormat, setKeyFormat] = createSignal<Sm2KeyFormat>("Sec1");
   const [privateKey, setPrivateKey] = createSignal("");
   const [publicKey, setPublicKey] = createSignal("");
   const [input, setInput] = createSignal("");
   const [output, setOutput] = createSignal("");
-
-  // 当操作模式变化时，清空输入和输出
-  createEffect(() => {
-    const _ = encryption();
-    setInput("");
-    setOutput("");
-  });
+  const setEncryption = (value: boolean) => {
+    batch(() => {
+      setInput("");
+      setOutput("");
+      _setEncryption(value);
+    });
+  };
 
   createEffect(() => {
     if (input().length > 0) {
@@ -97,7 +97,7 @@ export default function Sm2() {
             <Title value="私钥" />
             <TextWriteButtons callback={setPrivateKey} position="before">
               <GenerateButton
-              label="生成密钥对"
+                label="生成密钥对"
                 onGenerate={() =>
                   generateSm2KeyPair(keyFormat()).then(
                     ([private_key, public_key]) => {

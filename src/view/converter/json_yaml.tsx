@@ -1,35 +1,31 @@
-import { createEffect, createSignal, Show } from "solid-js";
 import {
   convertJsonToYaml,
   convertYamlToJson,
 } from "@/command/converter/json_yaml";
-import {
-  CopyButton,
-  SaveButton,
-  TextReadButtons,
-  TextWriteButtons,
-} from "@/component/Buttons";
+import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import { ArrowLeftRight } from "lucide-solid";
 import IOLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
+import { ArrowLeftRight } from "lucide-solid";
+import { batch, createEffect, createSignal, Show } from "solid-js";
 
 export default function JsonYamlConverter() {
-  const [mode, setMode] = createSignal(true);
+  const [encode, _setEncode] = createSignal(true);
   const [input, setInput] = createSignal("");
   const [output, setOutput] = createSignal("");
-
-  createEffect(() => {
-    const _ = mode();
-    setInput("");
-    setOutput("");
-  });
+  const setEncode = (value: boolean) => {
+    batch(() => {
+      setInput("");
+      setOutput("");
+      _setEncode(value);
+    });
+  };
 
   createEffect(() => {
     if (input().length > 0) {
-      (mode() ? convertJsonToYaml(input()) : convertYamlToJson(input()))
+      (encode() ? convertJsonToYaml(input()) : convertYamlToJson(input()))
         .then(setOutput)
         .catch((e) => setOutput(e.toString()));
     } else {
@@ -48,8 +44,8 @@ export default function JsonYamlConverter() {
         >
           {/*转换配置*/}
           <Config.Switch
-            value={mode()}
-            onChange={setMode}
+            value={encode()}
+            onChange={setEncode}
             on="JSON -> YAML"
             off="YAML -> JSON"
           />
@@ -64,7 +60,7 @@ export default function JsonYamlConverter() {
               <TextWriteButtons callback={setInput} />
             </div>
             <Show
-              when={mode()}
+              when={encode()}
               fallback={
                 <Editor
                   value={input()}
@@ -88,7 +84,7 @@ export default function JsonYamlConverter() {
               <TextReadButtons value={output()} />
             </div>
             <Show
-              when={mode()}
+              when={encode()}
               fallback={
                 <Editor value={output()} readOnly={true} language="json" />
               }

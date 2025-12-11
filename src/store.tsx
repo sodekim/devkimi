@@ -1,5 +1,6 @@
 import { trackStore } from "@solid-primitives/deep";
 import { getTauriVersion, getVersion } from "@tauri-apps/api/app";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { load, Store } from "@tauri-apps/plugin-store";
 import {
   createContext,
@@ -9,6 +10,10 @@ import {
   useContext,
 } from "solid-js";
 import { createStore, SetStoreFunction } from "solid-js/store";
+import { showTray } from "./command/tray";
+
+///
+export type CloseBehavior = "quit" | "tray";
 
 ///
 /// 输入和输出布局
@@ -24,6 +29,10 @@ export type WordWrap = "off" | "on" | "wordWrapColumn" | "bounded";
 // 设置类型
 //
 export type Settings = {
+  // 系统配置
+  system: {
+    closeBehavior: CloseBehavior;
+  };
   // 通用配置
   common: {
     theme: string;
@@ -52,6 +61,9 @@ const APP_VERSION = await getVersion();
 const TAURI_VERSION = await getTauriVersion();
 
 const defaultSettings: Settings = {
+  system: {
+    closeBehavior: "quit",
+  },
   common: { theme: "dark", openConfigCollapse: true, ioLayout: "horizontal" },
   editor: { wordWrap: "off", font: { family: "SansSerif", size: 14 } },
   debug: { level: "info" },
@@ -73,6 +85,15 @@ export const StoreProvider = (props: { children?: JSX.Element }) => {
   onMount(async () => {
     store = await load("store.json");
     setSettings((await store.get<Settings>("settings")) || defaultSettings);
+
+    // 控制关闭行为
+    const currentWindow = getCurrentWindow();
+    currentWindow.onCloseRequested(async (event) => {
+      if (settings.system.closeBehavior === "tray") {
+        event.preventDefault();
+        currentWindow.hide().then(() => showTray());
+      }
+    });
   });
 
   // 设置发生变动时保存设置信息

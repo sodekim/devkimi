@@ -2,32 +2,30 @@ import {
   convertPropertiesToYaml,
   convertYamlToProperties,
 } from "@/command/converter/yaml_properties";
-import {
-  TextReadButtons,
-  TextWriteButtons
-} from "@/component/Buttons";
+import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import IOLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
 import { ArrowLeftRight } from "lucide-solid";
-import { createEffect, createSignal, Show } from "solid-js";
+import { batch, createEffect, createSignal, Show } from "solid-js";
 
 export default function YamlPropertiesConverter() {
-  const [mode, setMode] = createSignal(true);
+  const [encode, _setEncode] = createSignal(true);
   const [input, setInput] = createSignal("");
   const [output, setOutput] = createSignal("");
-
-  createEffect(() => {
-    const _ = mode();
-    setInput("");
-    setOutput("");
-  });
+  const setEncode = (value: boolean) => {
+    batch(() => {
+      setInput("");
+      setOutput("");
+      _setEncode(value);
+    });
+  };
 
   createEffect(() => {
     if (input().length > 0) {
-      (mode()
+      (encode()
         ? convertYamlToProperties(input())
         : convertPropertiesToYaml(input())
       )
@@ -50,8 +48,8 @@ export default function YamlPropertiesConverter() {
         >
           {/*转换配置*/}
           <Config.Switch
-            value={mode()}
-            onChange={setMode}
+            value={encode()}
+            onChange={setEncode}
             on="YAML -> PROPERTIES"
             off="PROPERTIES -> YAML"
           />
@@ -66,7 +64,7 @@ export default function YamlPropertiesConverter() {
               <TextWriteButtons callback={setInput} />
             </div>
             <Show
-              when={mode()}
+              when={encode()}
               fallback={
                 <Editor
                   value={input()}
@@ -90,7 +88,7 @@ export default function YamlPropertiesConverter() {
               <TextReadButtons value={output()} />
             </div>
             <Show
-              when={mode()}
+              when={encode()}
               fallback={
                 <Editor value={output()} readOnly={true} language="yaml" />
               }

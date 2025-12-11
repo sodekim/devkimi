@@ -20,7 +20,7 @@ impl Output {
 }
 
 #[tauri::command]
-#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::ERROR))]
 pub fn encode_gzip(input: &str, level: u32) -> Result<Output, Error> {
     let mut encoder = flate2::write::GzEncoder::new(Vec::new(), Compression::new(level));
     let bytes = input.as_bytes();
@@ -33,7 +33,7 @@ pub fn encode_gzip(input: &str, level: u32) -> Result<Output, Error> {
 }
 
 #[tauri::command]
-#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::WARN))]
+#[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::ERROR))]
 pub fn decode_gzip(input: &str) -> Result<Output, Error> {
     let output_size = input.as_bytes().len();
     let bytes = BASE64_STANDARD.decode(input)?;
