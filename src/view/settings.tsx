@@ -6,6 +6,7 @@ import Editor, { MonacoEditor } from "@/component/Editor";
 import Link from "@/component/Link";
 import { CloseBehavior, IOLayout, useSettings, WordWrap } from "@/store";
 import { trackStore } from "@solid-primitives/deep";
+import { getTauriVersion, getVersion } from "@tauri-apps/api/app";
 import {
   AudioLines,
   CaseSensitive,
@@ -44,6 +45,11 @@ const LOG_LEVEL = ["trace", "debug", "info", "warn", "error"] as const;
 export default function Settings() {
   const editors = [] as MonacoEditor[];
   const [settings, setSettings] = useSettings();
+  const [version] = createResource<{ app: string; tauri: string }>(async () => {
+    const app = await getVersion();
+    const tauri = await getTauriVersion();
+    return { app, tauri }
+  });
 
   // 系统字体
   const [fonts] = createResource(async () => {
@@ -243,8 +249,8 @@ export default function Settings() {
         </Config.Option>
         <Config.Option label="Devkimi" icon={() => <OctagonAlert size={16} />}>
           <div class="join gap-2">
-            <span class="text-sm">App: {settings.version.app}</span>
-            <span class="text-sm">Tauri: {settings.version.tauri}</span>
+            <span class="text-sm">App: {version()?.app ?? "-"}</span>
+            <span class="text-sm">Tauri: {version()?.tauri ?? "-"}</span>
           </div>
         </Config.Option>
       </Config.Card>

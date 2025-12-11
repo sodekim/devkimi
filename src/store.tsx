@@ -51,14 +51,7 @@ export type Settings = {
   debug: {
     level: string;
   };
-  version: {
-    app: string;
-    tauri: string;
-  };
 };
-
-const APP_VERSION = await getVersion();
-const TAURI_VERSION = await getTauriVersion();
 
 const defaultSettings: Settings = {
   system: {
@@ -67,10 +60,6 @@ const defaultSettings: Settings = {
   common: { theme: "dark", openConfigCollapse: true, ioLayout: "horizontal" },
   editor: { wordWrap: "off", font: { family: "SansSerif", size: 14 } },
   debug: { level: "info" },
-  version: {
-    app: APP_VERSION,
-    tauri: TAURI_VERSION,
-  },
 };
 
 export const StoreContext = createContext<{
