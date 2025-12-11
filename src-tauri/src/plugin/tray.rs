@@ -1,7 +1,7 @@
 use tauri::{
     menu::{Menu, MenuItem},
     plugin::{PluginApi, TauriPlugin},
-    tray::{TrayIconBuilder, TrayIconEvent},
+    tray::{MouseButton, TrayIconBuilder, TrayIconEvent},
     AppHandle, Manager, Runtime,
 };
 use tracing::{debug, error};
@@ -18,17 +18,19 @@ fn setup<R: Runtime>(
         .show_menu_on_left_click(false)
         .on_tray_icon_event(|tray, event| {
             debug!("Tray icon event: {:?}", event);
-            if matches!(event, TrayIconEvent::Click { .. }) {
-                if let Some(window) = tray.app_handle().get_webview_window("main") {
-                    match window.show() {
-                        Ok(_) => {
-                            // 隐藏托盘
-                            if let Err(e) = tray.set_visible(false) {
-                                error!("Error hiding tray: {}", e);
+            if let TrayIconEvent::Click { button, .. } = event {
+                if matches!(button, MouseButton::Left) {
+                    if let Some(window) = tray.app_handle().get_webview_window("main") {
+                        match window.show() {
+                            Ok(_) => {
+                                // 隐藏托盘
+                                if let Err(e) = tray.set_visible(false) {
+                                    error!("Error hiding tray: {}", e);
+                                }
                             }
-                        }
-                        Err(e) => {
-                            error!("Error showing window: {}", e);
+                            Err(e) => {
+                                error!("Error showing window: {}", e);
+                            }
                         }
                     }
                 }
