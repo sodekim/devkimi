@@ -10,7 +10,7 @@ import { createEffect, createSignal } from "solid-js";
 
 export default function CronConverter() {
   const [cron, setCron] = createSignal("* * * * * *");
-  const [size, setSize] = createSignal(20);
+  const [size, setSize] = createSignal(10);
   const [pattern, setPattern] = createSignal("%Y-%m-%d %H:%M:%S");
   const [output, setOutput] = createSignal("");
   const [n, setN] = createSignal(0);
