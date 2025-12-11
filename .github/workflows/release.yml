@@ -67,10 +67,11 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_OPTIONS: "--max-old-space-size=4096"
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: "DevKimi ${{ github.ref_name }}"
-          releaseBody: "Draft release, will be updated later."
+          releaseName: "${{ github.ref_name }}"
+          releaseBody: "Release ${{ github.ref_name }}"
           releaseDraft: true
           prerelease: ${{ contains(github.ref_name, '-rc') }}
           includeUpdaterJson: true
