@@ -6,7 +6,7 @@ import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import IOLayout from "@/component/IOLayout";
+import MainLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
 import { ArrowLeftRight } from "lucide-solid";
 import { batch, createEffect, createSignal, Show } from "solid-js";
@@ -56,7 +56,7 @@ export default function YamlPropertiesConverter() {
         </Config.Option>
       </Config.Card>
 
-      <IOLayout
+      <MainLayout
         items={[
           <>
             <div class="flex items-center justify-between">

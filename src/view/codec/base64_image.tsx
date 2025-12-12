@@ -1,7 +1,8 @@
 import {
+  Base64Mode,
   decodeImageBase64,
   encodeImageBase64,
-} from "@/command/codec/base64_image";
+} from "@/command/codec/base64";
 import { saveBase64Image } from "@/command/fs";
 import {
   OpenBase64Image,
@@ -12,7 +13,7 @@ import {
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import IOLayout from "@/component/IOLayout";
+import MainLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
@@ -27,13 +28,6 @@ import {
   Switch,
 } from "solid-js";
 
-const BASE_MODE_OPTIONS = [
-  { label: "Standard", value: "Standard" },
-  { label: "StandardNoPad", value: "StandardNoPad" },
-  { label: "UrlSafe", value: "UrlSafe" },
-  { label: "UrlSafeNoPad", value: "UrlSafeNoPad" },
-];
-
 export default function Base64ImageCodec() {
   const [file, setFile] = createSignal("");
   const [base64, setBase64] = createSignal("");
@@ -41,7 +35,7 @@ export default function Base64ImageCodec() {
     base64: string;
     extension: string;
   }>();
-  const [mode, setMode] = createSignal("Standard");
+  const [mode, setMode] = createSignal<Base64Mode>(Base64Mode.Standard);
   const [encode, _setEncode] = createSignal(true);
   const decode = createMemo(() => !encode());
 
@@ -107,13 +101,13 @@ export default function Base64ImageCodec() {
           <Config.Select
             class="w-35"
             value={mode()}
-            options={BASE_MODE_OPTIONS}
+            options={Object.keys(Base64Mode)}
             onChange={setMode}
           />
         </Config.Option>
       </Config.Card>
 
-      <IOLayout
+      <MainLayout
         items={[
           <>
             <div class="flex items-center justify-between">

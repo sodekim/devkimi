@@ -11,6 +11,13 @@ export enum DesBitSize {
   Bits192 = "Bits192",
 }
 
+export enum RsaBitSize {
+  Bit1024 = 1024,
+  Bit2048 = 2048,
+  Bit3072 = 3072,
+  Bit4096 = 4096,
+}
+
 export enum KeyFormat {
   Pkcs1 = "Pkcs1",
   Pkcs8 = "Pkcs8",

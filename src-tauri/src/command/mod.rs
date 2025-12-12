@@ -6,5 +6,6 @@ pub mod font;
 pub mod formatter;
 pub mod fs;
 pub mod generator;
+pub mod network;
 pub mod text;
 pub mod tray;

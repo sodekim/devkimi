@@ -1,3 +1,7 @@
-export default function Title(props: { value: string }) {
-    return <span class="text-sm font-bold">{props.value}</span>;
+import { twMerge } from "tailwind-merge";
+
+export default function Title(props: { value: string; class?: string }) {
+  return (
+    <span class={twMerge("text-sm font-bold", props.class)}>{props.value}</span>
+  );
 }

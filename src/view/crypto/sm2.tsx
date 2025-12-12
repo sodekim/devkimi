@@ -17,7 +17,7 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Card from "@/component/Card";
 import Editor from "@/component/Editor";
-import IOLayout from "@/component/IOLayout";
+import MainLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
 
 const KEY_FORMAT_OPTIONS = [
@@ -133,7 +133,7 @@ export default function Sm2() {
         </Card>
       </div>
 
-      <IOLayout
+      <MainLayout
         items={[
           <>
             {" "}

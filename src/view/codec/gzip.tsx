@@ -4,7 +4,7 @@ import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import IOLayout from "@/component/IOLayout";
+import MainLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
 import { ArrowLeftRight, AudioWaveform, Blend } from "lucide-solid";
 import { batch, createEffect, createSignal, Show } from "solid-js";
@@ -86,7 +86,7 @@ export default function GZipCodec() {
         </Show>
       </Config.Card>
 
-      <IOLayout
+      <MainLayout
         items={[
           <>
             <div class="flex items-center justify-between">

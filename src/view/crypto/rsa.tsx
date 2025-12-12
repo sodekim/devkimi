@@ -3,7 +3,7 @@ import {
   encryptRsa,
   generateRsaKeyPair,
 } from "@/command/crypto/rsa";
-import { KeyFormat } from "@/command/crypto/type";
+import { KeyFormat, RsaBitSize } from "@/command/crypto/type";
 import {
   CopyButton,
   GenerateButton,
@@ -14,55 +14,54 @@ import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import IOLayout from "@/component/IOLayout";
+import MainLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
 import { ArrowLeftRight, PanelLeftRightDashed, Ruler } from "lucide-solid";
-import { batch, createEffect, createSignal } from "solid-js";
-
-const KEY_FORMAT_OPTIONS = [
-  { value: "Pkcs8", label: "PKCS#8" },
-  { value: "Pkcs1", label: "PKCS#1" },
-];
-
-const BIT_SIZE_OPTIONS = [
-  { value: 1024, label: "1024" },
-  { value: 2048, label: "2048" },
-  { value: 3072, label: "3072" },
-  { value: 4096, label: "4096" },
-];
+import { batch, createResource, createSignal } from "solid-js";
 
 export default function Rsa() {
   const [encryption, _setEncryption] = createSignal(true);
   const [keyFormat, setKeyFormat] = createSignal<KeyFormat>(KeyFormat.Pkcs8);
-  const [bitSize, setBitSize] = createSignal(1024);
-  const [privateKey, setPrivateKey] = createSignal("");
-  const [publicKey, setPublicKey] = createSignal("");
+  const [bitSize, setBitSize] = createSignal<RsaBitSize>(RsaBitSize.Bit1024);
   const [input, setInput] = createSignal("");
-  const [output, setOutput] = createSignal("");
   const setEncryption = (value: boolean) => {
     batch(() => {
       setInput("");
-      setOutput("");
       _setEncryption(value);
     });
   };
 
-  createEffect(() => {
-    if (input().length > 0) {
-      if (encryption()) {
-        encryptRsa(keyFormat(), publicKey(), input())
-          .then(setOutput)
-          .catch((e) => setOutput(e.toString()));
-      } else {
-        decryptRsa(keyFormat(), privateKey(), input())
-          .then(setOutput)
-          .catch((e) => setOutput(e.toString()));
+  // 处理数据
+  const [output] = createResource(
+    () => ({
+      encryption: encryption(),
+      keyFormat: keyFormat(),
+      keyPair: keyPair(),
+      input: input(),
+    }),
+    ({ encryption, keyFormat, keyPair, input }) => {
+      if (input) {
+        return (
+          encryption
+            ? encryptRsa(keyFormat, keyPair.publicKey, input)
+            : decryptRsa(keyFormat, keyPair.privateKey, input)
+        ).catch((e) => e.toString());
       }
-    } else {
-      setOutput("");
-    }
-  });
+    },
+    { initialValue: "" },
+  );
 
+  // 生成密钥对
+  const [keyPair, { refetch: refetchKeyPair, mutate: setKeyPair }] =
+    createResource(
+      () =>
+        generateRsaKeyPair(keyFormat(), bitSize()).then(
+          ([privateKey, publicKey]) => ({ privateKey, publicKey }),
+        ),
+      {
+        initialValue: { privateKey: "", publicKey: "" },
+      },
+    );
   return (
     <Container>
       {/* 配置 */}
@@ -88,7 +87,7 @@ export default function Rsa() {
         >
           <Config.Select
             value={bitSize()}
-            options={BIT_SIZE_OPTIONS}
+            options={Object.keys(RsaBitSize)}
             onChange={setBitSize}
             class="w-30"
           />
@@ -102,7 +101,7 @@ export default function Rsa() {
         >
           <Config.Select
             value={keyFormat()}
-            options={KEY_FORMAT_OPTIONS}
+            options={Object.keys(KeyFormat)}
             onChange={(value) => setKeyFormat(value as KeyFormat)}
             class="w-30"
           />
@@ -115,25 +114,23 @@ export default function Rsa() {
         <Card class="h-full w-0 flex-1">
           <div class="flex items-center justify-between">
             <Title value="私钥" />
-            <TextWriteButtons callback={setPrivateKey} position="before">
-              <GenerateButton
-                label="生成密钥对"
-                onGenerate={() =>
-                  generateRsaKeyPair(keyFormat(), bitSize()).then(
-                    ([privateKey, publicKey]) => {
-                      setPublicKey(publicKey);
-                      setPrivateKey(privateKey);
-                    },
-                  )
-                }
-              />
-              <CopyButton value={privateKey()} />
+            <TextWriteButtons
+              callback={(privateKey) =>
+                setKeyPair((prev) => ({ ...prev, privateKey }))
+              }
+              position="before"
+            >
+              <GenerateButton label="生成密钥对" onGenerate={refetchKeyPair} />
+              <CopyButton value={keyPair().privateKey} />
             </TextWriteButtons>
           </div>
           <Editor
-            value={privateKey()}
-            onChange={setPrivateKey}
+            value={keyPair().privateKey}
+            onChange={(value) =>
+              setKeyPair((prev) => ({ ...prev, privateKey: value }))
+            }
             placeholder="输入 RSA 私钥"
+            loading={keyPair.loading}
           />
         </Card>
 
@@ -141,22 +138,28 @@ export default function Rsa() {
         <Card class="h-full w-0 flex-1">
           <div class="flex items-center justify-between">
             <Title value="公钥" />
-            <TextWriteButtons callback={setPublicKey}>
-              <CopyButton value={publicKey()} />
+            <TextWriteButtons
+              callback={(publicKey) =>
+                setKeyPair((prev) => ({ ...prev, publicKey }))
+              }
+            >
+              <CopyButton value={keyPair().publicKey} />
             </TextWriteButtons>
           </div>
           <Editor
-            value={publicKey()}
-            onChange={setPublicKey}
+            value={keyPair().publicKey}
+            onChange={(value) =>
+              setKeyPair((prev) => ({ ...prev, publicKey: value }))
+            }
             placeholder="输入 RSA 公钥"
+            loading={keyPair.loading}
           />
         </Card>
       </div>
 
-      <IOLayout
+      <MainLayout
         items={[
           <>
-            {" "}
             <div class="flex items-center justify-between">
               <Title value="输入" />
               <TextWriteButtons callback={setInput} />
@@ -174,7 +177,7 @@ export default function Rsa() {
               <Title value="输出" />
               <TextReadButtons value={output()} />
             </div>
-            <Editor value={output()} readOnly={true} />
+            <Editor value={output()} readOnly={true} loading={output.loading} />
           </>,
         ]}
       />

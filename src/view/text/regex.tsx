@@ -13,7 +13,7 @@ import {
   ArrowLeftFromLine,
   CaseSensitive,
   SquareAsterisk,
-  Ungroup
+  Ungroup,
 } from "lucide-solid";
 import { createEffect, createSignal, For } from "solid-js";
 
@@ -64,7 +64,7 @@ export default function RegexTest() {
   const [multiLine, setMultiLine] = createSignal(false);
   const [pattern, setPattern] = createSignal("");
   const [text, setText] = createSignal("");
-  const [unicode, setUnicode] = createSignal(false);
+  const [unicode, setUnicode] = createSignal(true);
   const [captures, setCaptures] = createSignal<Capture[]>([]);
 
   createEffect(() => {

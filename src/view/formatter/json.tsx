@@ -1,12 +1,9 @@
 import { formatJson, Ident } from "@/command/formatter/json";
-import {
-  TextReadButtons,
-  TextWriteButtons
-} from "@/component/Buttons";
+import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import IOLayout from "@/component/IOLayout";
+import MainLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
 import { ArrowDownAZ, Space } from "lucide-solid";
 import { createEffect, createSignal } from "solid-js";
@@ -23,11 +20,14 @@ export default function JsonFormatter() {
   const [sortable, setSortable] = createSignal(false);
   const [input, setInput] = createSignal("");
   const [output, setOutput] = createSignal("");
+  const [loading, setLoading] = createSignal(false);
   createEffect(() => {
     if (input().length > 0) {
+      setLoading(true);
       formatJson(input(), indent(), sortable())
         .then(setOutput)
-        .catch((e) => setOutput(e.toString()));
+        .catch((e) => setOutput(e.toString()))
+        .finally(() => setLoading(false));
     } else {
       setOutput("");
     }
@@ -60,7 +60,7 @@ export default function JsonFormatter() {
         </Config.Option>
       </Config.Card>
 
-      <IOLayout
+      <MainLayout
         items={[
           <>
             {" "}
@@ -83,7 +83,12 @@ export default function JsonFormatter() {
               <Title value="输出" />
               <TextReadButtons value={output()} />
             </div>
-            <Editor value={output()} language="json" readOnly={true} />
+            <Editor
+              value={output()}
+              language="json"
+              readOnly={true}
+              loading={loading()}
+            />
           </>,
         ]}
       />

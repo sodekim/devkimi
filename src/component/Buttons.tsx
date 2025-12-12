@@ -181,7 +181,7 @@ const TextWriteButtons = (props: {
 };
 
 const TextReadButtons = (props: {
-  value: string;
+  value?: string;
   children?: JSX.Element;
   position?: "before" | "after";
 }) => {
@@ -189,8 +189,8 @@ const TextReadButtons = (props: {
   return (
     <div class="flex items-center justify-center gap-2">
       {props.position === "before" && _children()}
-      <CopyButton value={props.value} />
-      <SaveButton value={props.value} />
+      <CopyButton value={props.value ?? ""} />
+      <SaveButton value={props.value ?? ""} />
       {props.position !== "before" && _children()}
     </div>
   );

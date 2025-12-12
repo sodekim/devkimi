@@ -2,7 +2,7 @@ import { ClearButton, PasteButton } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Container from "@/component/Container";
 import Flex from "@/component/Flex";
-import IOLayout from "@/component/IOLayout";
+import MainLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import AirDatepicker from "air-datepicker";
@@ -226,7 +226,7 @@ export default function TimeConverter() {
         </div>
       </Card>
 
-      <IOLayout
+      <MainLayout
         vertical={{ full: false }}
         items={[
           <>

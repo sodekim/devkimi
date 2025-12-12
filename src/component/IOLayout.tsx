@@ -3,7 +3,7 @@ import { useSettings } from "@/store";
 import Card from "./Card";
 import { twMerge } from "tailwind-merge";
 
-export default function IOLayout(props: {
+export default function MainLayout(props: {
   items: JSX.Element[];
   vertical?: { full: boolean };
   horizontal?: { full: boolean };

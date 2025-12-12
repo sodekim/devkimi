@@ -62,7 +62,7 @@ const App: Component = () => {
                     );
                   }}
                 >
-                  <Suspense>{props.children}</Suspense>
+                  {props.children}
                 </ErrorBoundary>
               </Layout>
             </StoreProvider>

@@ -9,7 +9,7 @@ import {
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import IOLayout from "@/component/IOLayout";
+import MainLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
@@ -87,7 +87,7 @@ export default function QRCodeCodec() {
         </Config.Option>
       </Config.Card>
 
-      <IOLayout
+      <MainLayout
         items={[
           <>
             <div class="flex items-center justify-between">

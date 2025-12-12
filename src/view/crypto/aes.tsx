@@ -26,7 +26,7 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import { EncodingSelect, EncodingTextInput } from "@/component/Encoding";
-import IOLayout from "@/component/IOLayout";
+import MainLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
 import {
   ArrowLeftRight,
@@ -208,7 +208,7 @@ export default function Aes() {
         </Card>
       </Show>
 
-      <IOLayout
+      <MainLayout
         items={[
           <>
             {" "}

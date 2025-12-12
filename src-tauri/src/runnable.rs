@@ -69,6 +69,7 @@ impl<R: Runtime> Runnable for Builder<R> {
             command::crypto::des::decrypt_des,
             command::crypto::des::generate_des_key,
             command::crypto::des::generate_des_iv,
+            command::network::dns::query_dns,
         ])
     }
 

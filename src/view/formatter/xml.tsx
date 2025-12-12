@@ -6,7 +6,7 @@ import {
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import IOLayout from "@/component/IOLayout";
+import MainLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
 import { Space } from "lucide-solid";
 import { createEffect, createSignal } from "solid-js";
@@ -50,7 +50,7 @@ export default function XmlFormatter() {
         </Config.Option>
       </Config.Card>
 
-      <IOLayout
+      <MainLayout
         items={[
           <>
             <div class="flex items-center justify-between">

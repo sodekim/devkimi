@@ -1,51 +1,40 @@
 import {
+  Base64Mode,
   decodeTextBase64,
   encodeTextBase64,
-} from "@/command/codec/base64_text";
+} from "@/command/codec/base64";
 import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
 import Config from "@/component/Config";
 import ConfigSwitch from "@/component/Config/Switch";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import IOLayout from "@/component/IOLayout";
+import MainLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
 import { ArrowLeftRight, Layers } from "lucide-solid";
-import { batch, createEffect, createSignal } from "solid-js";
-
-const BASE_MODE_OPTIONS = [
-  { label: "Standard", value: "Standard" },
-  { label: "StandardNoPad", value: "StandardNoPad" },
-  { label: "UrlSafe", value: "UrlSafe" },
-  { label: "UrlSafeNoPad", value: "UrlSafeNoPad" },
-];
+import { batch, createResource, createSignal } from "solid-js";
 
 export default function Base64TextCodec() {
-  const [mode, setMode] = createSignal("Standard");
+  const [mode, setMode] = createSignal<Base64Mode>(Base64Mode.Standard);
   const [input, setInput] = createSignal("");
-  const [output, setOutput] = createSignal("");
   const [encode, _setEncode] = createSignal(true);
-
   const setEncode = (value: boolean) => {
     batch(() => {
       setInput("");
-      setOutput("");
       _setEncode(value);
     });
   };
 
-  createEffect(() => {
-    if (input().length > 0) {
-      let promise;
-      if (encode()) {
-        promise = encodeTextBase64(input(), mode()).then(setOutput);
-      } else {
-        promise = decodeTextBase64(input(), mode()).then(setOutput);
+  const [output] = createResource(
+    () => ({ input: input(), mode: mode(), encode: encode() }),
+    ({ input, mode, encode }) => {
+      if (input) {
+        return encode
+          ? encodeTextBase64(input, mode)
+          : decodeTextBase64(input, mode);
       }
-      promise.then(setOutput).catch((e) => setOutput(e.toString()));
-    } else {
-      setOutput("");
-    }
-  });
+    },
+    { initialValue: "" },
+  );
   return (
     <Container>
       {/* 配置 */}
@@ -72,14 +61,14 @@ export default function Base64TextCodec() {
         >
           <Config.Select
             value={mode()}
-            options={BASE_MODE_OPTIONS}
+            options={Object.keys(Base64Mode)}
             onChange={setMode}
             class="w-35"
           />
         </Config.Option>
       </Config.Card>
 
-      <IOLayout
+      <MainLayout
         items={[
           <>
             <div class="flex items-center justify-between">
@@ -97,7 +86,12 @@ export default function Base64TextCodec() {
               <Title value="输出" />
               <TextReadButtons value={output()} />
             </div>
-            <Editor value={output()} language="base64" readOnly={true} />
+            <Editor
+              value={output()}
+              language="base64"
+              readOnly={true}
+              loading={output.loading}
+            />
           </>,
         ]}
       />
