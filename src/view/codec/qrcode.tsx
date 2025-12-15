@@ -17,6 +17,7 @@ import { ArrowLeftRight, Image, Save } from "lucide-solid";
 import {
   batch,
   createEffect,
+  createResource,
   createSignal,
   Match,
   Show,
@@ -24,49 +25,38 @@ import {
 } from "solid-js";
 
 export default function QRCodeCodec() {
-  const [text, setText] = createSignal("");
   const [file, setFile] = createSignal("");
-  const [base64Image, setBase64Image] = createSignal<{
-    base64: string;
-    extension: string;
-  }>();
-  const [encode, _setEncode] = createSignal(true);
+  const [encode, setEncode] = createSignal(true);
   const decode = () => !encode();
 
-  const setEncode = (value: boolean) => {
+  // 切换操作模式
+  const switchEncode = (value: boolean) => {
     batch(() => {
       setFile("");
-      setText("");
-      setBase64Image();
-      _setEncode(value);
+      setEncode(value);
     });
   };
 
   // 编码
-  createEffect(() => {
-    if (encode()) {
-      if (text()) {
-        encodeQrCode(text())
-          .then(([base64, extension]) => setBase64Image({ base64, extension }))
-          .catch(() => setBase64Image());
-      } else {
-        setBase64Image();
+  const [qrcode] = createResource(
+    () => (encode() ? { text: text() } : false),
+    ({ text }) => {
+      if (text) {
+        return encodeQrCode(text)
+          .then(([base64, extension]) => ({ base64, extension }));
       }
     }
-  });
+  );
 
   // 解码
-  createEffect(() => {
-    if (decode()) {
-      if (file()) {
-        decodeQrCode(file())
-          .then(setText)
-          .catch((e) => setText(e.toString()));
-      } else {
-        setText("");
+  const [text, { mutate: setText }] = createResource(
+    () => (decode() ? { file: file() } : false),
+    ({ file }) => {
+      if (file) {
+        return decodeQrCode(file);
       }
-    }
-  });
+    },
+    { initialValue: "" });
 
   return (
     <Container>
@@ -80,7 +70,7 @@ export default function QRCodeCodec() {
         >
           <Config.Switch
             value={encode()}
-            onChange={setEncode}
+            onChange={switchEncode}
             on="编码"
             off="解码"
           />

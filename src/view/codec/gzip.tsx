@@ -7,7 +7,7 @@ import Editor from "@/component/Editor";
 import MainLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
 import { ArrowLeftRight, AudioWaveform, Blend } from "lucide-solid";
-import { batch, createEffect, createSignal, Show } from "solid-js";
+import { batch, createResource, createSignal, Show } from "solid-js";
 
 const getLevelText = (level: number) => {
   return level === 1 ? "1 (最快)" : level === 9 ? "9 (最好)" : `${level}`;
@@ -16,41 +16,34 @@ const getLevelText = (level: number) => {
 const COMPRESS_LEVEL_OPTIONS = Array.from({ length: 9 }, (_, i) => i + 1).map(
   (level) => ({
     label: getLevelText(level),
-    value: level.toString(),
+    value: level,
   }),
 );
 
 export default function GZipCodec() {
-  const [ratio, setRatio] = createSignal(0);
   const [level, setLevel] = createSignal(1);
   const [input, setInput] = createSignal("");
-  const [output, setOutput] = createSignal("");
-  const [encode, _setEncode] = createSignal(true);
+  const [encode, setEncode] = createSignal(true);
 
-  const setEncode = (value: boolean) => {
+  // 切换操作模式
+  const switchEncode = (value: boolean) => {
     batch(() => {
       setInput("");
-      setOutput("");
-      _setEncode(value);
+      setEncode(value);
     });
   };
 
-  createEffect(() => {
-    if (input().length > 0) {
-      let promise = encode()
-        ? encodeGZip(input(), level())
-        : decodeGZip(input(), level());
-      promise
-        .then(({ value, ratio }) => {
-          setOutput(value);
-          setRatio(ratio);
-        })
-        .catch((e) => setOutput(e.toString()));
-    } else {
-      setOutput("");
-      setRatio(0);
-    }
-  });
+  // 获取输出
+  const [output] = createResource(
+    () => ({ encode: encode(), level: level(), input: input() }),
+    ({ encode, level, input }) => {
+      if (input) {
+        return (encode ? encodeGZip(input, level) : decodeGZip(input, level)).catch((e) => ({ value: e.toString(), ratio: 0 }));
+      }
+    },
+    { initialValue: { value: "", ratio: 0 } }
+  );
+
   return (
     <Container>
       {/* 配置 */}
@@ -63,7 +56,7 @@ export default function GZipCodec() {
         >
           <Config.Switch
             value={encode()}
-            onChange={setEncode}
+            onChange={switchEncode}
             on="压缩"
             off="解压"
           />
@@ -77,9 +70,9 @@ export default function GZipCodec() {
             icon={() => <Blend size={16} />}
           >
             <Config.Select
-              value={`${level()}`}
+              value={level()}
               options={COMPRESS_LEVEL_OPTIONS}
-              onChange={(value) => setLevel(parseInt(value))}
+              onChange={setLevel}
               class="w-30"
             />
           </Config.Option>
@@ -95,16 +88,16 @@ export default function GZipCodec() {
             </div>
             <Editor
               value={input()}
-              onChange={(value) => setInput(value)}
+              onChange={setInput}
               placeholder={encode() ? "输入要压缩的文本" : "输入要解压的文本"}
             />
           </>,
           <>
             <div class="flex items-center justify-between">
               <Title value="输出" />
-              <TextReadButtons value={output()} />
+              <TextReadButtons value={output()?.value} />
             </div>
-            <Editor value={output()} readOnly={true} />
+            <Editor value={output()?.value} readOnly={true} loading={output.loading} />
           </>,
         ]}
       />
@@ -113,8 +106,8 @@ export default function GZipCodec() {
         <span class="flex items-center justify-start gap-1 text-sm">
           <AudioWaveform size={16} />
           压缩率
-          <span class={ratio() > 0 ? "text-success" : "text-warning"}>
-            {(ratio() * 100).toFixed(2)}%
+          <span class={(output()?.ratio ?? 0) > 0 ? "text-success" : "text-warning"}>
+            {((output()?.ratio ?? 0) * 100).toFixed(2)}%
           </span>
         </span>
       </Card>

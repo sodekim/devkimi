@@ -9,29 +9,31 @@ import Editor from "@/component/Editor";
 import MainLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
 import { ArrowLeftRight } from "lucide-solid";
-import { batch, createEffect, createSignal } from "solid-js";
+import { batch, createResource, createSignal } from "solid-js";
 
 export default function UrlCodec() {
   const [input, setInput] = createSignal("");
-  const [output, setOutput] = createSignal("");
-  const [encode, _setEnocde] = createSignal(true);
-  const setEnocde = (value: boolean) => {
+  const [encode, setEncode] = createSignal(true);
+
+  // 切换操作模式
+  const switchEncode = (value: boolean) => {
     batch(() => {
       setInput("");
-      setOutput("");
-      _setEnocde(value);
+      setEncode(value);
     });
   };
 
-  createEffect(() => {
-    if (input().length > 0) {
-      (encode() ? encodeURL(input()) : decodeURL(input()))
-        .then(setOutput)
-        .catch((e) => setOutput(e.toString()));
-    } else {
-      setOutput("");
-    }
-  });
+  // 获取输出
+  const [output] = createResource(
+    () => ({ input: input(), encode: encode() }),
+    ({ input, encode }) => {
+      if (input) {
+        return (encode ? encodeURL(input) : decodeURL(input)).catch((e) => e.toString());
+      }
+    },
+    { initialValue: "" }
+  );
+
   return (
     <Container>
       {/* 配置 */}
@@ -44,7 +46,7 @@ export default function UrlCodec() {
         >
           <Config.Switch
             value={encode()}
-            onChange={setEnocde}
+            onChange={switchEncode}
             on="编码"
             off="解码"
           />
@@ -69,7 +71,7 @@ export default function UrlCodec() {
               <Title value="输出" />
               <TextReadButtons value={output()} />
             </div>
-            <Editor value={output()} readOnly={true} />
+            <Editor value={output()} readOnly={true} loading={output.loading} />
           </>,
         ]}
       />

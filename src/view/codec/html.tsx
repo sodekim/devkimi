@@ -6,30 +6,31 @@ import Editor from "@/component/Editor";
 import MainLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
 import { ArrowLeftRight } from "lucide-solid";
-import { batch, createEffect, createSignal } from "solid-js";
+import { batch, createResource, createSignal } from "solid-js";
 
 export default function HTMLCodec() {
   const [input, setInput] = createSignal("");
-  const [output, setOutput] = createSignal("");
-  const [encode, _setEncode] = createSignal(true);
+  const [encode, setEncode] = createSignal(true);
 
-  const setEncode = (value: boolean) => {
+  // 切换操作模式
+  const switchEncode = (value: boolean) => {
     batch(() => {
       setInput("");
-      setOutput("");
-      _setEncode(value);
+      setEncode(value);
     });
   };
 
-  createEffect(() => {
-    if (input().length > 0) {
-      (encode() ? encodeHtml(input()) : decodeHtml(input()))
-        .then(setOutput)
-        .catch((e) => setOutput(e.toString()));
-    } else {
-      setOutput("");
-    }
-  });
+  // 获取输出
+  const [output] = createResource(
+    () => ({ input: input(), encode: encode() }),
+    ({ input, encode }) => {
+      if (input) {
+        return (encode ? encodeHtml(input) : decodeHtml(input)).catch((e) => e.toString());
+      }
+    },
+    { initialValue: "" }
+  );
+
   return (
     <Container>
       {/* 配置 */}
@@ -42,7 +43,7 @@ export default function HTMLCodec() {
         >
           <Config.Switch
             value={encode()}
-            onChange={setEncode}
+            onChange={switchEncode}
             on="编码"
             off="解码"
           />
@@ -67,7 +68,7 @@ export default function HTMLCodec() {
               <Title value="输出" />
               <TextReadButtons value={output()} />
             </div>
-            <Editor value={output()} readOnly={true} />
+            <Editor value={output()} readOnly={true} loading={output.loading} />
           </>,
         ]}
       />

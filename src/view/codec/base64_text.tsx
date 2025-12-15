@@ -16,25 +16,29 @@ import { batch, createResource, createSignal } from "solid-js";
 export default function Base64TextCodec() {
   const [mode, setMode] = createSignal<Base64Mode>(Base64Mode.Standard);
   const [input, setInput] = createSignal("");
-  const [encode, _setEncode] = createSignal(true);
-  const setEncode = (value: boolean) => {
+  const [encode, setEncode] = createSignal(true);
+
+  // 切换操作模式
+  const switchEncode = (value: boolean) => {
     batch(() => {
       setInput("");
-      _setEncode(value);
+      setEncode(value);
     });
   };
 
+  // 获取输出
   const [output] = createResource(
     () => ({ input: input(), mode: mode(), encode: encode() }),
     ({ input, mode, encode }) => {
       if (input) {
-        return encode
+        return (encode
           ? encodeTextBase64(input, mode)
-          : decodeTextBase64(input, mode);
+          : decodeTextBase64(input, mode)).catch((e) => e.toString());
       }
     },
     { initialValue: "" },
   );
+
   return (
     <Container>
       {/* 配置 */}
@@ -47,7 +51,7 @@ export default function Base64TextCodec() {
         >
           <ConfigSwitch
             value={encode()}
-            onChange={setEncode}
+            onChange={switchEncode}
             on="编码"
             off="解码"
           />
@@ -77,7 +81,7 @@ export default function Base64TextCodec() {
             </div>
             <Editor
               value={input()}
-              onChange={(value) => setInput(value)}
+              onChange={setInput}
               placeholder={encode() ? "输入要编码的文本" : "输入要解码的文本"}
             />
           </>,
@@ -88,7 +92,6 @@ export default function Base64TextCodec() {
             </div>
             <Editor
               value={output()}
-              language="base64"
               readOnly={true}
               loading={output.loading}
             />

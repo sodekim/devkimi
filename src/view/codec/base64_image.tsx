@@ -10,6 +10,7 @@ import {
   TextReadButtons,
   TextWriteButtons,
 } from "@/component/Buttons";
+import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
@@ -21,58 +22,50 @@ import { ArrowLeftRight, Image, Layers, Save } from "lucide-solid";
 import {
   batch,
   createEffect,
-  createMemo,
+  createResource,
   createSignal,
   Match,
   Show,
-  Switch,
+  Switch
 } from "solid-js";
 
 export default function Base64ImageCodec() {
   const [file, setFile] = createSignal("");
-  const [base64, setBase64] = createSignal("");
-  const [base64Image, setBase64Image] = createSignal<{
-    base64: string;
-    extension: string;
-  }>();
   const [mode, setMode] = createSignal<Base64Mode>(Base64Mode.Standard);
-  const [encode, _setEncode] = createSignal(true);
-  const decode = createMemo(() => !encode());
+  const [encode, setEncode] = createSignal(true);
+  const decode = () => !encode();
 
-  const setEncode = (value: boolean) => {
+  // 切换操作模式
+  const switchEncode = (value: boolean) => {
     batch(() => {
       setFile("");
       setBase64("");
-      setBase64Image();
-      _setEncode(value);
+      setEncode(value);
     });
   };
 
   // 编码
-  createEffect(() => {
-    if (encode()) {
-      if (file()) {
-        encodeImageBase64(file(), mode())
-          .then(setBase64)
-          .catch((e) => setBase64(e.toString()));
-      } else {
-        setBase64("");
+  const [base64, { mutate: setBase64 }] = createResource(
+    () => (encode() ? { file: file(), mode: mode() } : false),
+    ({ file, mode }) => {
+      if (file) {
+        return encodeImageBase64(file, mode);
       }
     }
-  });
+  );
 
   // 解码
-  createEffect(() => {
-    if (decode()) {
-      if (base64()) {
-        decodeImageBase64(base64(), mode()).then(([base64, extension]) =>
-          setBase64Image({ base64, extension }),
-        );
-      } else {
-        setBase64Image();
+  const [image] = createResource(
+    () => (decode() ? { base64: base64(), mode: mode() } : false),
+    ({ base64, mode }) => {
+      if (base64) {
+        return decodeImageBase64(base64, mode)
+          .then(([base64, extension]) => ({ base64, extension }))
       }
-    }
-  });
+    },
+  );
+
+  createEffect(() => console.log(image));
 
   return (
     <Container>
@@ -86,7 +79,7 @@ export default function Base64ImageCodec() {
         >
           <Config.Switch
             value={encode()}
-            onChange={setEncode}
+            onChange={switchEncode}
             on="编码"
             off="解码"
           />
@@ -107,6 +100,21 @@ export default function Base64ImageCodec() {
         </Config.Option>
       </Config.Card>
 
+      <Card class="px-4 py-0">
+        <Switch>
+          <Match when={base64.state === "errored"}>
+            <div class="border border-base-content/20 rounded-md p-4">
+              {base64.error.toString()}
+            </div>
+          </Match>
+          <Match when={image.state === "errored"}>
+            <div class="border border-base-content/20 rounded-md p-4">
+              {image.error.toString()}
+            </div>
+          </Match>
+        </Switch>
+      </Card>
+
       <MainLayout
         items={[
           <>
@@ -121,7 +129,7 @@ export default function Base64ImageCodec() {
                 </Show>
 
                 {/* 保存图片 */}
-                <Show when={decode() && base64Image()}>
+                <Show when={image.state === "ready" && image()}>
                   <button
                     class="btn btn-sm"
                     onClick={() => {
@@ -133,8 +141,8 @@ export default function Base64ImageCodec() {
                         if (dir) {
                           saveBase64Image(
                             dir,
-                            base64Image()!.base64,
-                            base64Image()!.extension,
+                            image()!.base64,
+                            image()!.extension,
                           );
                         }
                       });
@@ -143,17 +151,14 @@ export default function Base64ImageCodec() {
                     <Save size={16} />
                     保存
                   </button>
-                </Show>
-
-                {/* 打开文件 */}
-                <Show when={base64Image()}>
                   <OpenBase64Image
-                    base64={base64Image()!.base64}
-                    extension={base64Image()!.extension}
+                    base64={image()!.base64}
+                    extension={image()!.extension}
                   />
                 </Show>
               </div>
             </div>
+
             <div class="border-base-content/20 bg-base-100 flex flex-1 items-center justify-center overflow-hidden rounded-md border p-2">
               <Switch>
                 <Match when={encode()}>
@@ -173,8 +178,12 @@ export default function Base64ImageCodec() {
                   </Show>
                 </Match>
                 <Match when={decode()}>
+                  <Show when={image.state === "refreshing"}>
+                    <div class="loading loading-bars loading-xs"></div>
+                  </Show>
+
                   <Show
-                    when={base64Image()}
+                    when={image.state === "ready" && image()}
                     fallback={
                       <span class="text-warning flex items-center justify-center gap-2 text-sm">
                         <Image size={16} />
@@ -183,7 +192,7 @@ export default function Base64ImageCodec() {
                     }
                   >
                     <img
-                      src={`data:image/${base64Image()!.extension};base64,${base64Image()!.base64}`}
+                      src={`data:image/${image()!.extension};base64,${image()!.base64}`}
                       class="size-full object-scale-down"
                     />
                   </Show>
@@ -194,19 +203,28 @@ export default function Base64ImageCodec() {
           <>
             <div class="flex items-center justify-between">
               <Title value="Base64" />
-              {encode() && <TextReadButtons value={base64()} />}
-              {decode() && <TextWriteButtons callback={setBase64} />}
+              <Switch>
+                <Match when={encode()}>
+                  <TextReadButtons value={base64()} />
+                </Match>
+                <Match when={decode()}>
+                  <TextWriteButtons callback={setBase64} />
+                </Match>
+              </Switch>
             </div>
-            {encode() ? (
-              <Editor value={base64()} readOnly={true} wordWrap="on" />
-            ) : (
-              <Editor
-                value={base64()}
-                wordWrap="on"
-                onChange={setBase64}
-                placeholder="输入要解码的Base64文本"
-              />
-            )}
+            <Switch>
+              <Match when={encode()}>
+                <Editor value={base64()} readOnly={true} loading={base64.loading} />
+              </Match>
+              <Match when={decode()}>
+                <Editor
+                  value={base64()}
+                  wordWrap="on"
+                  onChange={setBase64}
+                  placeholder="输入要解码的Base64文本"
+                />
+              </Match>
+            </Switch>
           </>,
         ]}
       />
