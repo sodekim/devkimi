@@ -7,27 +7,32 @@ import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Title from "@/component/Title";
 import { CaseUpper, Minus, RefreshCcw, Settings2, Sigma } from "lucide-solid";
-import { createEffect, createSignal } from "solid-js";
+import { createEffect, createResource, createSignal } from "solid-js";
 
-const UUID_VERSION_OPTIONS = [
-  { value: "V1", label: "v1" },
-  { value: "V4", label: "v4" },
-  { value: "V7", label: "v7" },
-];
+enum Version {
+  V1 = "V1",
+  V4 = "V4",
+  V7 = "V7",
+}
 
 export default function UuidGenerator() {
-  const [version, setVersion] = createSignal("V4");
+  const [version, setVersion] = createSignal(Version.V4);
   const [uppercase, setUppercase] = createSignal(false);
   const [hyphen, setHyphen] = createSignal(true);
   const [size, setSize] = createSignal(10);
-  const [output, setOutput] = createSignal("");
-  const [n, setN] = createSignal(0);
-  createEffect(() => {
-    const _ = n();
-    generateUuid(size(), version(), hyphen(), uppercase())
-      .then((items) => setOutput(items.join("\n")))
-      .catch((e) => setOutput(e.toString()));
-  });
+
+  const [output, { refetch }] = createResource(
+    () => ({
+      version: version(),
+      uppercase: uppercase(),
+      hyphen: hyphen(),
+      size: size(),
+    }),
+    ({ version, uppercase, hyphen, size }) =>
+      generateUuid(size, version, hyphen, uppercase)
+        .then((uuids) => uuids.join("\n"))
+        .catch((e) => e.toString()),
+  );
   return (
     <Container>
       {/* 配置 */}
@@ -40,7 +45,7 @@ export default function UuidGenerator() {
         >
           <Config.Select
             value={version()}
-            options={UUID_VERSION_OPTIONS}
+            options={Object.keys(Version)}
             onChange={setVersion}
             class="w-20"
           />
@@ -83,9 +88,9 @@ export default function UuidGenerator() {
       {/*输出*/}
       <Card class="h-0 flex-1">
         <div class="flex items-center justify-between">
-          <Title value="输出" />
+          <Title loading={output.loading}>输出</Title>
           <TextReadButtons value={output()} position="before">
-            <button class="btn btn-sm" onClick={() => setN(n() + 1)}>
+            <button class="btn btn-sm" onClick={() => refetch()}>
               <RefreshCcw size={16} />
               重新生成
             </button>

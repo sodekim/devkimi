@@ -3,9 +3,8 @@ import {
   decodeImageBase64,
   encodeImageBase64,
 } from "@/command/codec/base64";
-import { saveBase64Image } from "@/command/fs";
 import {
-  OpenBase64Image,
+  Base64ImageButtons,
   PickImageFileButton,
   TextReadButtons,
   TextWriteButtons,
@@ -14,20 +13,19 @@ import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import MainLayout from "@/component/IOLayout";
-import Title from "@/component/Title";
+import Main from "@/component/Main";
+import { stringify } from "@/lib/util";
 import { convertFileSrc } from "@tauri-apps/api/core";
-import { open } from "@tauri-apps/plugin-dialog";
-import { ArrowLeftRight, Image, Layers, Save } from "lucide-solid";
+import { ArrowLeftRight, Image, Layers } from "lucide-solid";
 import {
   batch,
-  createEffect,
   createResource,
   createSignal,
   Match,
   Show,
-  Switch
+  Switch,
 } from "solid-js";
+import { twMerge } from "tailwind-merge";
 
 export default function Base64ImageCodec() {
   const [file, setFile] = createSignal("");
@@ -49,9 +47,9 @@ export default function Base64ImageCodec() {
     () => (encode() ? { file: file(), mode: mode() } : false),
     ({ file, mode }) => {
       if (file) {
-        return encodeImageBase64(file, mode);
+        return encodeImageBase64(file, mode).catch(stringify);
       }
-    }
+    },
   );
 
   // 解码
@@ -59,13 +57,13 @@ export default function Base64ImageCodec() {
     () => (decode() ? { base64: base64(), mode: mode() } : false),
     ({ base64, mode }) => {
       if (base64) {
-        return decodeImageBase64(base64, mode)
-          .then(([base64, extension]) => ({ base64, extension }))
+        return decodeImageBase64(base64, mode).then(([base64, extension]) => ({
+          base64,
+          extension,
+        }));
       }
     },
   );
-
-  createEffect(() => console.log(image));
 
   return (
     <Container>
@@ -100,134 +98,103 @@ export default function Base64ImageCodec() {
         </Config.Option>
       </Config.Card>
 
-      <Card class="px-4 py-0">
-        <Switch>
-          <Match when={base64.state === "errored"}>
-            <div class="border border-base-content/20 rounded-md p-4">
-              {base64.error.toString()}
-            </div>
-          </Match>
-          <Match when={image.state === "errored"}>
-            <div class="border border-base-content/20 rounded-md p-4">
-              {image.error.toString()}
-            </div>
-          </Match>
-        </Switch>
-      </Card>
-
-      <MainLayout
-        items={[
-          <>
-            <div class="flex items-center justify-between">
-              <Title value="图片" />
-              <div class="flex items-center justify-center gap-2">
-                {/* 选择图片 */}
-                <Show when={encode()}>
-                  <PickImageFileButton
-                    onPick={(file) => file && setFile(file)}
-                  />
-                </Show>
-
-                {/* 保存图片 */}
-                <Show when={image.state === "ready" && image()}>
-                  <button
-                    class="btn btn-sm"
-                    onClick={() => {
-                      open({
-                        title: "保存图片",
-                        directory: true,
-                        multiple: false,
-                      }).then((dir) => {
-                        if (dir) {
-                          saveBase64Image(
-                            dir,
-                            image()!.base64,
-                            image()!.extension,
-                          );
-                        }
-                      });
-                    }}
-                  >
-                    <Save size={16} />
-                    保存
-                  </button>
-                  <OpenBase64Image
+      {/* 操作区域 */}
+      <Main>
+        <Card
+          class={twMerge("h-full w-0 flex-1", encode() ? "order-2" : "order-3")}
+          title="图片"
+          loading={image.loading}
+          operation={
+            <Switch>
+              <Match when={encode()}>
+                <PickImageFileButton onPick={(file) => file && setFile(file)} />
+              </Match>
+              <Match when={decode()}>
+                <Show when={image.state !== "errored" && image()}>
+                  <Base64ImageButtons
                     base64={image()!.base64}
                     extension={image()!.extension}
                   />
                 </Show>
-              </div>
-            </div>
-
-            <div class="border-base-content/20 bg-base-100 flex flex-1 items-center justify-center overflow-hidden rounded-md border p-2">
-              <Switch>
-                <Match when={encode()}>
-                  <Show
-                    when={file()}
-                    fallback={
-                      <span class="text-warning flex items-center justify-center gap-2 text-sm">
-                        <Image size={16} />
-                        选择需要编码的图片
-                      </span>
-                    }
-                  >
-                    <img
-                      src={convertFileSrc(file())}
-                      class="size-full object-scale-down"
-                    />
-                  </Show>
-                </Match>
-                <Match when={decode()}>
-                  <Show when={image.state === "refreshing"}>
-                    <div class="loading loading-bars loading-xs"></div>
-                  </Show>
-
-                  <Show
-                    when={image.state === "ready" && image()}
-                    fallback={
-                      <span class="text-warning flex items-center justify-center gap-2 text-sm">
-                        <Image size={16} />
-                        输入Base64生成图片
-                      </span>
-                    }
-                  >
-                    <img
-                      src={`data:image/${image()!.extension};base64,${image()!.base64}`}
-                      class="size-full object-scale-down"
-                    />
-                  </Show>
-                </Match>
-              </Switch>
-            </div>
-          </>,
-          <>
-            <div class="flex items-center justify-between">
-              <Title value="Base64" />
-              <Switch>
-                <Match when={encode()}>
-                  <TextReadButtons value={base64()} />
-                </Match>
-                <Match when={decode()}>
-                  <TextWriteButtons callback={setBase64} />
-                </Match>
-              </Switch>
-            </div>
-            <Switch>
-              <Match when={encode()}>
-                <Editor value={base64()} readOnly={true} loading={base64.loading} />
-              </Match>
-              <Match when={decode()}>
-                <Editor
-                  value={base64()}
-                  wordWrap="on"
-                  onChange={setBase64}
-                  placeholder="输入要解码的Base64文本"
-                />
               </Match>
             </Switch>
-          </>,
-        ]}
-      />
+          }
+        >
+          <div class="border-base-content/20 bg-base-100 flex flex-1 items-center justify-center overflow-hidden rounded-md border p-2">
+            <Switch>
+              <Match when={encode()}>
+                <Show
+                  when={file()}
+                  fallback={
+                    <span class="text-warning flex items-center justify-center gap-2 text-sm">
+                      <Image size={16} />
+                      选择需要编码的图片
+                    </span>
+                  }
+                >
+                  <img
+                    src={convertFileSrc(file())}
+                    class="size-full object-scale-down"
+                  />
+                </Show>
+              </Match>
+              <Match when={decode()}>
+                <Switch>
+                  <Match when={image.state === "errored"}>
+                    <span>{stringify(image.error)}</span>
+                  </Match>
+                  <Match when={image.state === "ready"}>
+                    <Show
+                      when={image()}
+                      fallback={
+                        <span class="text-warning flex items-center justify-center gap-2 text-sm">
+                          <Image size={16} />
+                          输入Base64生成图片
+                        </span>
+                      }
+                    >
+                      <img
+                        src={`data:image/${image()!.extension};base64,${image()!.base64}`}
+                        class="size-full object-scale-down"
+                      />
+                    </Show>
+                  </Match>
+                </Switch>
+              </Match>
+            </Switch>
+          </div>
+        </Card>
+
+        <Card
+          class={twMerge("h-full w-0 flex-1", decode() ? "order-2" : "order-3")}
+          title="Base64"
+          loading={base64.loading}
+          operation={
+            <Switch>
+              <Match when={encode()}>
+                <TextReadButtons value={base64()} />
+              </Match>
+              <Match when={decode()}>
+                <TextWriteButtons callback={setBase64} />
+              </Match>
+            </Switch>
+          }
+        >
+          <Switch>
+            <Match when={encode()}>
+              <Editor value={base64()} readOnly={true} />
+            </Match>
+            <Match when={decode()}>
+              <Editor
+                value={base64()}
+                wordWrap="on"
+                onChange={setBase64}
+                placeholder="输入要解码的Base64文本"
+              />
+            </Match>
+          </Switch>
+        </Card>
+      </Main>
     </Container>
   );
 }

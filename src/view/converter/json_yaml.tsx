@@ -9,29 +9,28 @@ import Editor from "@/component/Editor";
 import MainLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
 import { ArrowLeftRight } from "lucide-solid";
-import { batch, createEffect, createSignal, Show } from "solid-js";
+import { batch, createResource, createSignal, Show } from "solid-js";
 
 export default function JsonYamlConverter() {
-  const [encode, _setEncode] = createSignal(true);
+  const [encode, setEncode] = createSignal(true);
   const [input, setInput] = createSignal("");
-  const [output, setOutput] = createSignal("");
-  const setEncode = (value: boolean) => {
+  const switchEncode = (value: boolean) => {
     batch(() => {
       setInput("");
-      setOutput("");
-      _setEncode(value);
+      setEncode(value);
     });
   };
 
-  createEffect(() => {
-    if (input().length > 0) {
-      (encode() ? convertJsonToYaml(input()) : convertYamlToJson(input()))
-        .then(setOutput)
-        .catch((e) => setOutput(e.toString()));
-    } else {
-      setOutput("");
-    }
-  });
+  const [output] = createResource(
+    () => ({ encode: encode(), input: input() }),
+    ({ input, encode }) => {
+      if (input) {
+        return (
+          encode ? convertJsonToYaml(input) : convertYamlToJson(input)
+        ).catch((e) => e.toString());
+      }
+    },
+  );
 
   return (
     <Container>
@@ -45,7 +44,7 @@ export default function JsonYamlConverter() {
           {/*转换配置*/}
           <Config.Switch
             value={encode()}
-            onChange={setEncode}
+            onChange={switchEncode}
             on="JSON -> YAML"
             off="YAML -> JSON"
           />
@@ -56,7 +55,7 @@ export default function JsonYamlConverter() {
         items={[
           <>
             <div class="flex items-center justify-between">
-              <Title value="输入" />
+              <Title>输入</Title>
               <TextWriteButtons callback={setInput} />
             </div>
             <Show
@@ -80,7 +79,7 @@ export default function JsonYamlConverter() {
           </>,
           <>
             <div class="flex items-center justify-between">
-              <Title value="输出" />
+              <Title loading={output.loading}>输出</Title>
               <TextReadButtons value={output()} />
             </div>
             <Show

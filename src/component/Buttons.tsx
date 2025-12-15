@@ -12,7 +12,8 @@ import {
   Save,
 } from "lucide-solid";
 import { children, createSignal, JSX } from "solid-js";
-import { openBase64Image, openFile } from "@/command/fs";
+import { openBase64Image, openFile, saveBase64Image } from "@/command/fs";
+import Flex from "./Flex";
 
 const CopyButton = (props: { value: string }) => {
   const [handle, setHandle] = createSignal<number | null>(null);
@@ -133,7 +134,10 @@ const PickTextFileButton = (props: {
   );
 };
 
-const OpenBase64Image = (props: { base64: string; extension: string }) => {
+const OpenBase64ImageButton = (props: {
+  base64: string;
+  extension: string;
+}) => {
   return (
     <button
       class="btn btn-sm"
@@ -141,6 +145,46 @@ const OpenBase64Image = (props: { base64: string; extension: string }) => {
     >
       <Eye size={16} /> 查看
     </button>
+  );
+};
+
+const SaveBase64ImageButton = (props: {
+  base64: string;
+  extension: string;
+}) => {
+  return (
+    <button
+      class="btn btn-sm"
+      onClick={() => {
+        open({
+          title: "保存图片",
+          directory: true,
+          multiple: false,
+        }).then((dir) => {
+          if (dir) {
+            saveBase64Image(dir, props.base64, props.extension);
+          }
+        });
+      }}
+    >
+      <Save size={16} />
+      保存
+    </button>
+  );
+};
+
+const Base64ImageButtons = (props: { base64: string; extension: string }) => {
+  return (
+    <Flex>
+      <SaveBase64ImageButton
+        base64={props.base64}
+        extension={props.extension}
+      />
+      <OpenBase64ImageButton
+        base64={props.base64}
+        extension={props.extension}
+      />
+    </Flex>
   );
 };
 
@@ -208,7 +252,9 @@ export {
   ClearButton,
   CopyButton,
   GenerateButton,
-  OpenBase64Image,
+  OpenBase64ImageButton,
+  SaveBase64ImageButton,
+  Base64ImageButtons,
   PasteButton,
   PickFileButton,
   PickImageFileButton,

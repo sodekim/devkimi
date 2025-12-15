@@ -3,7 +3,7 @@ use base64::{prelude::BASE64_STANDARD, Engine};
 use image::{codecs::png::PngEncoder, ImageError, Luma};
 use qrcode::{types::QrError, QrCode};
 
-#[tauri::command]
+#[tauri::command(async)]
 #[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::ERROR))]
 pub fn encode_qrcode(text: &str) -> Result<(String, String), Error> {
     let code = QrCode::new(text)?;
@@ -15,7 +15,7 @@ pub fn encode_qrcode(text: &str) -> Result<(String, String), Error> {
     Ok((base64, "png".to_string()))
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 #[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::ERROR))]
 pub fn decode_qrcode(image: &str) -> Result<String, Error> {
     let image = image::open(image)?.into_luma8();

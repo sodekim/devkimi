@@ -4,11 +4,13 @@ import {
   encodeTextBase64,
 } from "@/command/codec/base64";
 import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
+import Card from "@/component/Card";
 import Config from "@/component/Config";
 import ConfigSwitch from "@/component/Config/Switch";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import MainLayout from "@/component/IOLayout";
+import Main from "@/component/Main";
 import Title from "@/component/Title";
 import { ArrowLeftRight, Layers } from "lucide-solid";
 import { batch, createResource, createSignal } from "solid-js";
@@ -31,9 +33,9 @@ export default function Base64TextCodec() {
     () => ({ input: input(), mode: mode(), encode: encode() }),
     ({ input, mode, encode }) => {
       if (input) {
-        return (encode
-          ? encodeTextBase64(input, mode)
-          : decodeTextBase64(input, mode)).catch((e) => e.toString());
+        return (
+          encode ? encodeTextBase64(input, mode) : decodeTextBase64(input, mode)
+        ).catch((e) => e.toString());
       }
     },
     { initialValue: "" },
@@ -72,32 +74,27 @@ export default function Base64TextCodec() {
         </Config.Option>
       </Config.Card>
 
-      <MainLayout
-        items={[
-          <>
-            <div class="flex items-center justify-between">
-              <Title value="输入" />
-              <TextWriteButtons callback={setInput} />
-            </div>
-            <Editor
-              value={input()}
-              onChange={setInput}
-              placeholder={encode() ? "输入要编码的文本" : "输入要解码的文本"}
-            />
-          </>,
-          <>
-            <div class="flex items-center justify-between">
-              <Title value="输出" />
-              <TextReadButtons value={output()} />
-            </div>
-            <Editor
-              value={output()}
-              readOnly={true}
-              loading={output.loading}
-            />
-          </>,
-        ]}
-      />
+      <Main>
+        <Card
+          class="h-full w-0 flex-1"
+          title="输入"
+          operation={<TextWriteButtons callback={setInput} />}
+        >
+          <Editor
+            value={input()}
+            onChange={setInput}
+            placeholder={encode() ? "输入要编码的文本" : "输入要解码的文本"}
+          />
+        </Card>
+        <Card
+          class="h-full w-0 flex-1"
+          title="输出"
+          loading={output.loading}
+          operation={<TextReadButtons value={output()} />}
+        >
+          <Editor value={output()} readOnly={true} />
+        </Card>
+      </Main>
     </Container>
   );
 }

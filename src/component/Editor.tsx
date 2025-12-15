@@ -45,7 +45,6 @@ type EditorProps = Omit<
   class?: string;
   placeholder?: string;
   readonly?: boolean;
-  loading?: boolean;
 };
 
 monaco.editor.defineTheme("light", {
@@ -149,26 +148,14 @@ export default function Editor(props: EditorProps) {
   });
 
   return (
-    <div class="relative size-full overflow-hidden">
-      <div
-        id={id}
-        class={twMerge("input size-full p-2 outline-none", local.class)}
-      ></div>
-      <Show when={props.loading}>
-        <Loading />
-      </Show>
-    </div>
+    <div
+      id={id}
+      class={twMerge(
+        "input size-full h-0 flex-1 p-2 outline-none",
+        local.class,
+      )}
+    ></div>
   );
 }
-
-const Loading = () => {
-  return (
-    <div class="bg-base-100 border border-base-content/20 absolute inset-0 z-10 flex items-center justify-center rounded-md">
-      <div class="flex w-80 flex-col items-center">
-        <span class="loading loading-bars loading-sm"></span>
-      </div>
-    </div>
-  );
-};
 
 export type { MonacoEditor, MonacoEditorOptions };

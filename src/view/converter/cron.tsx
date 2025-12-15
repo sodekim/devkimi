@@ -6,25 +6,21 @@ import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Title from "@/component/Title";
 import { ALargeSmall, RefreshCcw, Sigma } from "lucide-solid";
-import { createEffect, createSignal } from "solid-js";
+import { createResource, createSignal } from "solid-js";
 
 export default function CronConverter() {
   const [cron, setCron] = createSignal("* * * * * *");
   const [size, setSize] = createSignal(10);
   const [pattern, setPattern] = createSignal("%Y-%m-%d %H:%M:%S");
-  const [output, setOutput] = createSignal("");
-  const [n, setN] = createSignal(0);
 
-  createEffect(() => {
-    const _ = n();
-    if (cron().length > 0) {
-      parseCron(cron(), size(), pattern())
-        .then((times) => setOutput(times.join("\n")))
-        .catch((e) => setOutput(e.toString()));
-    } else {
-      setOutput("");
-    }
-  });
+  const [output, { refetch }] = createResource(
+    () => ({ cron: cron(), size: size(), pattern: pattern() }),
+    ({ cron, size, pattern }) => {
+      return parseCron(cron, size, pattern)
+        .then((times) => times.join("\n"))
+        .catch((e) => e.toString());
+    },
+  );
 
   return (
     <Container>
@@ -57,7 +53,7 @@ export default function CronConverter() {
       {/*CRON表达式*/}
       <Card>
         <div class="flex items-center justify-between">
-          <Title value="CRON表达式" />
+          <Title>CRON表达式</Title>
           <div class="flex items-center justify-center gap-2">
             <PasteButton onRead={setCron} />
             <ClearButton onClick={() => setCron("")} />
@@ -73,9 +69,9 @@ export default function CronConverter() {
       {/*计划时间*/}
       <Card class="h-0 flex-1">
         <div class="flex items-center justify-between">
-          <Title value="计划执行时间" />
+          <Title loading={output.loading}>计划执行时间</Title>
           <TextReadButtons value={output()} position="before">
-            <button class="btn btn-sm" onClick={() => setN(n() + 1)}>
+            <button class="btn btn-sm" onClick={() => refetch()}>
               <RefreshCcw size={16} />
               重新生成
             </button>

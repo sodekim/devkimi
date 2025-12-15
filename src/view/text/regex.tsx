@@ -1,4 +1,4 @@
-import { Capture, parseRegex } from "@/command/text/regex";
+import { parseRegex } from "@/command/text/regex";
 import {
   ClearButton,
   PasteButton,
@@ -8,6 +8,7 @@ import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
+import Flex from "@/component/Flex";
 import Title from "@/component/Title";
 import {
   ArrowLeftFromLine,
@@ -15,7 +16,7 @@ import {
   SquareAsterisk,
   Ungroup,
 } from "lucide-solid";
-import { createEffect, createSignal, For } from "solid-js";
+import { createResource, createSignal, For, Match, Switch } from "solid-js";
 
 const RegexGrammars: Array<{ grammar: string; description: string }> = [
   // 🔹 基础字符匹配
@@ -65,24 +66,30 @@ export default function RegexTest() {
   const [pattern, setPattern] = createSignal("");
   const [text, setText] = createSignal("");
   const [unicode, setUnicode] = createSignal(true);
-  const [captures, setCaptures] = createSignal<Capture[]>([]);
+  const [captures] = createResource(
+    () => ({
+      global: global(),
+      caseInsensitive: caseInsensitive(),
+      multiLine: multiLine(),
+      pattern: pattern(),
+      text: text(),
+      unicode: unicode(),
+    }),
+    ({ global, caseInsensitive, multiLine, pattern, text, unicode }) => {
+      if (text && pattern) {
+        return parseRegex(
+          text,
+          pattern,
+          global,
+          multiLine,
+          caseInsensitive,
+          unicode,
+        );
+      }
+    },
+    { initialValue: [] },
+  );
 
-  createEffect(() => {
-    if (pattern().length > 0 && text().length > 0) {
-      parseRegex(
-        text(),
-        pattern(),
-        global(),
-        multiLine(),
-        caseInsensitive(),
-        unicode(),
-      )
-        .then(setCaptures)
-        .catch((e) => console.error("parse regex error!", e));
-    } else {
-      setCaptures([]);
-    }
-  });
   return (
     <Container>
       {/* 配置 */}
@@ -130,7 +137,7 @@ export default function RegexTest() {
       {/*正则表达式*/}
       <Card>
         <div class="flex items-center justify-between">
-          <Title value="正则表达式" />
+          <Title>正则表达式</Title>
           <div class="flex items-center justify-center gap-2">
             <PasteButton onRead={setPattern} />
             <ClearButton onClick={() => setPattern("")} />
@@ -147,7 +154,7 @@ export default function RegexTest() {
       {/*文本*/}
       <Card class="h-0 flex-1">
         <div class="flex items-center justify-between">
-          <Title value="文本" />
+          <Title>文本</Title>
           <div class="flex items-center justify-center gap-2">
             <TextWriteButtons callback={setText} />
           </div>
@@ -159,11 +166,11 @@ export default function RegexTest() {
         />
       </Card>
 
-      <div class="flex h-0 flex-1 items-center justify-center gap-4">
+      <Flex class="h-0 flex-1">
         {/*匹配信息*/}
         <Card class="h-full flex-1 overflow-x-hidden">
           <div class="flex items-center justify-between">
-            <Title value="匹配信息" />
+            <Title loading={captures.loading}>匹配信息</Title>
           </div>
           <div class="size-full overflow-x-auto">
             <table class="table-pin-rows table-sm table">
@@ -176,21 +183,30 @@ export default function RegexTest() {
                 </tr>
               </thead>
               <tbody>
-                <For each={captures()}>
-                  {(capture, i) =>
-                    capture.map((match, j) => (
-                      <tr class="hover:bg-base-300">
-                        {j === 0 ? (
-                          <td>{`匹配 ${i() + 1}`}</td>
-                        ) : (
-                          <td class="pl-8">{`分组 ${j}`}</td>
-                        )}
-                        <td>{`${match.start}-${match.end}`}</td>
-                        <td>{`${match.value}`}</td>
-                      </tr>
-                    ))
-                  }
-                </For>
+                <Switch>
+                  <Match when={captures.state === "errored"}>
+                    <tr>
+                      <td colSpan={2}>{captures.error.toString()}</td>
+                    </tr>
+                  </Match>
+                  <Match when={captures.state === "ready"}>
+                    <For each={captures()}>
+                      {(capture, i) =>
+                        capture.map((match, j) => (
+                          <tr class="hover:bg-base-300">
+                            {j === 0 ? (
+                              <td>{`匹配 ${i() + 1}`}</td>
+                            ) : (
+                              <td class="pl-8">{`分组 ${j}`}</td>
+                            )}
+                            <td>{`${match.start}-${match.end}`}</td>
+                            <td>{`${match.value}`}</td>
+                          </tr>
+                        ))
+                      }
+                    </For>
+                  </Match>
+                </Switch>
               </tbody>
             </table>
           </div>
@@ -199,7 +215,7 @@ export default function RegexTest() {
         {/*速查表*/}
         <Card class="h-full flex-1 overflow-x-hidden">
           <div class="flex items-center justify-between">
-            <Title value="速查表" />
+            <Title>速查表</Title>
           </div>
           <div class="size-full overflow-x-auto">
             <table class="table-pin-rows table-sm table">
@@ -220,7 +236,7 @@ export default function RegexTest() {
             </table>
           </div>
         </Card>
-      </div>
+      </Flex>
     </Container>
   );
 }

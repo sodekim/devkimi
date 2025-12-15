@@ -1,28 +1,31 @@
 import { decodeQrCode, encodeQrCode } from "@/command/codec/qrcode";
 import { saveBase64Image } from "@/command/fs";
 import {
-  OpenBase64Image,
+  Base64ImageButtons,
+  OpenBase64ImageButton,
   PickImageFileButton,
   TextReadButtons,
   TextWriteButtons,
 } from "@/component/Buttons";
+import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import MainLayout from "@/component/IOLayout";
-import Title from "@/component/Title";
+import Flex from "@/component/Flex";
+import Main from "@/component/Main";
+import { stringify } from "@/lib/util";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { ArrowLeftRight, Image, Save } from "lucide-solid";
 import {
   batch,
-  createEffect,
   createResource,
   createSignal,
   Match,
   Show,
   Switch,
 } from "solid-js";
+import { twMerge } from "tailwind-merge";
 
 export default function QRCodeCodec() {
   const [file, setFile] = createSignal("");
@@ -37,26 +40,29 @@ export default function QRCodeCodec() {
     });
   };
 
-  // 编码
-  const [qrcode] = createResource(
-    () => (encode() ? { text: text() } : false),
-    ({ text }) => {
-      if (text) {
-        return encodeQrCode(text)
-          .then(([base64, extension]) => ({ base64, extension }));
-      }
-    }
-  );
-
   // 解码
   const [text, { mutate: setText }] = createResource(
     () => (decode() ? { file: file() } : false),
     ({ file }) => {
       if (file) {
-        return decodeQrCode(file);
+        return decodeQrCode(file).catch(stringify);
       }
     },
-    { initialValue: "" });
+    { initialValue: "" },
+  );
+
+  // 编码
+  const [qrcode] = createResource(
+    () => (encode() ? { text: text() } : false),
+    ({ text }) => {
+      if (text) {
+        return encodeQrCode(text).then(([base64, extension]) => ({
+          base64,
+          extension,
+        }));
+      }
+    },
+  );
 
   return (
     <Container>
@@ -77,111 +83,100 @@ export default function QRCodeCodec() {
         </Config.Option>
       </Config.Card>
 
-      <MainLayout
-        items={[
-          <>
-            <div class="flex items-center justify-between">
-              <Title value="文本" />
-              <div class="flex items-center justify-center gap-2">
-                {encode() && <TextWriteButtons callback={setText} />}
-                {decode() && <TextReadButtons value={text()} />}
-              </div>
-            </div>
-            {encode() ? (
+      <Main>
+        <Card
+          class={twMerge("h-full w-0 flex-1", encode() ? "order-2" : "order-3")}
+          title="文本"
+          loading={text.loading}
+          operation={
+            <Switch>
+              <Match when={encode()}>
+                <TextWriteButtons callback={setText} />
+              </Match>
+              <Match when={decode()}>
+                <TextReadButtons value={text()} />
+              </Match>
+            </Switch>
+          }
+        >
+          <Switch>
+            <Match when={encode()}>
               <Editor
                 value={text()}
                 wordWrap="on"
                 onChange={setText}
                 placeholder="输入要编码的文本"
               />
-            ) : (
+            </Match>
+            <Match when={decode()}>
               <Editor value={text()} readOnly={true} wordWrap="on" />
-            )}
-          </>,
-          <>
-            <div class="flex items-center justify-between">
-              <Title value="二维码" />
-              <div class="flex items-center justify-center gap-2">
-                {/* 选择二维码 */}
-                <Show when={decode()}>
-                  <PickImageFileButton
-                    onPick={(file) => file && setFile(file)}
+            </Match>
+          </Switch>
+        </Card>
+
+        <Card
+          class={twMerge("h-full w-0 flex-1", decode() ? "order-2" : "order-3")}
+          title="二维码"
+          loading={qrcode.loading}
+          operation={
+            <Switch>
+              <Match when={decode()}>
+                <PickImageFileButton onPick={(file) => file && setFile(file)} />
+              </Match>
+              <Match when={encode() && qrcode.state !== "errored" && qrcode()}>
+                <Base64ImageButtons
+                  base64={qrcode()!.base64}
+                  extension={qrcode()!.extension}
+                />
+              </Match>
+            </Switch>
+          }
+        >
+          <div class="border-base-content/20 bg-base-100 flex flex-1 items-center justify-center overflow-hidden rounded-md border p-2">
+            <Switch>
+              <Match when={encode()}>
+                <Switch>
+                  <Match when={qrcode.state === "errored"}>
+                    <span>{stringify(qrcode.error)}</span>
+                  </Match>
+                  <Match when={qrcode.state === "ready"}>
+                    <Show
+                      when={qrcode.state !== "errored" && qrcode()}
+                      fallback={
+                        <span class="text-warning flex items-center justify-center gap-2 text-sm">
+                          <Image size={16} />
+                          输入文本生成二维码
+                        </span>
+                      }
+                    >
+                      <img
+                        src={`data:image/${qrcode()!.extension};base64,${qrcode()!.base64}`}
+                        class="size-full object-scale-down"
+                      />
+                    </Show>
+                  </Match>
+                </Switch>
+              </Match>
+              <Match when={decode()}>
+                <Show
+                  when={file()}
+                  fallback={
+                    <span class="text-warning flex items-center justify-center gap-2 text-sm">
+                      <Image size={16} />
+                      选择需要解码的二维码
+                    </span>
+                  }
+                >
+                  <img
+                    src={convertFileSrc(file())}
+                    class="size-full object-scale-down"
                   />
                 </Show>
-
-                {/* 保存二维码 */}
-                <Show when={encode() && base64Image()}>
-                  <button
-                    class="btn btn-sm"
-                    onClick={() => {
-                      open({
-                        title: "保存二维码",
-                        directory: true,
-                        multiple: false,
-                      }).then((dir) => {
-                        if (dir) {
-                          saveBase64Image(
-                            dir,
-                            base64Image()!.base64,
-                            base64Image()!.extension,
-                          );
-                        }
-                      });
-                    }}
-                  >
-                    <Save size={16} />
-                    保存
-                  </button>
-                </Show>
-
-                {/* 打开文件 */}
-                <Show when={base64Image()}>
-                  <OpenBase64Image
-                    base64={base64Image()!.base64}
-                    extension={base64Image()!.extension}
-                  />
-                </Show>
-              </div>
-            </div>
-            <div class="border-base-content/20 bg-base-100 flex flex-1 items-center justify-center overflow-hidden rounded-md border p-2">
-              <Switch>
-                <Match when={encode()}>
-                  <Show
-                    when={base64Image()}
-                    fallback={
-                      <span class="text-warning flex items-center justify-center gap-2 text-sm">
-                        <Image size={16} />
-                        输入文本生成二维码
-                      </span>
-                    }
-                  >
-                    <img
-                      src={`data:image/${base64Image()!.extension};base64,${base64Image()!.base64}`}
-                      class="size-full object-scale-down"
-                    />
-                  </Show>
-                </Match>
-                <Match when={decode()}>
-                  <Show
-                    when={file()}
-                    fallback={
-                      <span class="text-warning flex items-center justify-center gap-2 text-sm">
-                        <Image size={16} />
-                        选择需要解码的二维码
-                      </span>
-                    }
-                  >
-                    <img
-                      src={convertFileSrc(file())}
-                      class="size-full object-scale-down"
-                    />
-                  </Show>
-                </Match>
-              </Switch>
-            </div>
-          </>,
-        ]}
-      />
+              </Match>
+            </Switch>
+          </div>
+        </Card>
+      </Main>
     </Container>
   );
 }

@@ -1,37 +1,41 @@
-import { formatJson, Ident } from "@/command/formatter/json";
+import { formatJson } from "@/command/formatter/json";
 import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
+import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import MainLayout from "@/component/IOLayout";
+import Main from "@/component/Main";
 import Title from "@/component/Title";
+import { stringify } from "@/lib/util";
 import { ArrowDownAZ, Space } from "lucide-solid";
-import { createEffect, createSignal } from "solid-js";
+import { createResource, createSignal } from "solid-js";
 
-const INDENT_OPTIONS = [
-  { value: Ident.TwoSpace, label: "2个空格" },
-  { value: Ident.FourSpace, label: "4个空格" },
-  { value: Ident.Tab, label: "1个制表符" },
-  { value: Ident.None, label: "精简" },
-];
+enum Indent {
+  TwoSpace = "TwoSpace",
+  FourSpace = "FourSpace",
+  Tab = "Tab",
+  None = "None",
+}
 
 export default function JsonFormatter() {
-  const [indent, setIndent] = createSignal<Ident>(Ident.TwoSpace);
+  const [indent, setIndent] = createSignal(Indent.TwoSpace);
   const [sortable, setSortable] = createSignal(false);
   const [input, setInput] = createSignal("");
-  const [output, setOutput] = createSignal("");
-  const [loading, setLoading] = createSignal(false);
-  createEffect(() => {
-    if (input().length > 0) {
-      setLoading(true);
-      formatJson(input(), indent(), sortable())
-        .then(setOutput)
-        .catch((e) => setOutput(e.toString()))
-        .finally(() => setLoading(false));
-    } else {
-      setOutput("");
-    }
-  });
+
+  const [output] = createResource(
+    () => ({
+      indent: indent(),
+      sortable: sortable(),
+      input: input(),
+    }),
+    ({ indent, sortable, input }) => {
+      if (input) {
+        return formatJson(input, indent, sortable).catch(stringify);
+      }
+    },
+  );
+
   return (
     <Container>
       {/* 配置 */}
@@ -44,7 +48,7 @@ export default function JsonFormatter() {
         >
           <Config.Select
             value={indent()}
-            options={INDENT_OPTIONS}
+            options={Object.keys(Indent)}
             onChange={setIndent}
             class="w-30"
           />
@@ -60,38 +64,31 @@ export default function JsonFormatter() {
         </Config.Option>
       </Config.Card>
 
-      <MainLayout
-        items={[
-          <>
-            {" "}
-            <div class="flex items-center justify-between">
-              <Title value="输入" />
-              <TextWriteButtons callback={setInput} />
-            </div>
-            <Editor
-              value={input()}
-              onChange={(value) => {
-                console.log(value);
-                setInput(value);
-              }}
-              language="json"
-              placeholder="输入需要格式化的 JSON 数据"
-            />
-          </>,
-          <>
-            <div class="flex items-center justify-between">
-              <Title value="输出" />
-              <TextReadButtons value={output()} />
-            </div>
-            <Editor
-              value={output()}
-              language="json"
-              readOnly={true}
-              loading={loading()}
-            />
-          </>,
-        ]}
-      />
+      <Main>
+        <Card
+          class="h-full w-0 flex-1"
+          title="输入"
+          operation={<TextWriteButtons callback={setInput} />}
+        >
+          <Editor
+            value={input()}
+            onChange={(value) => {
+              console.log(value);
+              setInput(value);
+            }}
+            language="json"
+            placeholder="输入需要格式化的 JSON 数据"
+          />
+        </Card>
+        <Card
+          class="h-full w-0 flex-1"
+          title="输出"
+          loading={output.loading}
+          operation={<TextReadButtons value={output()} />}
+        >
+          <Editor value={output()} language="json" readOnly={true} />
+        </Card>
+      </Main>
     </Container>
   );
 }

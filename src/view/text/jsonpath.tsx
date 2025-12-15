@@ -1,14 +1,16 @@
-import { createEffect, createSignal } from "solid-js";
+import { createEffect, createResource, createSignal } from "solid-js";
 import { parseJsonPath } from "@/command/text/jsonpath";
 import {
   ClearButton,
   PasteButton,
+  TextReadButtons,
   TextWriteButtons,
 } from "@/component/Buttons";
 import Container from "@/component/Container";
 import Card from "@/component/Card";
 import Editor from "@/component/Editor";
 import Title from "@/component/Title";
+import Flex from "@/component/Flex";
 
 const JsonPathGrammars: Array<{ expression: string; description: string }> = [
   {
@@ -120,22 +122,21 @@ const JsonPathGrammars: Array<{ expression: string; description: string }> = [
 export default function JSONPath() {
   const [pattern, setPattern] = createSignal("");
   const [text, setText] = createSignal("");
-  const [output, setOutput] = createSignal("");
-  createEffect(() => {
-    if (pattern().length > 0 && text().length > 0) {
-      parseJsonPath(text(), pattern())
-        .then(setOutput)
-        .catch((e) => setOutput(e.toString()));
-    } else {
-      setOutput("");
-    }
-  });
+  const [output] = createResource(
+    () => ({ pattern: pattern(), text: text() }),
+    ({ pattern, text }) => {
+      if (text && pattern) {
+        return parseJsonPath(text, pattern).catch((e) => e.toString());
+      }
+    },
+  );
+
   return (
     <Container>
       {/*JSONPath*/}
       <Card>
         <div class="flex items-center justify-between">
-          <Title value="JSONPath" />
+          <Title>JSONPath</Title>
           <div class="flex items-center justify-center gap-2">
             <PasteButton onRead={setPattern} />
             <ClearButton onClick={() => setPattern("")} />
@@ -150,13 +151,11 @@ export default function JSONPath() {
       </Card>
 
       {/*JSON*/}
-      <Card class="h-0 flex-1">
-        <div class="flex items-center justify-between">
-          <Title value="JSON" />
-          <div class="flex items-center justify-center gap-2">
-            <TextWriteButtons callback={setText} />
-          </div>
-        </div>
+      <Card
+        class="h-0 flex-1"
+        title="JSON"
+        operation={<TextWriteButtons callback={setText} />}
+      >
         <Editor
           value={text()}
           onChange={setText}
@@ -165,20 +164,19 @@ export default function JSONPath() {
         />
       </Card>
 
-      <div class="flex h-0 flex-1 items-center justify-center gap-4">
+      <Flex class="h-0 flex-1">
         {/*匹配信息*/}
-        <Card class="h-full flex-1 overflow-x-hidden">
-          <div class="flex items-center justify-between">
-            <Title value="结果" />
-          </div>
+        <Card
+          class="h-full flex-1 overflow-x-hidden"
+          title="结果"
+          loading={output.loading}
+          operation={<TextReadButtons value={output()} />}
+        >
           <Editor language="json" value={output()} readOnly={true} />
         </Card>
 
         {/*速查表*/}
-        <Card class="h-full flex-1 overflow-x-hidden">
-          <div class="flex items-center justify-between">
-            <Title value="速查表" />
-          </div>
+        <Card class="h-full flex-1 overflow-x-hidden" title="速查表">
           <div class="size-full overflow-x-auto">
             <table class="table-pin-rows table-sm table">
               <thead>
@@ -198,7 +196,7 @@ export default function JSONPath() {
             </table>
           </div>
         </Card>
-      </div>
+      </Flex>
     </Container>
   );
 }

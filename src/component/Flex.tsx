@@ -8,14 +8,14 @@ export default function Flex(props: {
   direction?: "horizontal" | "vertical";
 }) {
   const _children = children(() => props.children);
+  const _gap = () => props.gap ?? 2;
   return (
     <div
       class={twMerge(
-        "flex items-center justify-center",
+        `flex items-center justify-center gap-${_gap()}`,
         (props.direction ?? "horizontal") === "vertical"
           ? "flex-col"
           : "flex-row",
-        props.gap ? `gap-${props.gap}` : "",
         props.class,
       )}
     >

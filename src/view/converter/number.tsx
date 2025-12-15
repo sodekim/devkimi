@@ -106,7 +106,7 @@ export default function NumberConverter() {
 
       <Card>
         <div class="flex items-center justify-between">
-          <Title value="十六进制" />
+          <Title>十六进制</Title>
           <TextWriteButtons callback={(value) => update(value, 16)}>
             <TextReadButtons value={hex()} />
           </TextWriteButtons>
@@ -120,7 +120,7 @@ export default function NumberConverter() {
 
       <Card>
         <div class="flex items-center justify-between">
-          <Title value="十进制" />
+          <Title>十进制</Title>
           <TextWriteButtons callback={(value) => update(value, 10)}>
             <TextReadButtons value={decimal()} />
           </TextWriteButtons>
@@ -134,7 +134,7 @@ export default function NumberConverter() {
 
       <Card>
         <div class="flex items-center justify-between">
-          <Title value="八进制" />
+          <Title>八进制</Title>
           <TextWriteButtons callback={(value) => update(value, 8)}>
             <TextReadButtons value={octal()} />
           </TextWriteButtons>
@@ -148,7 +148,7 @@ export default function NumberConverter() {
 
       <Card>
         <div class="flex items-center justify-between">
-          <Title value="二进制" />
+          <Title>二进制</Title>
           <TextWriteButtons callback={(value) => update(value, 2)}>
             <TextReadButtons value={binary()} />
           </TextWriteButtons>

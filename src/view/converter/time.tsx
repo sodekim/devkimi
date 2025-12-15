@@ -190,7 +190,7 @@ export default function TimeConverter() {
   return (
     <Container>
       <Card>
-        <Title value="当前时间" />
+        <Title>当前时间</Title>
         <div class="border-base-content/20 flex items-center justify-center gap-2 rounded-md border p-4">
           <div class="flex flex-1 flex-col items-center justify-center gap-4">
             <span class="font-mono text-4xl font-bold">{time()}</span>
@@ -214,11 +214,11 @@ export default function TimeConverter() {
           </div>
           <div class="flex flex-col items-start justify-center gap-2">
             <span class="text-md font-bold">UNIX 时间戳</span>
-            <Flex gap={2}>
+            <Flex>
               <div class="badge badge-accent w-15">秒</div>
               <ClickCopyButton value={`${seconds()}`} class="w-48" />
             </Flex>
-            <Flex gap={2}>
+            <Flex>
               <div class="badge badge-accent w-15">毫秒</div>
               <ClickCopyButton value={`${milliseconds()}`} class="w-48" />
             </Flex>
@@ -231,14 +231,14 @@ export default function TimeConverter() {
         items={[
           <>
             <div class="flex items-center justify-between">
-              <Title value="时间戳转时间" />
+              <Title>时间戳转时间</Title>
               <div class="flex items-center justify-center gap-2">
                 <PasteButton onRead={(value) => setTimestamp(Number(value))} />
                 <ClearButton onClick={() => setTimestamp(undefined)} />
               </div>
             </div>
 
-            <Flex gap={2}>
+            <Flex>
               <label class="select flex-1 outline-none">
                 <span class="label">单位</span>
                 <select
@@ -293,13 +293,13 @@ export default function TimeConverter() {
           </>,
           <>
             <div class="flex items-center justify-between">
-              <Title value="时间转时间戳" />
+              <Title>时间转时间戳</Title>
               <div class="flex items-center justify-center gap-2">
                 <ClearButton onClick={() => setDateTime("")} />
               </div>
             </div>
 
-            <Flex gap={2}>
+            <Flex>
               <label class="select flex-1 outline-none">
                 <span class="label">时区</span>
                 <select

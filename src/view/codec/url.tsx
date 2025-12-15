@@ -1,8 +1,5 @@
 import { decodeURL, encodeURL } from "@/command/codec/url";
-import {
-  TextReadButtons,
-  TextWriteButtons
-} from "@/component/Buttons";
+import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
@@ -28,10 +25,12 @@ export default function UrlCodec() {
     () => ({ input: input(), encode: encode() }),
     ({ input, encode }) => {
       if (input) {
-        return (encode ? encodeURL(input) : decodeURL(input)).catch((e) => e.toString());
+        return (encode ? encodeURL(input) : decodeURL(input)).catch((e) =>
+          e.toString(),
+        );
       }
     },
-    { initialValue: "" }
+    { initialValue: "" },
   );
 
   return (
@@ -57,7 +56,7 @@ export default function UrlCodec() {
         items={[
           <>
             <div class="flex items-center justify-between">
-              <Title value="输入" />
+              <Title>输入</Title>
               <TextWriteButtons callback={setInput} />
             </div>
             <Editor
@@ -68,10 +67,10 @@ export default function UrlCodec() {
           </>,
           <>
             <div class="flex items-center justify-between">
-              <Title value="输出" />
+              <Title loading={output.loading}>输出</Title>
               <TextReadButtons value={output()} />
             </div>
-            <Editor value={output()} readOnly={true} loading={output.loading} />
+            <Editor value={output()} readOnly={true} />
           </>,
         ]}
       />

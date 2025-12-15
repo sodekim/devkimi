@@ -113,7 +113,7 @@ export default function Rsa() {
         {/*私钥*/}
         <Card class="h-full w-0 flex-1">
           <div class="flex items-center justify-between">
-            <Title value="私钥" />
+            <Title>私钥</Title>
             <TextWriteButtons
               callback={(privateKey) =>
                 setKeyPair((prev) => ({ ...prev, privateKey }))
@@ -130,14 +130,13 @@ export default function Rsa() {
               setKeyPair((prev) => ({ ...prev, privateKey: value }))
             }
             placeholder="输入 RSA 私钥"
-            loading={keyPair.loading}
           />
         </Card>
 
         {/*公钥*/}
         <Card class="h-full w-0 flex-1">
           <div class="flex items-center justify-between">
-            <Title value="公钥" />
+            <Title>公钥</Title>
             <TextWriteButtons
               callback={(publicKey) =>
                 setKeyPair((prev) => ({ ...prev, publicKey }))
@@ -152,7 +151,6 @@ export default function Rsa() {
               setKeyPair((prev) => ({ ...prev, publicKey: value }))
             }
             placeholder="输入 RSA 公钥"
-            loading={keyPair.loading}
           />
         </Card>
       </div>
@@ -161,7 +159,7 @@ export default function Rsa() {
         items={[
           <>
             <div class="flex items-center justify-between">
-              <Title value="输入" />
+              <Title>输入</Title>
               <TextWriteButtons callback={setInput} />
             </div>
             <Editor
@@ -174,10 +172,10 @@ export default function Rsa() {
           </>,
           <>
             <div class="flex items-center justify-between">
-              <Title value="输出" />
+              <Title>输出</Title>
               <TextReadButtons value={output()} />
             </div>
-            <Editor value={output()} readOnly={true} loading={output.loading} />
+            <Editor value={output()} readOnly={true} />
           </>,
         ]}
       />

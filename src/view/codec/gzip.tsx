@@ -5,6 +5,7 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import MainLayout from "@/component/IOLayout";
+import Main from "@/component/Main";
 import Title from "@/component/Title";
 import { ArrowLeftRight, AudioWaveform, Blend } from "lucide-solid";
 import { batch, createResource, createSignal, Show } from "solid-js";
@@ -38,10 +39,12 @@ export default function GZipCodec() {
     () => ({ encode: encode(), level: level(), input: input() }),
     ({ encode, level, input }) => {
       if (input) {
-        return (encode ? encodeGZip(input, level) : decodeGZip(input, level)).catch((e) => ({ value: e.toString(), ratio: 0 }));
+        return (
+          encode ? encodeGZip(input, level) : decodeGZip(input, level)
+        ).catch((e) => ({ value: e.toString(), ratio: 0 }));
       }
     },
-    { initialValue: { value: "", ratio: 0 } }
+    { initialValue: { value: "", ratio: 0 } },
   );
 
   return (
@@ -79,34 +82,35 @@ export default function GZipCodec() {
         </Show>
       </Config.Card>
 
-      <MainLayout
-        items={[
-          <>
-            <div class="flex items-center justify-between">
-              <Title value="输入" />
-              <TextWriteButtons callback={setInput} />
-            </div>
-            <Editor
-              value={input()}
-              onChange={setInput}
-              placeholder={encode() ? "输入要压缩的文本" : "输入要解压的文本"}
-            />
-          </>,
-          <>
-            <div class="flex items-center justify-between">
-              <Title value="输出" />
-              <TextReadButtons value={output()?.value} />
-            </div>
-            <Editor value={output()?.value} readOnly={true} loading={output.loading} />
-          </>,
-        ]}
-      />
+      <Main>
+        <Card
+          class="h-full w-0 flex-1"
+          title="输入"
+          operation={<TextWriteButtons callback={setInput} />}
+        >
+          <Editor
+            value={input()}
+            onChange={setInput}
+            placeholder={encode() ? "输入要压缩的文本" : "输入要解压的文本"}
+          />
+        </Card>
+        <Card
+          class="h-full w-0 flex-1"
+          title="输出"
+          loading={output.loading}
+          operation={<TextReadButtons value={output()?.value} />}
+        >
+          <Editor value={output()?.value} readOnly={true} />
+        </Card>
+      </Main>
 
-      <Card class="h-10 justify-center">
-        <span class="flex items-center justify-start gap-1 text-sm">
+      <Card>
+        <span class="flex w-full items-center justify-start gap-1 text-sm">
           <AudioWaveform size={16} />
           压缩率
-          <span class={(output()?.ratio ?? 0) > 0 ? "text-success" : "text-warning"}>
+          <span
+            class={(output()?.ratio ?? 0) > 0 ? "text-success" : "text-warning"}
+          >
             {((output()?.ratio ?? 0) * 100).toFixed(2)}%
           </span>
         </span>

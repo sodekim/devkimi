@@ -19,6 +19,7 @@ import Card from "@/component/Card";
 import Editor from "@/component/Editor";
 import MainLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
+import Main from "@/component/Main";
 
 const KEY_FORMAT_OPTIONS = [
   { value: "Sec1", label: "PEM (SEC1)" },
@@ -90,11 +91,12 @@ export default function Sm2() {
       </Config.Card>
 
       {/* 密钥对 */}
-      <div class="flex h-0 max-h-100 flex-1 gap-4">
+      <Main class="max-h-100">
         {/*私钥*/}
-        <Card class="h-full w-0 flex-1">
-          <div class="flex items-center justify-between">
-            <Title value="私钥" />
+        <Card
+          class="h-full w-0 flex-1"
+          title="私钥"
+          operation={
             <TextWriteButtons callback={setPrivateKey} position="before">
               <GenerateButton
                 label="生成密钥对"
@@ -109,7 +111,8 @@ export default function Sm2() {
               />
               <CopyButton value={privateKey()} />
             </TextWriteButtons>
-          </div>
+          }
+        >
           <Editor
             value={privateKey()}
             onChange={setPrivateKey}
@@ -118,46 +121,45 @@ export default function Sm2() {
         </Card>
 
         {/*公钥*/}
-        <Card class="h-full w-0 flex-1">
-          <div class="flex items-center justify-between">
-            <Title value="公钥" />
+        <Card
+          class="h-full w-0 flex-1"
+          title="公钥"
+          operation={
             <TextWriteButtons callback={setPublicKey}>
               <CopyButton value={publicKey()} />
             </TextWriteButtons>
-          </div>
+          }
+        >
           <Editor
             value={publicKey()}
             onChange={setPublicKey}
             placeholder="输入 SM2 公钥"
           />
         </Card>
-      </div>
+      </Main>
 
-      <MainLayout
-        items={[
-          <>
-            {" "}
-            <div class="flex items-center justify-between">
-              <Title value="输入" />
-              <TextWriteButtons callback={setInput} />
-            </div>
-            <Editor
-              value={input()}
-              onChange={setInput}
-              placeholder={
-                encryption() ? "输入需要加密的数据" : "输入需要解密的数据"
-              }
-            />
-          </>,
-          <>
-            <div class="flex items-center justify-between">
-              <Title value="输出" />
-              <TextReadButtons value={output()} />
-            </div>
-            <Editor value={output()} readOnly={true} />
-          </>,
-        ]}
-      />
+      <Main>
+        <Card
+          class="h-full w-0 flex-1"
+          title="输入"
+          operation={<TextWriteButtons callback={setInput} />}
+        >
+          <Editor
+            value={input()}
+            onChange={setInput}
+            placeholder={
+              encryption() ? "输入需要加密的数据" : "输入需要解密的数据"
+            }
+          />
+        </Card>
+        <Card
+          class="h-full w-0 flex-1"
+          title="输出"
+          operation={<TextReadButtons value={output()} />}
+        >
+          <Editor value={output()} readOnly={true} />
+        </Card>
+      </Main>
     </Container>
   );
 }

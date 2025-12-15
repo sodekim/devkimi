@@ -1,34 +1,35 @@
 import { escapeText, unescapeText } from "@/command/text/escape";
 import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
+import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import MainLayout from "@/component/IOLayout";
+import Main from "@/component/Main";
 import Title from "@/component/Title";
 import { ArrowLeftRight } from "lucide-solid";
-import { batch, createEffect, createSignal } from "solid-js";
+import { batch, createResource, createSignal } from "solid-js";
 
 export default function TextEscape() {
-  const [encode, _setEncode] = createSignal(true);
+  const [encode, setEncode] = createSignal(true);
   const [input, setInput] = createSignal("");
-  const [output, setOutput] = createSignal("");
-  const setEncode = (value: boolean) => {
+  const switchEncode = (value: boolean) => {
     batch(() => {
       setInput("");
-      setOutput("");
-      _setEncode(value);
+      setEncode(value);
     });
   };
 
-  createEffect(() => {
-    if (input().length > 0) {
-      (encode() ? escapeText(input()) : unescapeText(input()))
-        .then(setOutput)
-        .catch((e) => setOutput(e.toString()));
-    } else {
-      setOutput("");
-    }
-  });
+  const [output] = createResource(
+    () => ({ encode: encode(), input: input() }),
+    ({ encode, input }) => {
+      if (input) {
+        return (encode ? escapeText(input) : unescapeText(input)).catch((e) =>
+          e.toString(),
+        );
+      }
+    },
+  );
   return (
     <Container>
       {/* 配置 */}
@@ -41,35 +42,34 @@ export default function TextEscape() {
         >
           <Config.Switch
             value={encode()}
-            onChange={setEncode}
+            onChange={switchEncode}
             on="转义"
             off="反转义"
           />
         </Config.Option>
       </Config.Card>
 
-      <MainLayout
-        items={[
-          <>
-            <div class="flex items-center justify-between">
-              <Title value="输入" />
-              <TextWriteButtons callback={setInput} />
-            </div>
-            <Editor
-              value={input()}
-              onChange={setInput}
-              placeholder={encode() ? "输入要转义的文本" : "输入要反转义的文本"}
-            />
-          </>,
-          <>
-            <div class="flex items-center justify-between">
-              <Title value="输出" />
-              <TextReadButtons value={output()} />
-            </div>
-            <Editor value={output()} readOnly={true} />
-          </>,
-        ]}
-      />
+      <Main>
+        <Card
+          class="h-full w-0 flex-1"
+          title="输入"
+          operation={<TextWriteButtons callback={setInput} />}
+        >
+          <Editor
+            value={input()}
+            onChange={setInput}
+            placeholder={encode() ? "输入要转义的文本" : "输入要反转义的文本"}
+          />
+        </Card>
+        <Card
+          class="h-full w-0 flex-1"
+          title="输出"
+          loading={output.loading}
+          operation={<TextReadButtons value={output()} />}
+        >
+          <Editor value={output()} readOnly={true} />
+        </Card>
+      </Main>
     </Container>
   );
 }

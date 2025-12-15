@@ -27,6 +27,7 @@ import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import { EncodingSelect, EncodingTextInput } from "@/component/Encoding";
 import MainLayout from "@/component/IOLayout";
+import Main from "@/component/Main";
 import Title from "@/component/Title";
 import {
   ArrowLeftRight,
@@ -160,7 +161,7 @@ export default function Des() {
       {/* 密钥 */}
       <Card>
         <div class="flex items-center justify-between">
-          <Title value="密钥" />
+          <Title>密钥</Title>
           <div class="flex items-center justify-center gap-2">
             <GenerateButton
               onGenerate={() =>
@@ -184,7 +185,7 @@ export default function Des() {
       <Show when={blockMode() !== "Ecb"}>
         <Card>
           <div class="flex items-center justify-between">
-            <Title value="向量" />
+            <Title>向量</Title>
             <div class="flex items-center justify-center gap-2">
               <GenerateButton
                 label="生成向量"
@@ -206,47 +207,48 @@ export default function Des() {
         </Card>
       </Show>
 
-      <MainLayout
-        items={[
-          <>
-            <div class="flex items-center justify-between">
-              <Title value="输入" />
-              <TextWriteButtons
-                callback={(value) => setInput("text", value)}
-                position="before"
-              >
-                <EncodingSelect
-                  label="编码"
-                  value={input.encoding}
-                  onChange={(value) => setInput("encoding", value)}
-                  exclude={inputEncodingExcludes()}
-                />
-              </TextWriteButtons>
-            </div>
-            <Editor
-              value={input.text}
-              onChange={(value) => setInput("text", value)}
-              placeholder={
-                encryption() ? "输入要加密的数据" : "输入要解密的数据"
-              }
-            />
-          </>,
-          <>
-            <div class="flex items-center justify-between">
-              <Title value="输出" />
-              <TextReadButtons value={output()} position="before">
-                <EncodingSelect
-                  label="编码"
-                  exclude={outputEncodingExcludes()}
-                  value={encoding()}
-                  onChange={(value) => setEncoding(value)}
-                />
-              </TextReadButtons>
-            </div>
-            <Editor value={output()} readOnly={true} />
-          </>,
-        ]}
-      />
+      <Main>
+        <Card
+          class="h-full w-0 flex-1"
+          title="输入"
+          operation={
+            <TextWriteButtons
+              callback={(value) => setInput("text", value)}
+              position="before"
+            >
+              <EncodingSelect
+                label="编码"
+                value={input.encoding}
+                onChange={(value) => setInput("encoding", value)}
+                exclude={inputEncodingExcludes()}
+              />
+            </TextWriteButtons>
+          }
+        >
+          {" "}
+          <Editor
+            value={input.text}
+            onChange={(value) => setInput("text", value)}
+            placeholder={encryption() ? "输入要加密的数据" : "输入要解密的数据"}
+          />
+        </Card>
+        <Card
+          class="h-full w-0 flex-1"
+          title="输出"
+          operation={
+            <TextReadButtons value={output()} position="before">
+              <EncodingSelect
+                label="编码"
+                exclude={outputEncodingExcludes()}
+                value={encoding()}
+                onChange={(value) => setEncoding(value)}
+              />
+            </TextReadButtons>
+          }
+        >
+          <Editor value={output()} readOnly={true} />
+        </Card>
+      </Main>
     </Container>
   );
 }

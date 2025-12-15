@@ -214,7 +214,7 @@ export default function Jwt() {
         {/*头部*/}
         <Card class="h-full w-0 flex-1">
           <div class="flex items-center justify-between">
-            <Title value="头部" />
+            <Title>头部</Title>
             <Show
               when={!encode()}
               fallback={<CopyButton value={prettyHeader()} />}
@@ -233,7 +233,7 @@ export default function Jwt() {
         {/*载荷*/}
         <Card class="h-full w-0 flex-1">
           <div class="flex items-center justify-between">
-            <Title value="载荷" />
+            <Title>载荷</Title>
             <Show
               when={encode()}
               fallback={<TextReadButtons value={payload()} />}
@@ -266,7 +266,7 @@ export default function Jwt() {
             {/*私钥*/}
             <Card class="h-full w-0 flex-1">
               <div class="flex items-center justify-between">
-                <Title value="私钥" />
+                <Title>私钥</Title>
                 <TextWriteButtons callback={setPrivateKey} position="before">
                   <GenerateButton
                     onGenerate={() => {
@@ -308,7 +308,7 @@ export default function Jwt() {
             {/*公钥*/}
             <Card class="h-full w-0 flex-1">
               <div class="flex items-center justify-between">
-                <Title value="公钥" />
+                <Title>公钥</Title>
                 <TextWriteButtons callback={setPublicKey} position="before">
                   <CopyButton value={publicKey()} />
                 </TextWriteButtons>
@@ -325,7 +325,7 @@ export default function Jwt() {
         <Match when={!useKeyPair()}>
           <Card class="order-3">
             <div class="flex items-center justify-between">
-              <Title value="签名密钥" />
+              <Title>签名密钥</Title>
               <TextWriteButtons callback={setPayload} />
             </div>
             <EncodingTextInput
@@ -341,7 +341,7 @@ export default function Jwt() {
       <Card class={twMerge("h-60", encode() ? "order-4" : "order-2")}>
         <div class="flex items-center justify-between">
           <div class="join gap-4">
-            <Title value="令牌" />
+            <Title>令牌</Title>
             <Show when={verified() !== null}>
               <Switch>
                 <Match when={verified()}>

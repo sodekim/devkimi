@@ -83,7 +83,7 @@ export default function TextTools() {
   return (
     <Container>
       <Card>
-        <Title value="转换换行符" />
+        <Title>转换换行符</Title>
         <div class="flex gap-2">
           <button
             class="btn btn-sm"
@@ -101,7 +101,7 @@ export default function TextTools() {
       </Card>
 
       <Card>
-        <Title value="转换大小写" />
+        <Title>转换大小写</Title>
         <div class="flex flex-wrap gap-2">
           <button
             class="btn btn-sm"
@@ -204,7 +204,7 @@ export default function TextTools() {
       </Card>
 
       <Card>
-        <Title value="行排序" />
+        <Title>行排序</Title>
         <div class="flex flex-wrap gap-2">
           <button class="btn btn-sm">按字母升序</button>
           <button class="btn btn-sm">按字母降序</button>
@@ -218,7 +218,7 @@ export default function TextTools() {
       <div class="flex h-0 flex-1">
         <Card class="w-0 flex-1">
           <div class="flex items-center justify-between">
-            <Title value="文本" />
+            <Title>文本</Title>
             <TextWriteButtons callback={setText}>
               <TextReadButtons value={text()} />
             </TextWriteButtons>
@@ -227,7 +227,7 @@ export default function TextTools() {
         </Card>
 
         <Card class="flex w-80 flex-col">
-          <Title value="统计数据" />
+          <Title>统计数据</Title>
           <div class="size-full overflow-x-auto">
             <table class="table-pin-rows table-sm table">
               <thead>

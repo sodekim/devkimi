@@ -9,32 +9,36 @@ import Editor from "@/component/Editor";
 import MainLayout from "@/component/IOLayout";
 import Title from "@/component/Title";
 import { ArrowLeftRight } from "lucide-solid";
-import { batch, createEffect, createSignal, Show } from "solid-js";
+import {
+  batch,
+  createEffect,
+  createResource,
+  createSignal,
+  Show,
+} from "solid-js";
 
 export default function YamlPropertiesConverter() {
-  const [encode, _setEncode] = createSignal(true);
+  const [encode, setEncode] = createSignal(true);
   const [input, setInput] = createSignal("");
-  const [output, setOutput] = createSignal("");
-  const setEncode = (value: boolean) => {
+  const switchEncode = (value: boolean) => {
     batch(() => {
       setInput("");
-      setOutput("");
-      _setEncode(value);
+      setEncode(value);
     });
   };
 
-  createEffect(() => {
-    if (input().length > 0) {
-      (encode()
-        ? convertYamlToProperties(input())
-        : convertPropertiesToYaml(input())
-      )
-        .then(setOutput)
-        .catch((e) => setOutput(e.toString()));
-    } else {
-      setOutput("");
-    }
-  });
+  const [output] = createResource(
+    () => ({ encode: encode(), input: input() }),
+    ({ encode, input }) => {
+      if (input) {
+        return (
+          encode
+            ? convertYamlToProperties(input)
+            : convertPropertiesToYaml(input)
+        ).catch((e) => e.toString());
+      }
+    },
+  );
 
   return (
     <Container>
@@ -49,7 +53,7 @@ export default function YamlPropertiesConverter() {
           {/*转换配置*/}
           <Config.Switch
             value={encode()}
-            onChange={setEncode}
+            onChange={switchEncode}
             on="YAML -> PROPERTIES"
             off="PROPERTIES -> YAML"
           />
@@ -60,7 +64,7 @@ export default function YamlPropertiesConverter() {
         items={[
           <>
             <div class="flex items-center justify-between">
-              <Title value="输入" />
+              <Title>输入</Title>
               <TextWriteButtons callback={setInput} />
             </div>
             <Show
@@ -84,7 +88,7 @@ export default function YamlPropertiesConverter() {
           </>,
           <>
             <div class="flex items-center justify-between">
-              <Title value="输出" />
+              <Title loading={output.loading}>输出</Title>
               <TextReadButtons value={output()} />
             </div>
             <Show

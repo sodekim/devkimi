@@ -1,43 +1,49 @@
 import { formatSql } from "@/command/formatter/sql";
-import {
-  TextReadButtons,
-  TextWriteButtons
-} from "@/component/Buttons";
+import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
+import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import MainLayout from "@/component/IOLayout";
+import Main from "@/component/Main";
 import Title from "@/component/Title";
 import { CaseUpper, Code, Space } from "lucide-solid";
-import { createEffect, createSignal } from "solid-js";
+import { createResource, createSignal } from "solid-js";
 
-const INDENT_OPTIONS = [
-  { value: "TwoSpace", label: "2个空格" },
-  { value: "FourSpace", label: "4个空格" },
-  { value: "Tab", label: "1个制表符" },
-];
+enum Indent {
+  TwoSpace = "TwoSpace",
+  FourSpace = "FourSpace",
+  Tab = "Tab",
+}
 
-const DIALECT_OPTIONS = [
-  { value: "Generic", label: "标准 SQL" },
-  { value: "SQLServer", label: "SQLServer" },
-  { value: "PostgreSql", label: "PostgreSql" },
-];
+enum Dialect {
+  Generic = "Generic",
+  SQLServer = "SQLServer",
+  PostgreSql = "PostgreSql",
+}
 
 export default function SqlFormatter() {
-  const [indent, setIndent] = createSignal("TwoSpace");
-  const [dialect, setDialect] = createSignal("Generic");
+  const [indent, setIndent] = createSignal(Indent.TwoSpace);
+  const [dialect, setDialect] = createSignal(Dialect.Generic);
   const [uppercase, setUppercase] = createSignal(false);
   const [input, setInput] = createSignal("");
-  const [output, setOutput] = createSignal("");
-  createEffect(() => {
-    if (input().length > 0) {
-      formatSql(input(), indent(), dialect(), uppercase())
-        .then(setOutput)
-        .catch((e) => setOutput(e.toString()));
-    } else {
-      setOutput("");
-    }
-  });
+
+  const [output] = createResource(
+    () => ({
+      ident: indent(),
+      dialect: dialect(),
+      uppercase: uppercase(),
+      input: input(),
+    }),
+    ({ ident, dialect, uppercase, input }) => {
+      if (input) {
+        return formatSql(input, ident, dialect, uppercase).catch((e) =>
+          e.toString(),
+        );
+      }
+    },
+  );
+
   return (
     <Container>
       {/* 配置 */}
@@ -50,7 +56,7 @@ export default function SqlFormatter() {
         >
           <Config.Select
             value={indent()}
-            options={INDENT_OPTIONS}
+            options={Object.keys(Indent)}
             onChange={setIndent}
             class="w-30"
           />
@@ -64,7 +70,7 @@ export default function SqlFormatter() {
         >
           <Config.Select
             value={dialect()}
-            options={DIALECT_OPTIONS}
+            options={Object.keys(Dialect)}
             onChange={setDialect}
             class="w-30"
           />
@@ -80,29 +86,28 @@ export default function SqlFormatter() {
         </Config.Option>
       </Config.Card>
 
-      <MainLayout
-        items={[
-          <>
-            <div class="flex items-center justify-between">
-              <Title value="输入" />
-              <TextWriteButtons callback={setInput} />
-            </div>
-            <Editor
-              value={input()}
-              onChange={(value) => setInput(value)}
-              language="sql"
-              placeholder="输入需要格式化的 SQL 语句"
-            />
-          </>,
-          <>
-            <div class="flex items-center justify-between">
-              <Title value="输出" />
-              <TextReadButtons value={output()} />
-            </div>
-            <Editor value={output()} language="sql" readOnly={true} />
-          </>,
-        ]}
-      />
+      <Main>
+        <Card
+          class="h-full w-0 flex-1"
+          title="输入"
+          operation={<TextWriteButtons callback={setInput} />}
+        >
+          <Editor
+            value={input()}
+            onChange={(value) => setInput(value)}
+            language="sql"
+            placeholder="输入需要格式化的 SQL 语句"
+          />
+        </Card>
+        <Card
+          class="h-full w-0 flex-1"
+          title="输出"
+          loading={output.loading}
+          operation={<TextReadButtons value={output()} />}
+        >
+          <Editor value={output()} language="sql" readOnly={true} />
+        </Card>
+      </Main>
     </Container>
   );
 }

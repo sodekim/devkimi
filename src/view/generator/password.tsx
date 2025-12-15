@@ -1,3 +1,10 @@
+import { generatePassword } from "@/command/generate/password";
+import { TextReadButtons } from "@/component/Buttons";
+import Card from "@/component/Card";
+import Config from "@/component/Config";
+import Container from "@/component/Container";
+import Editor from "@/component/Editor";
+import Title from "@/component/Title";
 import {
   Binary,
   CaseLower,
@@ -8,14 +15,7 @@ import {
   Sigma,
   SquaresExclude,
 } from "lucide-solid";
-import { createEffect, createSignal } from "solid-js";
-import { generatePassword } from "@/command/generate/password";
-import { TextReadButtons } from "@/component/Buttons";
-import Config from "@/component/Config";
-import Container from "@/component/Container";
-import Card from "@/component/Card";
-import Editor from "@/component/Editor";
-import Title from "@/component/Title";
+import { createResource, createSignal } from "solid-js";
 
 export default function PasswordGenerator() {
   const [length, setLength] = createSignal(16);
@@ -25,30 +25,30 @@ export default function PasswordGenerator() {
   const [special, setSpecial] = createSignal(false);
   const [size, setSize] = createSignal(10);
   const [excludes, setExcludes] = createSignal("");
-  const [output, setOutput] = createSignal("");
-  const [n, setN] = createSignal(0);
-  createEffect(() => {
-    const _ = n();
-    const flag =
-      size() > 0 &&
-      length() > 0 &&
-      (uppercase() || lowercase() || numeric() || special());
-    if (flag) {
+  const [output, { refetch }] = createResource(
+    () => ({
+      length: length(),
+      uppercase: uppercase(),
+      lowercase: lowercase(),
+      numeric: numeric(),
+      special: special(),
+      size: size(),
+      excludes: excludes(),
+    }),
+    ({ length, uppercase, lowercase, numeric, special, size, excludes }) =>
       generatePassword(
-        size(),
-        length(),
-        lowercase(),
-        uppercase(),
-        numeric(),
-        special(),
-        excludes(),
+        size,
+        length,
+        lowercase,
+        uppercase,
+        numeric,
+        special,
+        excludes,
       )
-        .then((items) => setOutput(items.join("\n")))
-        .catch((e) => setOutput(e.toString()));
-    } else {
-      setOutput("");
-    }
-  });
+        .then((passwords) => passwords.join("\n"))
+        .catch((e) => e.toString()),
+  );
+
   return (
     <Container>
       {/* 配置 */}
@@ -125,9 +125,9 @@ export default function PasswordGenerator() {
       {/*输出*/}
       <Card class="h-0 flex-1">
         <div class="flex items-center justify-between">
-          <Title value="输出" />
+          <Title loading={output.loading}>输出</Title>
           <TextReadButtons value={output()} position="before">
-            <button class="btn btn-sm" onClick={() => setN(n() + 1)}>
+            <button class="btn btn-sm" onClick={() => refetch()}>
               <RefreshCcw size={16} />
               重新生成
             </button>
