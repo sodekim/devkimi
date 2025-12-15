@@ -3,17 +3,19 @@ import {
   convertYamlToJson,
 } from "@/command/converter/json_yaml";
 import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
+import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import MainLayout from "@/component/IOLayout";
-import Title from "@/component/Title";
+import Main from "@/component/Main";
+import { stringify } from "@/lib/util";
 import { ArrowLeftRight } from "lucide-solid";
-import { batch, createResource, createSignal, Show } from "solid-js";
+import { batch, createResource, createSignal, Match, Switch } from "solid-js";
 
 export default function JsonYamlConverter() {
   const [encode, setEncode] = createSignal(true);
   const [input, setInput] = createSignal("");
+  const decode = () => !encode();
   const switchEncode = (value: boolean) => {
     batch(() => {
       setInput("");
@@ -27,7 +29,7 @@ export default function JsonYamlConverter() {
       if (input) {
         return (
           encode ? convertJsonToYaml(input) : convertYamlToJson(input)
-        ).catch((e) => e.toString());
+        ).catch(stringify);
       }
     },
   );
@@ -51,48 +53,43 @@ export default function JsonYamlConverter() {
         </Config.Option>
       </Config.Card>
 
-      <MainLayout
-        items={[
-          <>
-            <div class="flex items-center justify-between">
-              <Title>输入</Title>
-              <TextWriteButtons callback={setInput} />
-            </div>
-            <Show
-              when={encode()}
-              fallback={
-                <Editor
-                  value={input()}
-                  onChange={setInput}
-                  language="yaml"
-                  placeholder="输入需要转换的 YAML 数据"
-                />
-              }
-            >
+      <Main>
+        <Card class="h-full w-0 flex-1" title="输入" operation={<TextWriteButtons callback={setInput} />}>
+          <Switch>
+            <Match when={encode()}>
               <Editor
                 value={input()}
                 onChange={setInput}
                 language="json"
                 placeholder="输入需要转换的 JSON 数据"
               />
-            </Show>
-          </>,
-          <>
-            <div class="flex items-center justify-between">
-              <Title loading={output.loading}>输出</Title>
-              <TextReadButtons value={output()} />
-            </div>
-            <Show
-              when={encode()}
-              fallback={
-                <Editor value={output()} readOnly={true} language="json" />
-              }
-            >
+            </Match>
+            <Match when={decode()}>
+              <Editor
+                value={input()}
+                onChange={setInput}
+                language="yaml"
+                placeholder="输入需要转换的 YAML 数据"
+              />
+            </Match>
+          </Switch>
+        </Card>
+        <Card
+          class="h-full w-0 flex-1"
+          title="输出"
+          operation={<TextReadButtons value={output()} />}
+          loading={output.loading}
+        >
+          <Switch>
+            <Match when={encode()}>
               <Editor value={output()} readOnly={true} language="yaml" />
-            </Show>
-          </>,
-        ]}
-      />
+            </Match>
+            <Match when={decode()}>
+              <Editor value={output()} readOnly={true} language="json" />
+            </Match>
+          </Switch>
+        </Card>
+      </Main>
     </Container>
   );
 }

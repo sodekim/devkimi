@@ -48,7 +48,7 @@ export default function Settings() {
   const [version] = createResource<{ app: string; tauri: string }>(async () => {
     const app = await getVersion();
     const tauri = await getTauriVersion();
-    return { app, tauri }
+    return { app, tauri };
   });
 
   // 系统字体
@@ -113,24 +113,6 @@ export default function Settings() {
             value={settings.common.theme}
             class="w-30"
             onChange={(value) => setSettings("common", "theme", value)}
-          />
-        </Config.Option>
-
-        <Config.Option
-          label="输入输出布局"
-          icon={() => <LayoutTemplate size={16} />}
-          description="工具界面控制输入 / 输出区域的布局。"
-        >
-          <Config.Select
-            value={settings.common.ioLayout}
-            options={[
-              { label: "左右布局", value: "horizontal" },
-              { label: "上下布局", value: "vertical" },
-            ]}
-            onChange={(value) =>
-              setSettings("common", "ioLayout", value as IOLayout)
-            }
-            class="w-30"
           />
         </Config.Option>
 

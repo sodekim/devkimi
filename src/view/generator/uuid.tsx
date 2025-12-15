@@ -6,6 +6,7 @@ import ConfigSwitch from "@/component/Config/Switch";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Title from "@/component/Title";
+import { stringify } from "@/lib/util";
 import { CaseUpper, Minus, RefreshCcw, Settings2, Sigma } from "lucide-solid";
 import { createEffect, createResource, createSignal } from "solid-js";
 
@@ -31,7 +32,7 @@ export default function UuidGenerator() {
     ({ version, uppercase, hyphen, size }) =>
       generateUuid(size, version, hyphen, uppercase)
         .then((uuids) => uuids.join("\n"))
-        .catch((e) => e.toString()),
+        .catch(stringify),
   );
   return (
     <Container>
@@ -86,16 +87,19 @@ export default function UuidGenerator() {
       </Config.Card>
 
       {/*输出*/}
-      <Card class="h-0 flex-1">
-        <div class="flex items-center justify-between">
-          <Title loading={output.loading}>输出</Title>
+      <Card
+        class="h-0 flex-1"
+        title="输出"
+        loading={output.loading}
+        operation={
           <TextReadButtons value={output()} position="before">
             <button class="btn btn-sm" onClick={() => refetch()}>
               <RefreshCcw size={16} />
               重新生成
             </button>
           </TextReadButtons>
-        </div>
+        }
+      >
         <Editor value={output()} language="plaintext" readOnly={true} />
       </Card>
     </Container>

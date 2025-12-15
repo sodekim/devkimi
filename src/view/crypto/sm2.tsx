@@ -1,5 +1,3 @@
-import { ArrowLeftRight, PanelLeftRightDashed } from "lucide-solid";
-import { batch, createEffect, createSignal } from "solid-js";
 import {
   decryptSm2,
   encryptSm2,
@@ -9,54 +7,64 @@ import {
 import {
   CopyButton,
   GenerateButton,
-  SaveButton,
   TextReadButtons,
   TextWriteButtons,
 } from "@/component/Buttons";
+import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
-import Card from "@/component/Card";
 import Editor from "@/component/Editor";
-import MainLayout from "@/component/IOLayout";
-import Title from "@/component/Title";
 import Main from "@/component/Main";
+import { stringify } from "@/lib/util";
+import { ArrowLeftRight, PanelLeftRightDashed } from "lucide-solid";
+import { batch, createResource, createSignal } from "solid-js";
 
-const KEY_FORMAT_OPTIONS = [
-  { value: "Sec1", label: "PEM (SEC1)" },
-  { value: "Pkcs8", label: "PEM (PKCS#8)" },
-  { value: "Hex", label: "Hex" },
-];
-
-export default function Sm2() {
-  const [encryption, _setEncryption] = createSignal(true);
-  const [keyFormat, setKeyFormat] = createSignal<Sm2KeyFormat>("Sec1");
-  const [privateKey, setPrivateKey] = createSignal("");
-  const [publicKey, setPublicKey] = createSignal("");
+export default function Sm2Crypto() {
+  const [encryption, setEncryption] = createSignal(true);
+  const [keyFormat, setKeyFormat] = createSignal<Sm2KeyFormat>(
+    Sm2KeyFormat.Pkcs8,
+  );
   const [input, setInput] = createSignal("");
-  const [output, setOutput] = createSignal("");
-  const setEncryption = (value: boolean) => {
+  const switchEncryption = (value: boolean) => {
     batch(() => {
       setInput("");
-      setOutput("");
-      _setEncryption(value);
+      setKeyFormat(Sm2KeyFormat.Pkcs8);
+      setEncryption(value);
     });
   };
 
-  createEffect(() => {
-    if (input().length > 0) {
-      if (encryption()) {
-        encryptSm2(keyFormat(), publicKey(), input())
-          .then(setOutput)
-          .catch((e) => setOutput(e.toString()));
-      } else {
-        decryptSm2(keyFormat(), privateKey(), input())
-          .then(setOutput)
-          .catch((e) => setOutput(e.toString()));
+  // 生成密钥对
+  const [keyPair, { refetch: refetchKeyPair, mutate: setKeyPair }] =
+    createResource(
+      () =>
+        generateSm2KeyPair(keyFormat()).then(([privateKey, publicKey]) => ({
+          privateKey,
+          publicKey,
+        })),
+      {
+        initialValue: { privateKey: "", publicKey: "" },
+      },
+    );
+
+  // 输出
+  const [output] = createResource(
+    () => ({
+      encryption: encryption(),
+      keyFormat: keyFormat(),
+      keyPair: keyPair(),
+      input: input(),
+    }),
+    ({ encryption, keyFormat, keyPair, input }) => {
+      if (input && keyPair.publicKey && keyPair.privateKey) {
+        return (
+          encryption
+            ? encryptSm2(keyFormat, keyPair.publicKey, input)
+            : decryptSm2(keyFormat, keyPair.privateKey, input)
+        ).catch(stringify);
       }
-    } else {
-      setOutput("");
-    }
-  });
+    },
+    { initialValue: "" },
+  );
 
   return (
     <Container>
@@ -69,7 +77,7 @@ export default function Sm2() {
         >
           <Config.Switch
             value={encryption()}
-            onChange={setEncryption}
+            onChange={switchEncryption}
             on="加密"
             off="解密"
           />
@@ -78,12 +86,12 @@ export default function Sm2() {
         {/*密钥格式*/}
         <Config.Option
           label="密钥格式"
-          description="选择私钥和公钥的编码格式"
           icon={() => <PanelLeftRightDashed size={16} />}
+          description="选择私钥和公钥的编码格式"
         >
           <Config.Select
             value={keyFormat()}
-            options={KEY_FORMAT_OPTIONS}
+            options={Object.keys(Sm2KeyFormat)}
             onChange={(value) => setKeyFormat(value as Sm2KeyFormat)}
             class="w-30"
           />
@@ -91,32 +99,30 @@ export default function Sm2() {
       </Config.Card>
 
       {/* 密钥对 */}
-      <Main class="max-h-100">
+      <Main>
         {/*私钥*/}
         <Card
           class="h-full w-0 flex-1"
           title="私钥"
+          loading={keyPair.loading}
           operation={
-            <TextWriteButtons callback={setPrivateKey} position="before">
-              <GenerateButton
-                label="生成密钥对"
-                onGenerate={() =>
-                  generateSm2KeyPair(keyFormat()).then(
-                    ([private_key, public_key]) => {
-                      setPrivateKey(private_key);
-                      setPublicKey(public_key);
-                    },
-                  )
-                }
-              />
-              <CopyButton value={privateKey()} />
+            <TextWriteButtons
+              callback={(privateKey) =>
+                setKeyPair((prev) => ({ ...prev, privateKey }))
+              }
+              position="before"
+            >
+              <GenerateButton label="生成密钥对" onGenerate={refetchKeyPair} />
+              <CopyButton value={keyPair().privateKey} />
             </TextWriteButtons>
           }
         >
           <Editor
-            value={privateKey()}
-            onChange={setPrivateKey}
-            placeholder="输入 SM2 私钥"
+            value={keyPair().privateKey}
+            onChange={(value) =>
+              setKeyPair((prev) => ({ ...prev, privateKey: value }))
+            }
+            placeholder="输入 RSA 私钥"
           />
         </Card>
 
@@ -124,16 +130,23 @@ export default function Sm2() {
         <Card
           class="h-full w-0 flex-1"
           title="公钥"
+          loading={keyPair.loading}
           operation={
-            <TextWriteButtons callback={setPublicKey}>
-              <CopyButton value={publicKey()} />
+            <TextWriteButtons
+              callback={(publicKey) =>
+                setKeyPair((prev) => ({ ...prev, publicKey }))
+              }
+            >
+              <CopyButton value={keyPair().publicKey} />
             </TextWriteButtons>
           }
         >
           <Editor
-            value={publicKey()}
-            onChange={setPublicKey}
-            placeholder="输入 SM2 公钥"
+            value={keyPair().publicKey}
+            onChange={(value) =>
+              setKeyPair((prev) => ({ ...prev, publicKey: value }))
+            }
+            placeholder="输入 RSA 公钥"
           />
         </Card>
       </Main>
@@ -156,6 +169,7 @@ export default function Sm2() {
           class="h-full w-0 flex-1"
           title="输出"
           operation={<TextReadButtons value={output()} />}
+          loading={output.loading}
         >
           <Editor value={output()} readOnly={true} />
         </Card>

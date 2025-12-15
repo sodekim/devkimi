@@ -1,5 +1,6 @@
 import {
   Algorithm,
+  BitSize,
   decodeJwt,
   encodeJwt,
   generateJwtEcdsaKeyPair,
@@ -19,6 +20,7 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import { EncodingTextInput } from "@/component/Encoding";
+import Main from "@/component/Main";
 import Title from "@/component/Title";
 import {
   ArrowLeftRight,
@@ -39,29 +41,11 @@ import {
 } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
-const ALGORITHM_OPTIONS = [
-  { value: "HS256", label: "HS256" },
-  { value: "HS384", label: "HS384" },
-  { value: "HS512", label: "HS512" },
-  { value: "RS256", label: "RS256" },
-  { value: "RS384", label: "RS384" },
-  { value: "RS512", label: "RS512" },
-  { value: "ES256", label: "ES256" },
-  { value: "ES384", label: "ES384" },
-  { value: "ES512", label: "ES512" },
-];
-
-const RSA_BIT_SIZE_OPTIONS = [
-  { value: 2048, label: "2048" },
-  { value: 3072, label: "3072" },
-  { value: 4096, label: "4096" },
-];
-
 const defaultHeader: Header = { alg: Algorithm.HS256, typ: "JWT" };
 
 export default function Jwt() {
   const [algorithm, setAlgorithm] = createSignal<Algorithm>(Algorithm.HS256);
-  const [encode, _setEncode] = createSignal(true);
+  const [encode, setEncode] = createSignal(true);
   const [header, setHeader] = createSignal<Header>(defaultHeader);
   const [payload, setPayload] = createSignal("{}");
   const [secret, setSecret] = createEncodingText();
@@ -101,18 +85,15 @@ export default function Jwt() {
     }
   });
 
-  const setEncode = (value: boolean) => {
+  const switchEncode = (value: boolean) => {
     batch(() => {
       setHeader({ alg: Algorithm.HS256, typ: "JWT" });
       setPayload("{}");
       setToken("");
       setVerified(null);
-      setPrivateKey("");
-      setPublicKey("");
-      setSecret({ text: "", encoding: Encoding.Utf8 });
       setAlgorithm(Algorithm.HS256);
       setRsaBitSize(2048);
-      _setEncode(value);
+      setEncode(value);
     });
   };
 
@@ -167,7 +148,7 @@ export default function Jwt() {
         >
           <Config.Switch
             value={encode()}
-            onChange={setEncode}
+            onChange={switchEncode}
             on="编码"
             off="解码"
           />
@@ -181,7 +162,7 @@ export default function Jwt() {
           >
             <Config.Select
               value={algorithm()}
-              options={ALGORITHM_OPTIONS}
+              options={Object.keys(Algorithm)}
               onChange={(value) => setAlgorithm(value as Algorithm)}
               class="w-40"
             />
@@ -197,7 +178,9 @@ export default function Jwt() {
           >
             <Config.Select
               value={rsaBitSize()}
-              options={RSA_BIT_SIZE_OPTIONS}
+              options={Object.keys(BitSize).filter(
+                (key) => !key.includes("Bit"),
+              )}
               onChange={(value) => setRsaBitSize(value)}
               class="w-30"
             />
@@ -205,23 +188,22 @@ export default function Jwt() {
         </Show>
       </Config.Card>
 
-      <div
-        class={twMerge(
-          "flex h-0 flex-1 gap-4",
-          encode() ? "order-2" : "order-4",
-        )}
-      >
+      <Main class={encode() ? "order-2" : "order-4"}>
         {/*头部*/}
-        <Card class="h-full w-0 flex-1">
-          <div class="flex items-center justify-between">
-            <Title>头部</Title>
-            <Show
-              when={!encode()}
-              fallback={<CopyButton value={prettyHeader()} />}
-            >
-              <TextReadButtons value={prettyHeader()} />
-            </Show>
-          </div>
+        <Card
+          class="h-full w-0 flex-1"
+          title="头部"
+          operation={
+            <Switch>
+              <Match when={encode()}>
+                <CopyButton value={prettyHeader()} />
+              </Match>
+              <Match when={!encode()}>
+                <TextReadButtons value={prettyHeader()} />
+              </Match>
+            </Switch>
+          }
+        >
           <Editor
             value={prettyHeader()}
             placeholder="JWT 头部"
@@ -231,24 +213,30 @@ export default function Jwt() {
         </Card>
 
         {/*载荷*/}
-        <Card class="h-full w-0 flex-1">
-          <div class="flex items-center justify-between">
-            <Title>载荷</Title>
-            <Show
-              when={encode()}
-              fallback={<TextReadButtons value={payload()} />}
-            >
-              <TextWriteButtons callback={(value) => setPayload(value || "{}")}>
-                <button
-                  class="btn btn-sm"
-                  onClick={() => formatJson(payload()).then(setPayload)}
+        <Card
+          class="h-full w-0 flex-1"
+          title="载荷"
+          operation={
+            <Switch>
+              <Match when={encode()}>
+                <TextWriteButtons
+                  callback={(value) => setPayload(value || "{}")}
                 >
-                  <SquareLibrary size={16} />
-                  格式化
-                </button>
-              </TextWriteButtons>
-            </Show>
-          </div>
+                  <button
+                    class="btn btn-sm"
+                    onClick={() => formatJson(payload()).then(setPayload)}
+                  >
+                    <SquareLibrary size={16} />
+                    格式化
+                  </button>
+                </TextWriteButtons>
+              </Match>
+              <Match when={!encode()}>
+                <TextReadButtons value={payload()} />
+              </Match>
+            </Switch>
+          }
+        >
           <Editor
             value={payload()}
             onChange={setPayload}
@@ -257,47 +245,51 @@ export default function Jwt() {
             readOnly={!encode()}
           />
         </Card>
-      </div>
+      </Main>
 
       <Switch>
         <Match when={useKeyPair()}>
           {/* 密钥对 */}
-          <div class="order-3 flex h-0 flex-1 gap-4">
+          <Main class="order-3">
             {/*私钥*/}
-            <Card class="h-full w-0 flex-1">
-              <div class="flex items-center justify-between">
-                <Title>私钥</Title>
+            <Card
+              class="h-full w-0 flex-1"
+              title="私钥"
+              operation={
                 <TextWriteButtons callback={setPrivateKey} position="before">
-                  <GenerateButton
-                    onGenerate={() => {
-                      switch (algorithm()) {
-                        case Algorithm.RS256:
-                        case Algorithm.RS384:
-                        case Algorithm.RS512:
-                          generateJwtRsaKeyPair(rsaBitSize()).then(
-                            ([privateKey, publicKey]) => {
-                              setPublicKey(publicKey);
-                              setPrivateKey(privateKey);
-                            },
-                          );
-                          break;
-                        case Algorithm.ES256:
-                        case Algorithm.ES384:
-                        case Algorithm.ES512:
-                          generateJwtEcdsaKeyPair(algorithm()).then(
-                            ([privateKey, publicKey]) => {
-                              setPublicKey(publicKey);
-                              setPrivateKey(privateKey);
-                            },
-                          );
-                          break;
-                      }
-                    }}
-                    label="生成密钥对"
-                  />
-                  <CopyButton value={privateKey()} />
+                  <Show when={encode()}>
+                    <GenerateButton
+                      onGenerate={() => {
+                        switch (algorithm()) {
+                          case Algorithm.RS256:
+                          case Algorithm.RS384:
+                          case Algorithm.RS512:
+                            generateJwtRsaKeyPair(rsaBitSize()).then(
+                              ([privateKey, publicKey]) => {
+                                setPublicKey(publicKey);
+                                setPrivateKey(privateKey);
+                              },
+                            );
+                            break;
+                          case Algorithm.ES256:
+                          case Algorithm.ES384:
+                          case Algorithm.ES512:
+                            generateJwtEcdsaKeyPair(algorithm()).then(
+                              ([privateKey, publicKey]) => {
+                                setPublicKey(publicKey);
+                                setPrivateKey(privateKey);
+                              },
+                            );
+                            break;
+                        }
+                      }}
+                      label="生成密钥对"
+                    />
+                    <CopyButton value={privateKey()} />
+                  </Show>
                 </TextWriteButtons>
-              </div>
+              }
+            >
               <Editor
                 value={privateKey()}
                 onChange={setPrivateKey}
@@ -306,31 +298,38 @@ export default function Jwt() {
             </Card>
 
             {/*公钥*/}
-            <Card class="h-full w-0 flex-1">
-              <div class="flex items-center justify-between">
-                <Title>公钥</Title>
+            <Card
+              class="h-full w-0 flex-1"
+              title="公钥"
+              operation={
                 <TextWriteButtons callback={setPublicKey} position="before">
                   <CopyButton value={publicKey()} />
                 </TextWriteButtons>
-              </div>
+              }
+            >
               <Editor
                 value={publicKey()}
                 onChange={setPublicKey}
                 placeholder="输入公钥"
               />
             </Card>
-          </div>
+          </Main>
         </Match>
 
         <Match when={!useKeyPair()}>
-          <Card class="order-3">
-            <div class="flex items-center justify-between">
-              <Title>签名密钥</Title>
-              <TextWriteButtons callback={setPayload} />
-            </div>
+          <Card
+            class="order-3"
+            title="签名密钥"
+            operation={<TextWriteButtons callback={setPayload} />}
+          >
             <EncodingTextInput
               value={secret}
-              setValue={setSecret}
+              onEncodingChange={(value) =>
+                setSecret((prev) => ({ ...prev, encoding: value }))
+              }
+              onTextChange={(value) =>
+                setSecret((prev) => ({ ...prev, text: value }))
+              }
               placeholder={encode() ? "输入密钥生成令牌" : "输入密钥校验令牌"}
             />
           </Card>
@@ -338,35 +337,38 @@ export default function Jwt() {
       </Switch>
 
       {/* 令牌 */}
-      <Card class={twMerge("h-60", encode() ? "order-4" : "order-2")}>
-        <div class="flex items-center justify-between">
-          <div class="join gap-4">
-            <Title>令牌</Title>
-            <Show when={verified() !== null}>
-              <Switch>
-                <Match when={verified()}>
-                  <span class="flex items-center justify-center gap-1 text-sm">
-                    <CircleCheckBig size={16} color="var(--color-success)" />
-                    校验成功
-                  </span>
-                </Match>
-                <Match when={!verified()}>
-                  <span class="flex items-center justify-center gap-1 text-sm">
-                    <CircleX size={16} color="var(--color-error)" />
-                    校验失败
-                  </span>
-                </Match>
-              </Switch>
-            </Show>
-          </div>
-
-          <Show
-            when={encode()}
-            fallback={<TextWriteButtons callback={setToken} />}
-          >
-            <TextReadButtons value={token()} />
+      <Card
+        class={twMerge("h-60", encode() ? "order-4" : "order-2")}
+        title="令牌"
+        operation={
+          <Switch>
+            <Match when={encode()}>
+              <TextReadButtons value={token()} />
+            </Match>
+            <Match when={!encode()}>
+              <TextWriteButtons callback={setToken} />
+            </Match>
+          </Switch>
+        }
+        notification={
+          <Show when={verified() !== null}>
+            <Switch>
+              <Match when={verified()}>
+                <span class="flex items-center justify-center gap-1 text-sm">
+                  <CircleCheckBig size={16} color="var(--color-success)" />
+                  校验成功
+                </span>
+              </Match>
+              <Match when={!verified()}>
+                <span class="flex items-center justify-center gap-1 text-sm">
+                  <CircleX size={16} color="var(--color-error)" />
+                  校验失败
+                </span>
+              </Match>
+            </Switch>
           </Show>
-        </div>
+        }
+      >
         <Editor value={token()} readOnly={encode()} onChange={setToken} />
       </Card>
     </Container>

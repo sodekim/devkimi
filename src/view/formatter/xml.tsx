@@ -4,9 +4,8 @@ import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import MainLayout from "@/component/IOLayout";
 import Main from "@/component/Main";
-import Title from "@/component/Title";
+import { stringify } from "@/lib/util";
 import { Space } from "lucide-solid";
 import { createResource, createSignal } from "solid-js";
 
@@ -24,7 +23,7 @@ export default function XmlFormatter() {
     () => ({ indent: indent(), input: input() }),
     ({ indent, input }) => {
       if (input) {
-        return formatXml(input, indent).catch((e) => e.toString());
+        return formatXml(input, indent).catch(stringify);
       }
     },
   );

@@ -4,7 +4,8 @@ import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import Title from "@/component/Title";
+import Flex from "@/component/Flex";
+import { stringify } from "@/lib/util";
 import { ALargeSmall, RefreshCcw, Sigma } from "lucide-solid";
 import { createResource, createSignal } from "solid-js";
 
@@ -18,7 +19,7 @@ export default function CronConverter() {
     ({ cron, size, pattern }) => {
       return parseCron(cron, size, pattern)
         .then((times) => times.join("\n"))
-        .catch((e) => e.toString());
+        .catch(stringify);
     },
   );
 
@@ -51,14 +52,15 @@ export default function CronConverter() {
       </Config.Card>
 
       {/*CRON表达式*/}
-      <Card>
-        <div class="flex items-center justify-between">
-          <Title>CRON表达式</Title>
-          <div class="flex items-center justify-center gap-2">
+      <Card
+        title="CRON表达式"
+        operation={
+          <Flex>
             <PasteButton onRead={setCron} />
             <ClearButton onClick={() => setCron("")} />
-          </div>
-        </div>
+          </Flex>
+        }
+      >
         <input
           class="input input-md w-full rounded-md font-mono font-bold outline-none"
           value={cron()}
@@ -67,16 +69,19 @@ export default function CronConverter() {
       </Card>
 
       {/*计划时间*/}
-      <Card class="h-0 flex-1">
-        <div class="flex items-center justify-between">
-          <Title loading={output.loading}>计划执行时间</Title>
+      <Card
+        class="h-0 flex-1"
+        title="计划执行时间"
+        loading={output.loading}
+        operation={
           <TextReadButtons value={output()} position="before">
             <button class="btn btn-sm" onClick={() => refetch()}>
               <RefreshCcw size={16} />
               重新生成
             </button>
           </TextReadButtons>
-        </div>
+        }
+      >
         <Editor value={output()} readOnly={true} />
       </Card>
     </Container>

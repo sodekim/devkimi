@@ -1,9 +1,10 @@
 import { decodeURL, encodeURL } from "@/command/codec/url";
 import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
+import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import MainLayout from "@/component/IOLayout";
+import Main from "@/component/Main";
 import Title from "@/component/Title";
 import { ArrowLeftRight } from "lucide-solid";
 import { batch, createResource, createSignal } from "solid-js";
@@ -52,28 +53,27 @@ export default function UrlCodec() {
         </Config.Option>
       </Config.Card>
 
-      <MainLayout
-        items={[
-          <>
-            <div class="flex items-center justify-between">
-              <Title>输入</Title>
-              <TextWriteButtons callback={setInput} />
-            </div>
-            <Editor
-              value={input()}
-              onChange={setInput}
-              placeholder={encode() ? "输入要编码的文本" : "输入要解码的文本"}
-            />
-          </>,
-          <>
-            <div class="flex items-center justify-between">
-              <Title loading={output.loading}>输出</Title>
-              <TextReadButtons value={output()} />
-            </div>
-            <Editor value={output()} readOnly={true} />
-          </>,
-        ]}
-      />
+      <Main>
+        <Card
+          class="h-full w-0 flex-1"
+          title="输入"
+          operation={<TextWriteButtons callback={setInput} />}
+        >
+          <Editor
+            value={input()}
+            onChange={setInput}
+            placeholder={encode() ? "输入要编码的文本" : "输入要解码的文本"}
+          />
+        </Card>
+        <Card
+          class="h-full w-0 flex-1"
+          title="输出"
+          operation={<TextReadButtons value={output()} />}
+          loading={output.loading}
+        >
+          <Editor value={output()} readOnly={true} />
+        </Card>
+      </Main>
     </Container>
   );
 }

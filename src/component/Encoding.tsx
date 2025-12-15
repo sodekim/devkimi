@@ -45,8 +45,9 @@ export function EncodingSelect(props: {
 
 export function EncodingTextInput(props: {
   value: EncodingText;
-  setValue?: SetStoreFunction<EncodingText>;
   placeholder?: string;
+  onEncodingChange?: (value: Encoding) => void;
+  onTextChange?: (value: string) => void;
 }) {
   return (
     <div class="join gap-2">
@@ -55,14 +56,10 @@ export function EncodingTextInput(props: {
         <select
           class="select select-md rounded-md"
           value={props.value.encoding}
-          onChange={(e) =>
-            props.setValue?.("encoding", e.target.value as Encoding)
-          }
+          onChange={(e) => props.onEncodingChange?.(e.target.value as Encoding)}
         >
           {ENCODING_OPTIONS.map((option) => (
-            <option value={option.value}>
-              {option.label}
-            </option>
+            <option value={option.value}>{option.label}</option>
           ))}
         </select>
       </label>
@@ -71,7 +68,7 @@ export function EncodingTextInput(props: {
         class="input input-md flex-1 rounded-md outline-none"
         placeholder={props.placeholder}
         value={props.value.text}
-        onInput={(e) => props.setValue?.("text", e.target.value)}
+        onInput={(e) => props.onTextChange?.(e.target.value)}
       />
     </div>
   );

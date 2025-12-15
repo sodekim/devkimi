@@ -37,7 +37,6 @@ export type Settings = {
   common: {
     theme: string;
     openConfigCollapse: boolean;
-    ioLayout: IOLayout;
   };
   // 编辑器配置
   editor: {
@@ -57,7 +56,7 @@ const defaultSettings: Settings = {
   system: {
     closeBehavior: "quit",
   },
-  common: { theme: "dark", openConfigCollapse: true, ioLayout: "horizontal" },
+  common: { theme: "dark", openConfigCollapse: true },
   editor: { wordWrap: "off", font: { family: "SansSerif", size: 14 } },
   debug: { level: "info" },
 };

@@ -7,7 +7,6 @@ import {
 import {
   BLOCK_MODE_OPTIONS,
   BlockMode,
-  createEncodingText,
   Encoding,
   Padding,
   PADDING_OPTIONS,
@@ -24,57 +23,79 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import { EncodingSelect, EncodingTextInput } from "@/component/Encoding";
-import MainLayout from "@/component/IOLayout";
+import Flex from "@/component/Flex";
 import Main from "@/component/Main";
-import Title from "@/component/Title";
+import { stringify } from "@/lib/util";
 import { ArrowLeftRight, Blend, PanelLeftRightDashed } from "lucide-solid";
-import { batch, createEffect, createMemo, createSignal, Show } from "solid-js";
+import { batch, createResource, createSignal, Show } from "solid-js";
+import { createStore } from "solid-js/store";
 
-export default function Sm4() {
-  const [encryption, _setEncryption] = createSignal(true);
+export default function Sm4Crypto() {
+  const [encryption, setEncryption] = createSignal(true);
   const [blockMode, setBlockMode] = createSignal(BlockMode.Cbc);
-  const [key, setKey] = createEncodingText();
-  const [iv, setIv] = createEncodingText();
   const [padding, setPadding] = createSignal(Padding.Pkcs7);
-  const [input, setInput] = createEncodingText({ encoding: Encoding.Utf8 });
-  const [output, setOutput] = createSignal("");
-  const [encoding, setEncoding] = createSignal(Encoding.Hex);
-  const inputEncodingExcludes = createMemo(() =>
-    encryption() ? [] : [Encoding.Utf8],
-  );
-  const outputEncodingExcludes = createMemo(() =>
-    encryption() ? [Encoding.Utf8] : [],
-  );
-  const setEncryption = (value: boolean) => {
+  const [input, setInput] = createSignal("");
+  const [encodings, setEncodings] = createStore<{
+    key: Encoding;
+    iv: Encoding;
+    input: Encoding;
+    output: Encoding;
+  }>({
+    key: Encoding.Utf8,
+    iv: Encoding.Utf8,
+    input: Encoding.Utf8,
+    output: Encoding.Hex,
+  });
+
+  // 切换加密/解密
+  const switchEncryption = (value: boolean) => {
     batch(() => {
-      if (value) {
-        setInput("encoding", Encoding.Utf8);
-        setEncoding(Encoding.Hex);
-      } else {
-        setInput("encoding", Encoding.Hex);
-        setEncoding(Encoding.Utf8);
-      }
-      setInput("text", "");
-      setOutput("");
-      _setEncryption(value);
+      setIv("");
+      setBlockMode(BlockMode.Cbc);
+      setPadding(Padding.Pkcs7);
+      setEncodings({
+        key: Encoding.Utf8,
+        iv: Encoding.Utf8,
+        input: value ? Encoding.Utf8 : Encoding.Hex,
+        output: value ? Encoding.Hex : Encoding.Utf8,
+      });
+      setEncryption(value);
     });
   };
 
-  createEffect(() => {
-    if (input.text.length > 0) {
-      if (encryption()) {
-        encryptSm4(input, key, iv, blockMode(), padding(), encoding())
-          .then(setOutput)
-          .catch((e) => setOutput(e.toString()));
-      } else {
-        decryptSm4(input, key, iv, blockMode(), padding(), encoding())
-          .then(setOutput)
-          .catch((e) => setOutput(e.toString()));
-      }
-    } else {
-      setOutput("");
+  // 加密key
+  const [key, { mutate: setKey, refetch: refetchKey }] = createResource(() =>
+    generateSm4Key(encodings.key).catch(stringify),
+  );
+
+  // 加密iv
+  const [iv, { mutate: setIv, refetch: refetchIv }] = createResource(() => {
+    if (blockMode() !== BlockMode.Ecb) {
+      return generateSm4Iv(blockMode(), encodings.iv).catch(stringify);
     }
   });
+
+  // 输出
+  const [output] = createResource(
+    () => ({
+      input: { text: input(), encoding: encodings.input },
+      key: { text: key(), encoding: encodings.key },
+      iv: { text: iv(), encoding: encodings.iv },
+      blockMode: blockMode(),
+      padding: padding(),
+      encoding: encodings.output,
+    }),
+    ({ input, key, iv, blockMode, padding, encoding }) => {
+      if (input.text && key.text && (iv.text || blockMode === BlockMode.Ecb)) {
+        return (
+          encryption()
+            ? encryptSm4(input, key, iv, blockMode, padding, encoding)
+            : decryptSm4(input, key, iv, blockMode, padding, encoding)
+        ).catch(stringify);
+      }
+    },
+  );
+
   return (
     <Container>
       {/* 配置 */}
@@ -87,7 +108,7 @@ export default function Sm4() {
         >
           <Config.Switch
             value={encryption()}
-            onChange={setEncryption}
+            onChange={switchEncryption}
             on="加密"
             off="解密"
           />
@@ -125,49 +146,42 @@ export default function Sm4() {
       </Config.Card>
 
       {/* 密钥 */}
-      <Card>
-        <div class="flex items-center justify-between">
-          <Title>密钥</Title>
-          <div class="flex items-center justify-center gap-2">
-            <GenerateButton
-              onGenerate={() =>
-                generateSm4Key(key.encoding).then((value) =>
-                  setKey("text", value),
-                )
-              }
-            />
-            <PasteButton onRead={(value) => setKey("text", value)} />
-            <ClearButton onClick={() => setKey("text", "")} />
-          </div>
-        </div>
+      <Card
+        title="密钥"
+        loading={key.loading}
+        operation={
+          <Flex>
+            <GenerateButton onGenerate={refetchKey} />
+            <PasteButton onRead={setKey} />
+            <ClearButton onClick={() => setKey("")} />
+          </Flex>
+        }
+      >
         <EncodingTextInput
-          value={key}
-          setValue={setKey}
+          value={{ text: key(), encoding: encodings.key }}
+          onTextChange={setKey}
+          onEncodingChange={(value) => setEncodings("key", value)}
           placeholder="输入密钥"
         />
       </Card>
 
       {/* 向量 */}
-      <Show when={blockMode() !== "Ecb"}>
-        <Card>
-          <div class="flex items-center justify-between">
-            <Title>向量</Title>
-            <div class="flex items-center justify-center gap-2">
-              <GenerateButton
-                label="生成向量"
-                onGenerate={() =>
-                  generateSm4Iv(blockMode(), iv.encoding).then((value) =>
-                    setIv("text", value),
-                  )
-                }
-              />
-              <PasteButton onRead={(value) => setIv("text", value)} />
-              <ClearButton onClick={() => setIv("text", "")} />
-            </div>
-          </div>
+      <Show when={blockMode() !== BlockMode.Ecb}>
+        <Card
+          title="向量"
+          loading={iv.loading}
+          operation={
+            <Flex>
+              <GenerateButton label="生成向量" onGenerate={refetchIv} />
+              <PasteButton onRead={setIv} />
+              <ClearButton onClick={() => setIv("")} />
+            </Flex>
+          }
+        >
           <EncodingTextInput
-            value={iv}
-            setValue={setIv}
+            value={{ text: iv(), encoding: encodings.iv }}
+            onTextChange={setIv}
+            onEncodingChange={(value) => setEncodings("iv", value)}
             placeholder="输入向量"
           />
         </Card>
@@ -178,35 +192,33 @@ export default function Sm4() {
           class="h-full w-0 flex-1"
           title="输入"
           operation={
-            <TextWriteButtons
-              callback={(value) => setInput("text", value)}
-              position="before"
-            >
+            <TextWriteButtons callback={setInput} position="before">
               <EncodingSelect
                 label="编码"
-                value={input.encoding}
-                onChange={(value) => setInput("encoding", value)}
-                exclude={inputEncodingExcludes()}
+                value={encodings.input}
+                onChange={(value) => setEncodings("input", value)}
+                exclude={encryption() ? [] : [Encoding.Utf8]}
               />
             </TextWriteButtons>
           }
         >
           <Editor
-            value={input.text}
-            onChange={(value) => setInput("text", value)}
+            value={input()}
+            onChange={setInput}
             placeholder={encryption() ? "输入要加密的数据" : "输入要解密的数据"}
           />
         </Card>
         <Card
           class="h-full w-0 flex-1"
           title="输出"
+          loading={output.loading}
           operation={
             <TextReadButtons value={output()} position="before">
               <EncodingSelect
                 label="编码"
-                exclude={outputEncodingExcludes()}
-                value={encoding()}
-                onChange={(value) => setEncoding(value)}
+                exclude={encryption() ? [Encoding.Utf8] : []}
+                value={encodings.output}
+                onChange={(value) => setEncodings("output", value)}
               />
             </TextReadButtons>
           }

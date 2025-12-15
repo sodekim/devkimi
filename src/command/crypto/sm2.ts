@@ -1,6 +1,10 @@
 import { invoke } from "@tauri-apps/api/core";
 
-export type Sm2KeyFormat = "Sec1" | "Pkcs8" | "Hex";
+export enum Sm2KeyFormat {
+  Sec1 = "Sec1",
+  Pkcs8 = "Pkcs8",
+  Hex = "Hex",
+}
 
 export function generateSm2KeyPair(keyFormat: Sm2KeyFormat) {
   return invoke<string[]>("generate_sm2_key_pair", { keyFormat });

@@ -11,6 +11,7 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Title from "@/component/Title";
+import { stringify } from "@/lib/util";
 import {
   CaseUpper,
   CircleCheckBig,
@@ -18,16 +19,7 @@ import {
   Paperclip,
   Settings2,
 } from "lucide-solid";
-import {
-  batch,
-  createEffect,
-  createMemo,
-  createResource,
-  createSignal,
-  Match,
-  Show,
-  Switch,
-} from "solid-js";
+import { createResource, createSignal, Match, Show, Switch } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
 enum HashAlgorithm {
@@ -75,7 +67,7 @@ export default function HashGenerator() {
         input.value,
         algorithm,
         uppercase,
-      ).catch((e) => e.toString());
+      ).catch(stringify);
     },
     { initialValue: "" },
   );
@@ -167,11 +159,11 @@ export default function HashGenerator() {
       </Card>
 
       {/*哈希值*/}
-      <Card>
-        <div class="flex items-center justify-between">
-          <Title loading={output.loading}>哈希值</Title>
-          <TextReadButtons value={output()} />
-        </div>
+      <Card
+        title="哈希值"
+        loading={output.loading}
+        operation={<TextReadButtons value={output()} />}
+      >
         <input
           class="input input-md w-full font-mono font-bold outline-none"
           value={output() || ""}
@@ -180,29 +172,28 @@ export default function HashGenerator() {
       </Card>
 
       {/*校验哈希值*/}
-      <Card>
-        <div class="flex items-center justify-between">
-          <div class="join gap-4">
-            <Title>校验哈希值</Title>
-            <Show when={target()}>
-              <Switch>
-                <Match when={matched()}>
-                  <span class="flex items-center justify-center gap-1 text-sm">
-                    <CircleCheckBig size={16} color="var(--color-success)" />
-                    校验成功
-                  </span>
-                </Match>
-                <Match when={!matched()}>
-                  <span class="flex items-center justify-center gap-1 text-sm">
-                    <CircleX size={16} color="var(--color-error)" />
-                    校验失败
-                  </span>
-                </Match>
-              </Switch>
-            </Show>
-          </div>
-          <TextWriteButtons callback={setTarget} />
-        </div>
+      <Card
+        title="校验哈希值"
+        operation={<TextWriteButtons callback={setTarget} />}
+        notification={
+          <Show when={target()}>
+            <Switch>
+              <Match when={matched()}>
+                <span class="flex items-center justify-center gap-1 text-sm">
+                  <CircleCheckBig size={16} color="var(--color-success)" />
+                  校验成功
+                </span>
+              </Match>
+              <Match when={!matched()}>
+                <span class="flex items-center justify-center gap-1 text-sm">
+                  <CircleX size={16} color="var(--color-error)" />
+                  校验失败
+                </span>
+              </Match>
+            </Switch>
+          </Show>
+        }
+      >
         <input
           class="input input-md w-full font-mono font-bold outline-none"
           value={target()}

@@ -5,6 +5,7 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Title from "@/component/Title";
+import { stringify } from "@/lib/util";
 import {
   Binary,
   CaseLower,
@@ -46,7 +47,7 @@ export default function PasswordGenerator() {
         excludes,
       )
         .then((passwords) => passwords.join("\n"))
-        .catch((e) => e.toString()),
+        .catch(stringify),
   );
 
   return (
@@ -123,16 +124,19 @@ export default function PasswordGenerator() {
       </Config.Card>
 
       {/*输出*/}
-      <Card class="h-0 flex-1">
-        <div class="flex items-center justify-between">
-          <Title loading={output.loading}>输出</Title>
+      <Card
+        class="h-0 flex-1"
+        title="输出"
+        loading={output.loading}
+        operation={
           <TextReadButtons value={output()} position="before">
             <button class="btn btn-sm" onClick={() => refetch()}>
               <RefreshCcw size={16} />
               重新生成
             </button>
           </TextReadButtons>
-        </div>
+        }
+      >
         <Editor value={output()} language="plaintext" readOnly={true} />
       </Card>
     </Container>

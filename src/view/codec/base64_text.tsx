@@ -9,9 +9,8 @@ import Config from "@/component/Config";
 import ConfigSwitch from "@/component/Config/Switch";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import MainLayout from "@/component/IOLayout";
 import Main from "@/component/Main";
-import Title from "@/component/Title";
+import { stringify } from "@/lib/util";
 import { ArrowLeftRight, Layers } from "lucide-solid";
 import { batch, createResource, createSignal } from "solid-js";
 
@@ -35,7 +34,7 @@ export default function Base64TextCodec() {
       if (input) {
         return (
           encode ? encodeTextBase64(input, mode) : decodeTextBase64(input, mode)
-        ).catch((e) => e.toString());
+        ).catch(stringify);
       }
     },
     { initialValue: "" },

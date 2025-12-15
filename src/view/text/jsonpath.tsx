@@ -11,6 +11,7 @@ import Card from "@/component/Card";
 import Editor from "@/component/Editor";
 import Title from "@/component/Title";
 import Flex from "@/component/Flex";
+import { stringify } from "@/lib/util";
 
 const JsonPathGrammars: Array<{ expression: string; description: string }> = [
   {
@@ -126,7 +127,7 @@ export default function JSONPath() {
     () => ({ pattern: pattern(), text: text() }),
     ({ pattern, text }) => {
       if (text && pattern) {
-        return parseJsonPath(text, pattern).catch((e) => e.toString());
+        return parseJsonPath(text, pattern).catch(stringify);
       }
     },
   );
@@ -134,14 +135,15 @@ export default function JSONPath() {
   return (
     <Container>
       {/*JSONPath*/}
-      <Card>
-        <div class="flex items-center justify-between">
-          <Title>JSONPath</Title>
-          <div class="flex items-center justify-center gap-2">
+      <Card
+        title="JSONPath"
+        operation={
+          <Flex>
             <PasteButton onRead={setPattern} />
             <ClearButton onClick={() => setPattern("")} />
-          </div>
-        </div>
+          </Flex>
+        }
+      >
         <input
           class="input input-md w-full rounded-md font-mono font-bold outline-none"
           placeholder="输入 JSONPath 表达式"

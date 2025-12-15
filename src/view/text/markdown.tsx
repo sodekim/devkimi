@@ -9,6 +9,7 @@ import { createEffect, createResource, createSignal } from "solid-js";
 import "./a11y-dark.css";
 import Main from "@/component/Main";
 import { stringify } from "@/lib/util";
+import Flex from "@/component/Flex";
 
 export default function MarkdownPreview() {
   const [markdown, setMarkdown] = createSignal("");
@@ -34,14 +35,16 @@ export default function MarkdownPreview() {
     <Container>
       <Main>
         {/*输入*/}
-        <Card class="h-full w-0 flex-1">
-          <div class="flex items-center justify-between">
-            <Title>Markdown</Title>
-            <div class="flex items-center justify-center gap-2">
+        <Card
+          class="h-full w-0 flex-1"
+          title="Markdown"
+          operation={
+            <Flex>
               <TextReadButtons value={markdown()} />
               <TextWriteButtons callback={setMarkdown} />
-            </div>
-          </div>
+            </Flex>
+          }
+        >
           <Editor
             value={markdown()}
             onChange={(value) => setMarkdown(value)}
@@ -50,10 +53,7 @@ export default function MarkdownPreview() {
         </Card>
 
         {/*输出*/}
-        <Card class="h-full w-0 flex-1">
-          <div class="flex items-center justify-between">
-            <Title loading={html.loading}>预览</Title>
-          </div>
+        <Card class="h-full w-0 flex-1" title="预览">
           <div
             id="preview"
             class="prose dark:prose-invert border-base-content/20 size-full max-w-full overflow-auto rounded-md border p-2"

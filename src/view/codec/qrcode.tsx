@@ -1,22 +1,18 @@
 import { decodeQrCode, encodeQrCode } from "@/command/codec/qrcode";
-import { saveBase64Image } from "@/command/fs";
 import {
   Base64ImageButtons,
-  OpenBase64ImageButton,
   PickImageFileButton,
   TextReadButtons,
-  TextWriteButtons,
+  TextWriteButtons
 } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import Flex from "@/component/Flex";
 import Main from "@/component/Main";
 import { stringify } from "@/lib/util";
 import { convertFileSrc } from "@tauri-apps/api/core";
-import { open } from "@tauri-apps/plugin-dialog";
-import { ArrowLeftRight, Image, Save } from "lucide-solid";
+import { ArrowLeftRight, Image } from "lucide-solid";
 import {
   batch,
   createResource,

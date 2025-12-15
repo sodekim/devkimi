@@ -2,8 +2,7 @@ import { ClearButton, PasteButton } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Container from "@/component/Container";
 import Flex from "@/component/Flex";
-import MainLayout from "@/component/IOLayout";
-import Title from "@/component/Title";
+import Main from "@/component/Main";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import AirDatepicker from "air-datepicker";
 import "air-datepicker/air-datepicker.css";
@@ -189,8 +188,7 @@ export default function TimeConverter() {
 
   return (
     <Container>
-      <Card>
-        <Title>当前时间</Title>
+      <Card title="当前时间">
         <div class="border-base-content/20 flex items-center justify-center gap-2 rounded-md border p-4">
           <div class="flex flex-1 flex-col items-center justify-center gap-4">
             <span class="font-mono text-4xl font-bold">{time()}</span>
@@ -226,124 +224,120 @@ export default function TimeConverter() {
         </div>
       </Card>
 
-      <MainLayout
-        vertical={{ full: false }}
-        items={[
-          <>
-            <div class="flex items-center justify-between">
-              <Title>时间戳转时间</Title>
-              <div class="flex items-center justify-center gap-2">
-                <PasteButton onRead={(value) => setTimestamp(Number(value))} />
-                <ClearButton onClick={() => setTimestamp(undefined)} />
-              </div>
-            </div>
-
+      <Main>
+        <Card
+          class="w-0 flex-1"
+          title="时间戳转时间"
+          operation={
             <Flex>
-              <label class="select flex-1 outline-none">
-                <span class="label">单位</span>
-                <select
-                  onChange={(e) =>
-                    setTimestampUnit(
-                      e.target.value as "milliseconds" | "seconds",
-                    )
-                  }
-                >
-                  <option
-                    value="milliseconds"
-                    selected={timestampUnit() === "milliseconds"}
-                  >
-                    毫秒
-                  </option>
-                  <option
-                    value="seconds"
-                    selected={timestampUnit() === "seconds"}
-                  >
-                    秒
-                  </option>
-                </select>
-              </label>
-              <input
-                type="number"
-                class="input flex-1 [appearance:textfield] font-mono text-lg font-bold outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                placeholder="输入时间戳"
-                value={`${timestamp() || ""}`}
-                onInput={(e) => setTimestamp(e.target.valueAsNumber)}
-              />
+              <PasteButton onRead={(value) => setTimestamp(Number(value))} />
+              <ClearButton onClick={() => setTimestamp(undefined)} />
             </Flex>
-            <fieldset class="fieldset bg-base-200 rounded-box w-full p-4">
-              <legend class="fieldset-legend">转换结果</legend>
-              <label class="label">本地时间</label>
-              <ClickCopyButton
-                class="w-full"
-                value={parseTimestampResult().local || "-"}
-              />
+          }
+        >
+          <Flex>
+            <label class="select flex-1 outline-none">
+              <span class="label">单位</span>
+              <select
+                onChange={(e) =>
+                  setTimestampUnit(e.target.value as "milliseconds" | "seconds")
+                }
+              >
+                <option
+                  value="milliseconds"
+                  selected={timestampUnit() === "milliseconds"}
+                >
+                  毫秒
+                </option>
+                <option
+                  value="seconds"
+                  selected={timestampUnit() === "seconds"}
+                >
+                  秒
+                </option>
+              </select>
+            </label>
+            <input
+              type="number"
+              class="input flex-1 [appearance:textfield] font-mono text-lg font-bold outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              placeholder="输入时间戳"
+              value={`${timestamp() || ""}`}
+              onInput={(e) => setTimestamp(e.target.valueAsNumber)}
+            />
+          </Flex>
+          <fieldset class="fieldset bg-base-200 rounded-box w-full p-4">
+            <legend class="fieldset-legend">转换结果</legend>
+            <label class="label">本地时间</label>
+            <ClickCopyButton
+              class="w-full"
+              value={parseTimestampResult().local || "-"}
+            />
 
-              <label class="label">UTC 时间</label>
-              <ClickCopyButton
-                class="w-full"
-                value={parseTimestampResult().utc || "-"}
-              />
+            <label class="label">UTC 时间</label>
+            <ClickCopyButton
+              class="w-full"
+              value={parseTimestampResult().utc || "-"}
+            />
 
-              <label class="label">ISO 8601</label>
-              <ClickCopyButton
-                class="w-full"
-                value={parseTimestampResult().iso8601 || "-"}
-              />
-            </fieldset>
-          </>,
-          <>
-            <div class="flex items-center justify-between">
-              <Title>时间转时间戳</Title>
-              <div class="flex items-center justify-center gap-2">
-                <ClearButton onClick={() => setDateTime("")} />
-              </div>
-            </div>
-
+            <label class="label">ISO 8601</label>
+            <ClickCopyButton
+              class="w-full"
+              value={parseTimestampResult().iso8601 || "-"}
+            />
+          </fieldset>
+        </Card>
+        <Card
+          class="w-0 flex-1"
+          title="时间转时间戳"
+          operation={
             <Flex>
-              <label class="select flex-1 outline-none">
-                <span class="label">时区</span>
-                <select
-                  value={parseDateTimeZone()}
-                  onChange={(e) => setParseDateTimeZone(e.target.value)}
-                >
-                  <option value={atTimeZone}>
-                    本地时区 (UTC +{utcOffset})
-                  </option>
-                  <option value="UTC">UTC +0</option>
-                  {timeZoneOptions()}
-                </select>
-              </label>
-              <input
-                id="datetime"
-                class="input flex-1 [appearance:textfield] font-mono text-lg font-bold outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                placeholder="选择时间"
-                value={dateTime()}
-                readOnly
-              />
+              <PasteButton onRead={(value) => setTimestamp(Number(value))} />
+              <ClearButton onClick={() => setTimestamp(undefined)} />
             </Flex>
-            <fieldset class="fieldset bg-base-200 rounded-box w-full p-4">
-              <legend class="fieldset-legend">转换结果</legend>
-              <label class="label">UNIX 时间戳 (秒)</label>
-              <ClickCopyButton
-                class="w-full"
-                value={`${parseDateTimeResult().seconds ?? "-"}`}
-              />
+          }
+        >
+          <Flex>
+            <label class="select flex-1 outline-none">
+              <span class="label">时区</span>
+              <select
+                value={parseDateTimeZone()}
+                onChange={(e) => setParseDateTimeZone(e.target.value)}
+              >
+                <option value={atTimeZone}>本地时区 (UTC +{utcOffset})</option>
+                <option value="UTC">UTC +0</option>
+                {timeZoneOptions()}
+              </select>
+            </label>
+            <input
+              id="datetime"
+              class="input flex-1 [appearance:textfield] font-mono text-lg font-bold outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              placeholder="选择时间"
+              value={dateTime()}
+              readOnly
+            />
+          </Flex>
+          <fieldset class="fieldset bg-base-200 rounded-box w-full p-4">
+            <legend class="fieldset-legend">转换结果</legend>
+            <label class="label">UNIX 时间戳 (秒)</label>
+            <ClickCopyButton
+              class="w-full"
+              value={`${parseDateTimeResult().seconds ?? "-"}`}
+            />
 
-              <label class="label">UNIX 时间戳 (毫秒)</label>
-              <ClickCopyButton
-                class="w-full"
-                value={`${parseDateTimeResult().milliseconds ?? "-"}`}
-              />
+            <label class="label">UNIX 时间戳 (毫秒)</label>
+            <ClickCopyButton
+              class="w-full"
+              value={`${parseDateTimeResult().milliseconds ?? "-"}`}
+            />
 
-              <label class="label">UNIX 时间戳 (微秒)</label>
-              <ClickCopyButton
-                class="w-full"
-                value={`${parseDateTimeResult().microseconds ?? "-"}`}
-              />
-            </fieldset>
-          </>,
-        ]}
-      />
+            <label class="label">UNIX 时间戳 (微秒)</label>
+            <ClickCopyButton
+              class="w-full"
+              value={`${parseDateTimeResult().microseconds ?? "-"}`}
+            />
+          </fieldset>
+        </Card>
+      </Main>
     </Container>
   );
 }

@@ -2,7 +2,6 @@ import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
-import Title from "@/component/Title";
 import { PaintRoller } from "lucide-solid";
 import { createSignal } from "solid-js";
 
@@ -104,57 +103,61 @@ export default function NumberConverter() {
         </Config.Option>
       </Config.Card>
 
-      <Card>
-        <div class="flex items-center justify-between">
-          <Title>十六进制</Title>
+      <Card
+        title="十六进制"
+        operation={
           <TextWriteButtons callback={(value) => update(value, 16)}>
             <TextReadButtons value={hex()} />
           </TextWriteButtons>
-        </div>
+        }
+      >
         <input
-          class="input input-md w-full font-mono font-bold outline-none text-lg"
+          class="input input-md w-full font-mono text-lg font-bold outline-none"
           value={hex()}
           onInput={(e) => update(e.target.value, 16)}
         />
       </Card>
 
-      <Card>
-        <div class="flex items-center justify-between">
-          <Title>十进制</Title>
+      <Card
+        title="十进制"
+        operation={
           <TextWriteButtons callback={(value) => update(value, 10)}>
             <TextReadButtons value={decimal()} />
           </TextWriteButtons>
-        </div>
+        }
+      >
         <input
-          class="input input-md w-full font-mono font-bold outline-none text-lg"
+          class="input input-md w-full font-mono text-lg font-bold outline-none"
           value={decimal()}
           onInput={(e) => update(e.target.value, 10)}
         />
       </Card>
 
-      <Card>
-        <div class="flex items-center justify-between">
-          <Title>八进制</Title>
+      <Card
+        title="八进制"
+        operation={
           <TextWriteButtons callback={(value) => update(value, 8)}>
             <TextReadButtons value={octal()} />
           </TextWriteButtons>
-        </div>
+        }
+      >
         <input
-          class="input input-md w-full font-mono font-bold outline-none text-lg"
+          class="input input-md w-full font-mono text-lg font-bold outline-none"
           value={octal()}
           onInput={(e) => update(e.target.value, 8)}
         />
       </Card>
 
-      <Card>
-        <div class="flex items-center justify-between">
-          <Title>二进制</Title>
+      <Card
+        title="二进制"
+        operation={
           <TextWriteButtons callback={(value) => update(value, 2)}>
             <TextReadButtons value={binary()} />
           </TextWriteButtons>
-        </div>
+        }
+      >
         <input
-          class="input input-md w-full font-mono font-bold outline-none text-lg"
+          class="input input-md w-full font-mono text-lg font-bold outline-none"
           value={binary()}
           onInput={(e) => update(e.target.value, 2)}
         />

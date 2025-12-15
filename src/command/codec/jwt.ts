@@ -13,16 +13,18 @@ export enum Algorithm {
   ES512 = "ES512",
 }
 
+export enum BitSize {
+  Bit2048 = 2048,
+  Bit3072 = 3072,
+  Bit4096 = 4096,
+}
+
 export type Header = {
   alg: Algorithm;
   typ: "JWT";
 };
 
-export function encodeJwt(
-  header: Header,
-  payload: string,
-  key: EncodingText,
-) {
+export function encodeJwt(header: Header, payload: string, key: EncodingText) {
   return invoke<string>("encode_jwt", { header, payload, key });
 }
 
@@ -33,11 +35,10 @@ export function decodeJwt(token: string, key: EncodingText) {
   });
 }
 
-
 export function generateJwtEcdsaKeyPair(algorithm: Algorithm) {
   return invoke<[string, string]>("generate_jwt_ecdsa_key_pair", { algorithm });
 }
 
-export function generateJwtRsaKeyPair(bitSize: number) {
+export function generateJwtRsaKeyPair(bitSize: BitSize) {
   return invoke<[string, string]>("generate_jwt_rsa_key_pair", { bitSize });
 }

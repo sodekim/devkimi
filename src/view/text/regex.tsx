@@ -135,14 +135,15 @@ export default function RegexTest() {
       </Config.Card>
 
       {/*正则表达式*/}
-      <Card>
-        <div class="flex items-center justify-between">
-          <Title>正则表达式</Title>
-          <div class="flex items-center justify-center gap-2">
+      <Card
+        title="正则表达式"
+        operation={
+          <Flex>
             <PasteButton onRead={setPattern} />
             <ClearButton onClick={() => setPattern("")} />
-          </div>
-        </div>
+          </Flex>
+        }
+      >
         <input
           class="input input-md w-full rounded-md font-mono font-bold outline-none"
           placeholder="输入正则表达式"
@@ -152,13 +153,11 @@ export default function RegexTest() {
       </Card>
 
       {/*文本*/}
-      <Card class="h-0 flex-1">
-        <div class="flex items-center justify-between">
-          <Title>文本</Title>
-          <div class="flex items-center justify-center gap-2">
-            <TextWriteButtons callback={setText} />
-          </div>
-        </div>
+      <Card
+        class="h-0 flex-1"
+        title="文本"
+        operation={<TextWriteButtons callback={setText} />}
+      >
         <Editor
           value={text()}
           onChange={setText}
@@ -168,10 +167,11 @@ export default function RegexTest() {
 
       <Flex class="h-0 flex-1">
         {/*匹配信息*/}
-        <Card class="h-full flex-1 overflow-x-hidden">
-          <div class="flex items-center justify-between">
-            <Title loading={captures.loading}>匹配信息</Title>
-          </div>
+        <Card
+          class="h-full flex-1 overflow-x-hidden"
+          title="匹配结果"
+          loading={captures.loading}
+        >
           <div class="size-full overflow-x-auto">
             <table class="table-pin-rows table-sm table">
               {/* head */}
@@ -213,10 +213,7 @@ export default function RegexTest() {
         </Card>
 
         {/*速查表*/}
-        <Card class="h-full flex-1 overflow-x-hidden">
-          <div class="flex items-center justify-between">
-            <Title>速查表</Title>
-          </div>
+        <Card class="h-full flex-1 overflow-x-hidden" title="速查表">
           <div class="size-full overflow-x-auto">
             <table class="table-pin-rows table-sm table">
               <thead>
