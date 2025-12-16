@@ -1,11 +1,20 @@
 import { parseRegex } from "@/command/text/regex";
-import { ClearButton, PasteButton, TextWriteButtons } from "@/component/Buttons";
+import {
+  ClearButton,
+  PasteButton,
+  TextWriteButtons,
+} from "@/component/Buttons";
 import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Flex from "@/component/Flex";
-import { ArrowLeftFromLine, CaseSensitive, SquareAsterisk, Ungroup } from "lucide-solid";
+import {
+  ArrowLeftFromLine,
+  CaseSensitive,
+  SquareAsterisk,
+  Ungroup,
+} from "lucide-solid";
 import { createResource, createSignal, For, Match, Switch } from "solid-js";
 
 const RegexGrammars: Array<{ grammar: string; description: string }> = [
