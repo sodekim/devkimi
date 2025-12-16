@@ -5,10 +5,9 @@ import Config from "@/component/Config";
 import ConfigSwitch from "@/component/Config/Switch";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import Title from "@/component/Title";
 import { stringify } from "@/lib/util";
 import { CaseUpper, Minus, RefreshCcw, Settings2, Sigma } from "lucide-solid";
-import { createEffect, createResource, createSignal } from "solid-js";
+import { createResource, createSignal } from "solid-js";
 
 enum Version {
   V1 = "V1",

@@ -3,13 +3,12 @@ import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import Title from "@/component/Title";
+import Flex from "@/component/Flex";
+import Main from "@/component/Main";
+import { stringify } from "@/lib/util";
 import hljs from "highlight.js";
 import { createEffect, createResource, createSignal } from "solid-js";
 import "./a11y-dark.css";
-import Main from "@/component/Main";
-import { stringify } from "@/lib/util";
-import Flex from "@/component/Flex";
 
 export default function MarkdownPreview() {
   const [markdown, setMarkdown] = createSignal("");

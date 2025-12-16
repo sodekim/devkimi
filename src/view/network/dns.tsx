@@ -2,7 +2,7 @@ import { queryDns } from "@/command/network/dns";
 import { CopyButton } from "@/component/Buttons";
 import Container from "@/component/Container";
 import Flex from "@/component/Flex";
-import { Search } from "lucide-solid";
+import { Laptop, Search } from "lucide-solid";
 import {
   createMemo,
   createResource,
@@ -15,9 +15,9 @@ import {
 
 export default function DNSQuery() {
   const [name, setName] = createSignal("");
-  const [response, { refetch }] = createResource(async () => {
+  const [response, { refetch }] = createResource(() => {
     if (name()) {
-      return await queryDns(name());
+      return queryDns(name());
     }
   });
 
@@ -28,25 +28,29 @@ export default function DNSQuery() {
   return (
     <Container>
       <Flex gap={4}>
-        <input
-          class="input flex-1 font-mono text-lg font-bold outline-none"
-          onInput={(e) => setName(e.target.value)}
-          placeholder="www.example.com"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              refetch();
-            }
-          }}
-        />
+        <label class="input w-full outline-none">
+          <span class="label">
+            <Laptop size={16} />
+          </span>
+          <input
+            class="flex-1 font-mono text-lg font-bold outline-none"
+            onInput={(e) => setName(e.target.value)}
+            placeholder="www.example.com"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                refetch();
+              }
+            }}
+          />
+          <kbd class="kbd kbd-sm">⏎</kbd>
+        </label>
         <button class="btn btn-primary" onClick={() => refetch()}>
           查询
         </button>
       </Flex>
 
       <Switch>
-        <Match
-          when={response.state === "pending" || response.state === "refreshing"}
-        >
+        <Match when={response.loading}>
           <Loading />
         </Match>
 

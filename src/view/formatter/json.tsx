@@ -16,6 +16,13 @@ enum Indent {
   None = "None",
 }
 
+const INDENT_OPTIONS = [
+  { label: "2个空格", value: Indent.TwoSpace },
+  { label: "4个空格", value: Indent.FourSpace },
+  { label: "1个制表符", value: Indent.Tab },
+  { label: "无缩进", value: Indent.None },
+];
+
 export default function JsonFormatter() {
   const [indent, setIndent] = createSignal(Indent.TwoSpace);
   const [sortable, setSortable] = createSignal(false);
@@ -46,7 +53,7 @@ export default function JsonFormatter() {
         >
           <Config.Select
             value={indent()}
-            options={Object.keys(Indent)}
+            options={INDENT_OPTIONS}
             onChange={setIndent}
             class="w-30"
           />

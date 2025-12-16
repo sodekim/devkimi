@@ -10,7 +10,6 @@ import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import Title from "@/component/Title";
 import { stringify } from "@/lib/util";
 import {
   CaseUpper,

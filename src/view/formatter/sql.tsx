@@ -14,11 +14,23 @@ enum Indent {
   Tab = "Tab",
 }
 
+const INDENT_OPTIONS = [
+  { label: "2个空格", value: Indent.TwoSpace },
+  { label: "4个空格", value: Indent.FourSpace },
+  { label: "1个制表符", value: Indent.Tab },
+];
+
 enum Dialect {
   Generic = "Generic",
   SQLServer = "SQLServer",
   PostgreSql = "PostgreSql",
 }
+
+const DIALECT_OPTIONS = [
+  { label: "标准", value: Dialect.Generic },
+  { label: "SQLServer", value: Dialect.SQLServer },
+  { label: "PostgreSQL", value: Dialect.PostgreSql },
+];
 
 export default function SqlFormatter() {
   const [indent, setIndent] = createSignal(Indent.TwoSpace);
@@ -54,7 +66,7 @@ export default function SqlFormatter() {
         >
           <Config.Select
             value={indent()}
-            options={Object.keys(Indent)}
+            options={INDENT_OPTIONS}
             onChange={setIndent}
             class="w-30"
           />
@@ -68,7 +80,7 @@ export default function SqlFormatter() {
         >
           <Config.Select
             value={dialect()}
-            options={Object.keys(Dialect)}
+            options={DIALECT_OPTIONS}
             onChange={setDialect}
             class="w-30"
           />

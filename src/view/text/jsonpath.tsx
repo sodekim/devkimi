@@ -1,4 +1,3 @@
-import { createEffect, createResource, createSignal } from "solid-js";
 import { parseJsonPath } from "@/command/text/jsonpath";
 import {
   ClearButton,
@@ -6,12 +5,12 @@ import {
   TextReadButtons,
   TextWriteButtons,
 } from "@/component/Buttons";
-import Container from "@/component/Container";
 import Card from "@/component/Card";
+import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import Title from "@/component/Title";
 import Flex from "@/component/Flex";
 import { stringify } from "@/lib/util";
+import { createResource, createSignal } from "solid-js";
 
 const JsonPathGrammars: Array<{ expression: string; description: string }> = [
   {

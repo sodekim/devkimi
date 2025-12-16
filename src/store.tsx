@@ -15,11 +15,6 @@ import { showTray } from "./command/tray";
 ///
 export type CloseBehavior = "quit" | "tray";
 
-///
-/// 输入和输出布局
-///
-export type IOLayout = "horizontal" | "vertical";
-
 //
 // 编辑器自动换行类型
 //

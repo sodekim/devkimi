@@ -21,7 +21,7 @@ import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import { EncodingTextInput } from "@/component/Encoding";
 import Main from "@/component/Main";
-import Title from "@/component/Title";
+import { stringify } from "@/lib/util";
 import {
   ArrowLeftRight,
   Blend,
@@ -34,6 +34,7 @@ import {
   batch,
   createEffect,
   createMemo,
+  createResource,
   createSignal,
   Match,
   Show,
@@ -85,11 +86,15 @@ export default function Jwt() {
     }
   });
 
+  // 切换编码模式
   const switchEncode = (value: boolean) => {
     batch(() => {
       setHeader({ alg: Algorithm.HS256, typ: "JWT" });
       setPayload("{}");
       setToken("");
+      setSecret({ text: "", encoding: Encoding.Utf8 });
+      setPrivateKey("");
+      setPublicKey("");
       setVerified(null);
       setAlgorithm(Algorithm.HS256);
       setRsaBitSize(2048);
@@ -97,22 +102,13 @@ export default function Jwt() {
     });
   };
 
-  // 更新算法
-  createEffect(() => {
-    setHeader((prev) => ({ ...prev, alg: algorithm() }));
-    // 算法变动时清空密钥
-    setPrivateKey("");
-    setPublicKey("");
-    setSecret({ text: "", encoding: Encoding.Utf8 });
-  });
-
   // 处理数据
   createEffect(() => {
     if (encode()) {
       if ((header() || payload()) && key().text) {
         encodeJwt(header(), payload(), key())
           .then(setToken)
-          .catch((e) => setToken(e.toString()));
+          .catch((e) => setToken(stringify(e)));
       } else {
         setToken("");
       }
@@ -127,7 +123,7 @@ export default function Jwt() {
           })
           .catch((e) => {
             setVerified(null);
-            setPayload(e.toString());
+            setPayload(stringify(e));
           });
       } else {
         setHeader(defaultHeader);

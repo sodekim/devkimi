@@ -4,7 +4,7 @@ import { openLogDir } from "@/command/fs";
 import Config from "@/component/Config";
 import Editor, { MonacoEditor } from "@/component/Editor";
 import Link from "@/component/Link";
-import { CloseBehavior, IOLayout, useSettings, WordWrap } from "@/store";
+import { CloseBehavior, useSettings, WordWrap } from "@/store";
 import { trackStore } from "@solid-primitives/deep";
 import { getTauriVersion, getVersion } from "@tauri-apps/api/app";
 import {
@@ -12,13 +12,12 @@ import {
   CaseSensitive,
   ExternalLink,
   FolderOpen,
-  LayoutTemplate,
   MonitorX,
   OctagonAlert,
   Palette,
   RectangleEllipsis,
   SquareTerminal,
-  TextWrap,
+  TextWrap
 } from "lucide-solid";
 import { createEffect, createResource } from "solid-js";
 //

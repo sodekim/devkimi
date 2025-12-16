@@ -9,7 +9,6 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Flex from "@/component/Flex";
-import Title from "@/component/Title";
 import {
   ArrowLeftFromLine,
   CaseSensitive,
