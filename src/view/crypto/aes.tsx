@@ -34,7 +34,7 @@ import {
   PanelLeftRightDashed,
   Ruler,
 } from "lucide-solid";
-import { batch, createResource, createSignal, onMount, Show } from "solid-js";
+import { batch, createResource, createSignal, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 
 export default function AesCrypto() {

@@ -34,7 +34,6 @@ import {
   batch,
   createEffect,
   createMemo,
-  createResource,
   createSignal,
   Match,
   Show,

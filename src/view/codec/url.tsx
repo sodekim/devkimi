@@ -5,7 +5,6 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Main from "@/component/Main";
-import Title from "@/component/Title";
 import { ArrowLeftRight } from "lucide-solid";
 import { batch, createResource, createSignal } from "solid-js";
 

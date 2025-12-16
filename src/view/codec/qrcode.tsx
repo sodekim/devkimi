@@ -3,7 +3,7 @@ import {
   Base64ImageButtons,
   PickImageFileButton,
   TextReadButtons,
-  TextWriteButtons
+  TextWriteButtons,
 } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Config from "@/component/Config";
