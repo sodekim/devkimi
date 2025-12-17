@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 
-const generatePassword = async (
+const generatePassword = (
   size: number,
   length: number,
   lowercase: boolean,

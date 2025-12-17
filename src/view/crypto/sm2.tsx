@@ -12,9 +12,9 @@ import {
 } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Config from "@/component/Config";
-import Container from "@/component/Container";
+import Page from "@/component/Page";
 import Editor from "@/component/Editor";
-import Main from "@/component/Main";
+import Container from "@/component/Container";
 import { stringify } from "@/lib/util";
 import { ArrowLeftRight, PanelLeftRightDashed } from "lucide-solid";
 import { batch, createResource, createSignal } from "solid-js";
@@ -67,7 +67,7 @@ export default function Sm2Crypto() {
   );
 
   return (
-    <Container>
+    <Page>
       {/* 配置 */}
       <Config.Card>
         <Config.Option
@@ -99,7 +99,7 @@ export default function Sm2Crypto() {
       </Config.Card>
 
       {/* 密钥对 */}
-      <Main>
+      <Container>
         {/*私钥*/}
         <Card
           class="h-full w-0 flex-1"
@@ -149,9 +149,9 @@ export default function Sm2Crypto() {
             placeholder="输入 RSA 公钥"
           />
         </Card>
-      </Main>
+      </Container>
 
-      <Main>
+      <Container>
         <Card
           class="h-full w-0 flex-1"
           title="输入"
@@ -173,7 +173,7 @@ export default function Sm2Crypto() {
         >
           <Editor value={output()} readOnly={true} />
         </Card>
-      </Main>
-    </Container>
+      </Container>
+    </Page>
   );
 }

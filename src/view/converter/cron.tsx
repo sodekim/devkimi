@@ -2,7 +2,7 @@ import { parseCron } from "@/command/converter/cron";
 import { ClearButton, PasteButton, TextReadButtons } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Config from "@/component/Config";
-import Container from "@/component/Container";
+import Page from "@/component/Page";
 import Editor from "@/component/Editor";
 import Flex from "@/component/Flex";
 import { stringify } from "@/lib/util";
@@ -24,7 +24,7 @@ export default function CronConverter() {
   );
 
   return (
-    <Container>
+    <Page>
       {/* 配置 */}
       <Config.Card>
         <Config.Option
@@ -84,6 +84,6 @@ export default function CronConverter() {
       >
         <Editor value={output()} readOnly={true} />
       </Card>
-    </Container>
+    </Page>
   );
 }

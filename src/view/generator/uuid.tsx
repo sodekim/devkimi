@@ -3,7 +3,7 @@ import { TextReadButtons } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Config from "@/component/Config";
 import ConfigSwitch from "@/component/Config/Switch";
-import Container from "@/component/Container";
+import Page from "@/component/Page";
 import Editor from "@/component/Editor";
 import { stringify } from "@/lib/util";
 import { CaseUpper, Minus, RefreshCcw, Settings2, Sigma } from "lucide-solid";
@@ -34,7 +34,7 @@ export default function UuidGenerator() {
         .catch(stringify),
   );
   return (
-    <Container>
+    <Page>
       {/* 配置 */}
       <Config.Card>
         {/*版本配置*/}
@@ -101,6 +101,6 @@ export default function UuidGenerator() {
       >
         <Editor value={output()} language="plaintext" readOnly={true} />
       </Card>
-    </Container>
+    </Page>
   );
 }

@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 
-const formatJson = async (
+const formatJson = (
   input: string,
   indent: string = "TwoSpace",
   sortable: boolean = false,

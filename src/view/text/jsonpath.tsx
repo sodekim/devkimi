@@ -6,7 +6,7 @@ import {
   TextWriteButtons,
 } from "@/component/Buttons";
 import Card from "@/component/Card";
-import Container from "@/component/Container";
+import Page from "@/component/Page";
 import Editor from "@/component/Editor";
 import Flex from "@/component/Flex";
 import { stringify } from "@/lib/util";
@@ -132,7 +132,7 @@ export default function JSONPath() {
   );
 
   return (
-    <Container>
+    <Page>
       {/*JSONPath*/}
       <Card
         title="JSONPath"
@@ -198,6 +198,6 @@ export default function JSONPath() {
           </div>
         </Card>
       </Flex>
-    </Container>
+    </Page>
   );
 }

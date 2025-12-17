@@ -1,10 +1,13 @@
 import { formatSql } from "@/command/formatter/sql";
-import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
-import Card from "@/component/Card";
+import Card, {
+  readTextOperations,
+  writeTextOperations,
+} from "@/component/Card";
 import Config from "@/component/Config";
-import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import Main from "@/component/Main";
+import Container from "@/component/Container";
+import Page from "@/component/Page";
+import Splitter from "@/component/Splitter";
 import { CaseUpper, Code, Space } from "lucide-solid";
 import { createResource, createSignal } from "solid-js";
 
@@ -55,7 +58,7 @@ export default function SqlFormatter() {
   );
 
   return (
-    <Container>
+    <Page>
       {/* 配置 */}
       <Config.Card>
         {/*缩进配置*/}
@@ -96,28 +99,28 @@ export default function SqlFormatter() {
         </Config.Option>
       </Config.Card>
 
-      <Main>
+      <Container>
         <Card
-          class="h-full w-0 flex-1"
+          class="h-full"
           title="输入"
-          operation={<TextWriteButtons callback={setInput} />}
+          operation={writeTextOperations(setInput)}
         >
           <Editor
             value={input()}
-            onChange={(value) => setInput(value)}
+            onChange={setInput}
             language="sql"
             placeholder="输入需要格式化的 SQL 语句"
           />
         </Card>
         <Card
-          class="h-full w-0 flex-1"
+          class="h-full"
           title="输出"
           loading={output.loading}
-          operation={<TextReadButtons value={output()} />}
+          operation={readTextOperations(() => output())}
         >
           <Editor value={output()} language="sql" readOnly={true} />
         </Card>
-      </Main>
-    </Container>
+      </Container>
+    </Page>
   );
 }

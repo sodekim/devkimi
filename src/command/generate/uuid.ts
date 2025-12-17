@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 
-const generateUuid = async (
+const generateUuid = (
   size: number,
   version: string,
   hyphen: boolean,

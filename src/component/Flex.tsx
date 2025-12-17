@@ -1,25 +1,31 @@
-import { children, JSX } from "solid-js";
+import { JSX, splitProps } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
-export default function Flex(props: {
-  children?: JSX.Element;
-  class?: string;
-  gap?: number;
-  direction?: "horizontal" | "vertical";
-}) {
-  const _children = children(() => props.children);
-  const _gap = () => props.gap ?? 2;
+export default function Flex(
+  props: {
+    children?: JSX.Element;
+    class?: string;
+    gap?: number;
+    direction?: "horizontal" | "vertical";
+  } & JSX.HTMLAttributes<HTMLDivElement>,
+) {
+  const [_props, attributes] = splitProps(props, [
+    "children",
+    "class",
+    "gap",
+    "direction",
+  ]);
   return (
     <div
       class={twMerge(
-        `flex items-center justify-center gap-${_gap()}`,
-        (props.direction ?? "horizontal") === "vertical"
+        `flex items-center justify-center gap-${_props.gap ?? 2}`,
+        (_props.direction ?? "horizontal") === "vertical"
           ? "flex-col"
           : "flex-row",
-        props.class,
+        _props.class,
       )}
     >
-      {_children()}
+      {_props.children}
     </div>
   );
 }

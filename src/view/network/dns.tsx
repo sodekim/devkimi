@@ -1,6 +1,6 @@
 import { queryDns } from "@/command/network/dns";
 import { CopyButton } from "@/component/Buttons";
-import Container from "@/component/Container";
+import Page from "@/component/Page";
 import Flex from "@/component/Flex";
 import { Laptop, Search } from "lucide-solid";
 import {
@@ -26,7 +26,7 @@ export default function DNSQuery() {
   const cname = createMemo(() => response()?.cname ?? []);
 
   return (
-    <Container>
+    <Page>
       <Flex gap={4}>
         <label class="input w-full outline-none">
           <span class="label">
@@ -117,7 +117,7 @@ export default function DNSQuery() {
           </div>
         </Match>
       </Switch>
-    </Container>
+    </Page>
   );
 }
 

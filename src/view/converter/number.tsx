@@ -1,7 +1,7 @@
 import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Config from "@/component/Config";
-import Container from "@/component/Container";
+import Page from "@/component/Page";
 import { PaintRoller } from "lucide-solid";
 import { createSignal } from "solid-js";
 
@@ -93,7 +93,7 @@ export default function NumberConverter() {
   };
 
   return (
-    <Container>
+    <Page>
       <Config.Card>
         <Config.Option
           label="格式化数字"
@@ -162,6 +162,6 @@ export default function NumberConverter() {
           onInput={(e) => update(e.target.value, 2)}
         />
       </Card>
-    </Container>
+    </Page>
   );
 }

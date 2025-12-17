@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 
-const formatSql = async (
+const formatSql = (
   input: string,
   indent: string,
   dialect: string,

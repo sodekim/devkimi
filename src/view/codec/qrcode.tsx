@@ -7,9 +7,9 @@ import {
 } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Config from "@/component/Config";
-import Container from "@/component/Container";
+import Page from "@/component/Page";
 import Editor from "@/component/Editor";
-import Main from "@/component/Main";
+import Container from "@/component/Container";
 import { stringify } from "@/lib/util";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { ArrowLeftRight, Image } from "lucide-solid";
@@ -61,7 +61,7 @@ export default function QRCodeCodec() {
   );
 
   return (
-    <Container>
+    <Page>
       {/* 配置 */}
       <Config.Card>
         {/*操作配置*/}
@@ -79,7 +79,7 @@ export default function QRCodeCodec() {
         </Config.Option>
       </Config.Card>
 
-      <Main>
+      <Container>
         <Card
           class={twMerge("h-full w-0 flex-1", encode() ? "order-2" : "order-3")}
           title="文本"
@@ -172,7 +172,7 @@ export default function QRCodeCodec() {
             </Switch>
           </div>
         </Card>
-      </Main>
-    </Container>
+      </Container>
+    </Page>
   );
 }

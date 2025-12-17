@@ -5,9 +5,9 @@ import {
 import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Config from "@/component/Config";
-import Container from "@/component/Container";
+import Page from "@/component/Page";
 import Editor from "@/component/Editor";
-import Main from "@/component/Main";
+import Container from "@/component/Container";
 import { stringify } from "@/lib/util";
 import { ArrowLeftRight } from "lucide-solid";
 import { batch, createResource, createSignal, Match, Switch } from "solid-js";
@@ -35,7 +35,7 @@ export default function JsonYamlConverter() {
   );
 
   return (
-    <Container>
+    <Page>
       {/* 配置 */}
       <Config.Card>
         <Config.Option
@@ -53,7 +53,7 @@ export default function JsonYamlConverter() {
         </Config.Option>
       </Config.Card>
 
-      <Main>
+      <Container>
         <Card class="h-full w-0 flex-1" title="输入" operation={<TextWriteButtons callback={setInput} />}>
           <Switch>
             <Match when={encode()}>
@@ -89,7 +89,7 @@ export default function JsonYamlConverter() {
             </Match>
           </Switch>
         </Card>
-      </Main>
-    </Container>
+      </Container>
+    </Page>
   );
 }

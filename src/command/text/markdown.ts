@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 
-const parseMarkdown = async (markdown: string) => {
+const parseMarkdown =  (markdown: string) => {
   return invoke<string>("parse_markdown", { markdown });
 };
 

@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 
-const getSystemFonts = async () => {
+const getSystemFonts = () => {
   return invoke<string[]>("get_system_fonts");
 };
 

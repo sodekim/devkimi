@@ -2,9 +2,9 @@ import { escapeText, unescapeText } from "@/command/text/escape";
 import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Config from "@/component/Config";
-import Container from "@/component/Container";
+import Page from "@/component/Page";
 import Editor from "@/component/Editor";
-import Main from "@/component/Main";
+import Container from "@/component/Container";
 import { ArrowLeftRight } from "lucide-solid";
 import { batch, createResource, createSignal } from "solid-js";
 
@@ -29,7 +29,7 @@ export default function TextEscape() {
     },
   );
   return (
-    <Container>
+    <Page>
       {/* 配置 */}
       <Config.Card>
         {/*操作配置*/}
@@ -47,7 +47,7 @@ export default function TextEscape() {
         </Config.Option>
       </Config.Card>
 
-      <Main>
+      <Container>
         <Card
           class="h-full w-0 flex-1"
           title="输入"
@@ -67,7 +67,7 @@ export default function TextEscape() {
         >
           <Editor value={output()} readOnly={true} />
         </Card>
-      </Main>
-    </Container>
+      </Container>
+    </Page>
   );
 }

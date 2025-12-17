@@ -8,7 +8,7 @@ import {
 } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Config from "@/component/Config";
-import Container from "@/component/Container";
+import Page from "@/component/Page";
 import Editor from "@/component/Editor";
 import { stringify } from "@/lib/util";
 import {
@@ -71,7 +71,7 @@ export default function HashGenerator() {
     { initialValue: "" },
   );
   return (
-    <Container>
+    <Page>
       {/* 配置 */}
       <Config.Card>
         {/*版本配置*/}
@@ -200,6 +200,6 @@ export default function HashGenerator() {
           placeholder="输入要校验的哈希值即可与结果进行比对"
         />
       </Card>
-    </Container>
+    </Page>
   );
 }

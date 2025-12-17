@@ -7,7 +7,7 @@ interface Match {
 }
 type Capture = Match[];
 
-const parseRegex = async (
+const parseRegex = (
   text: string,
   pattern: string,
   global: boolean,

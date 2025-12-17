@@ -17,10 +17,10 @@ import {
 } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Config from "@/component/Config";
-import Container from "@/component/Container";
+import Page from "@/component/Page";
 import Editor from "@/component/Editor";
 import { EncodingTextInput } from "@/component/Encoding";
-import Main from "@/component/Main";
+import Container from "@/component/Container";
 import { stringify } from "@/lib/util";
 import {
   ArrowLeftRight,
@@ -132,7 +132,7 @@ export default function Jwt() {
   });
 
   return (
-    <Container>
+    <Page>
       {/* 配置 */}
       <Config.Card>
         {/* 操作配置 */}
@@ -183,7 +183,7 @@ export default function Jwt() {
         </Show>
       </Config.Card>
 
-      <Main class={encode() ? "order-2" : "order-4"}>
+      <Container class={encode() ? "order-2" : "order-4"}>
         {/*头部*/}
         <Card
           class="h-full w-0 flex-1"
@@ -240,12 +240,12 @@ export default function Jwt() {
             readOnly={!encode()}
           />
         </Card>
-      </Main>
+      </Container>
 
       <Switch>
         <Match when={useKeyPair()}>
           {/* 密钥对 */}
-          <Main class="order-3">
+          <Container class="order-3">
             {/*私钥*/}
             <Card
               class="h-full w-0 flex-1"
@@ -308,7 +308,7 @@ export default function Jwt() {
                 placeholder="输入公钥"
               />
             </Card>
-          </Main>
+          </Container>
         </Match>
 
         <Match when={!useKeyPair()}>
@@ -366,6 +366,6 @@ export default function Jwt() {
       >
         <Editor value={token()} readOnly={encode()} onChange={setToken} />
       </Card>
-    </Container>
+    </Page>
   );
 }

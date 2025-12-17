@@ -11,9 +11,9 @@ import {
 } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Config from "@/component/Config";
-import Container from "@/component/Container";
+import Page from "@/component/Page";
 import Editor from "@/component/Editor";
-import Main from "@/component/Main";
+import Container from "@/component/Container";
 import { stringify } from "@/lib/util";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { ArrowLeftRight, Image, Layers } from "lucide-solid";
@@ -66,7 +66,7 @@ export default function Base64ImageCodec() {
   );
 
   return (
-    <Container>
+    <Page>
       {/* 配置 */}
       <Config.Card>
         {/*操作配置*/}
@@ -99,7 +99,7 @@ export default function Base64ImageCodec() {
       </Config.Card>
 
       {/* 操作区域 */}
-      <Main>
+      <Container>
         <Card
           class={twMerge("h-full w-0 flex-1", encode() ? "order-2" : "order-3")}
           title="图片"
@@ -194,7 +194,7 @@ export default function Base64ImageCodec() {
             </Match>
           </Switch>
         </Card>
-      </Main>
-    </Container>
+      </Container>
+    </Page>
   );
 }

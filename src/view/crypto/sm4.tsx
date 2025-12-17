@@ -20,11 +20,11 @@ import {
 } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Config from "@/component/Config";
-import Container from "@/component/Container";
+import Page from "@/component/Page";
 import Editor from "@/component/Editor";
 import { EncodingSelect, EncodingTextInput } from "@/component/Encoding";
 import Flex from "@/component/Flex";
-import Main from "@/component/Main";
+import Container from "@/component/Container";
 import { stringify } from "@/lib/util";
 import { ArrowLeftRight, Blend, PanelLeftRightDashed } from "lucide-solid";
 import { batch, createResource, createSignal, Show } from "solid-js";
@@ -97,7 +97,7 @@ export default function Sm4Crypto() {
   );
 
   return (
-    <Container>
+    <Page>
       {/* 配置 */}
       <Config.Card>
         {/* 转换类型 */}
@@ -187,7 +187,7 @@ export default function Sm4Crypto() {
         </Card>
       </Show>
 
-      <Main>
+      <Container>
         <Card
           class="h-full w-0 flex-1"
           title="输入"
@@ -225,7 +225,7 @@ export default function Sm4Crypto() {
         >
           <Editor value={output()} readOnly={true} />
         </Card>
-      </Main>
-    </Container>
+      </Container>
+    </Page>
   );
 }

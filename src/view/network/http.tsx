@@ -1,5 +1,5 @@
 import { Send } from "lucide-solid";
-import Container from "@/component/Container";
+import Page from "@/component/Page";
 
 const HTTP_METHOD_OPTIONS = [
   {
@@ -36,7 +36,7 @@ const HTTP_METHOD_OPTIONS = [
 
 export default function HttpClient() {
   return (
-    <Container>
+    <Page>
       <div class="flex items-center justify-center gap-2">
         <label class="input label w-full outline-none">
           <select class="select select-sm text-base-content w-25 border-none outline-none">
@@ -99,6 +99,6 @@ export default function HttpClient() {
           Tab content 3
         </div>
       </div>
-    </Container>
+    </Page>
   );
 }

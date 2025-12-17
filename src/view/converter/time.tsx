@@ -1,8 +1,8 @@
 import { ClearButton, PasteButton } from "@/component/Buttons";
 import Card from "@/component/Card";
-import Container from "@/component/Container";
+import Page from "@/component/Page";
 import Flex from "@/component/Flex";
-import Main from "@/component/Main";
+import Container from "@/component/Container";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import AirDatepicker from "air-datepicker";
 import "air-datepicker/air-datepicker.css";
@@ -187,7 +187,7 @@ export default function TimeConverter() {
     );
 
   return (
-    <Container>
+    <Page>
       <Card title="当前时间">
         <div class="border-base-content/20 flex items-center justify-center gap-2 rounded-md border p-4">
           <div class="flex flex-1 flex-col items-center justify-center gap-4">
@@ -224,7 +224,7 @@ export default function TimeConverter() {
         </div>
       </Card>
 
-      <Main>
+      <Container>
         <Card
           class="w-0 flex-1"
           title="时间戳转时间"
@@ -337,8 +337,8 @@ export default function TimeConverter() {
             />
           </fieldset>
         </Card>
-      </Main>
-    </Container>
+      </Container>
+    </Page>
   );
 }
 

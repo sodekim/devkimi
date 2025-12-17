@@ -2,7 +2,7 @@ import { generatePassword } from "@/command/generate/password";
 import { TextReadButtons } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Config from "@/component/Config";
-import Container from "@/component/Container";
+import Page from "@/component/Page";
 import Editor from "@/component/Editor";
 import { stringify } from "@/lib/util";
 import {
@@ -50,7 +50,7 @@ export default function PasswordGenerator() {
   );
 
   return (
-    <Container>
+    <Page>
       {/* 配置 */}
       <Config.Card>
         <Config.Option
@@ -138,6 +138,6 @@ export default function PasswordGenerator() {
       >
         <Editor value={output()} language="plaintext" readOnly={true} />
       </Card>
-    </Container>
+    </Page>
   );
 }

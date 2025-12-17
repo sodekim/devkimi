@@ -1,10 +1,10 @@
 import { parseMarkdown } from "@/command/text/markdown";
 import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
 import Card from "@/component/Card";
-import Container from "@/component/Container";
+import Page from "@/component/Page";
 import Editor from "@/component/Editor";
 import Flex from "@/component/Flex";
-import Main from "@/component/Main";
+import Container from "@/component/Container";
 import { stringify } from "@/lib/util";
 import hljs from "highlight.js";
 import { createEffect, createResource, createSignal } from "solid-js";
@@ -31,8 +31,8 @@ export default function MarkdownPreview() {
   });
 
   return (
-    <Container>
-      <Main>
+    <Page>
+      <Container>
         {/*输入*/}
         <Card
           class="h-full w-0 flex-1"
@@ -59,7 +59,7 @@ export default function MarkdownPreview() {
             innerHTML={html()}
           ></div>
         </Card>
-      </Main>
-    </Container>
+      </Container>
+    </Page>
   );
 }

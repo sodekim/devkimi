@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 
-const generateTextHash = async (
+const generateTextHash = (
   text: string,
   algorithm: string,
   uppercase: boolean,
@@ -8,7 +8,7 @@ const generateTextHash = async (
   return invoke<string>("generate_text_hash", { text, algorithm, uppercase });
 };
 
-const generateFileHash = async (
+const generateFileHash = (
   file: string,
   algorithm: string,
   uppercase: boolean,

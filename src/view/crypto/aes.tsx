@@ -22,11 +22,11 @@ import {
 } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Config from "@/component/Config";
-import Container from "@/component/Container";
+import Page from "@/component/Page";
 import Editor from "@/component/Editor";
 import { EncodingSelect, EncodingTextInput } from "@/component/Encoding";
 import Flex from "@/component/Flex";
-import Main from "@/component/Main";
+import Container from "@/component/Container";
 import { stringify } from "@/lib/util";
 import {
   ArrowLeftRight,
@@ -107,7 +107,7 @@ export default function AesCrypto() {
   );
 
   return (
-    <Container>
+    <Page>
       {/* 配置 */}
       <Config.Card>
         {/* 转换类型 */}
@@ -211,7 +211,7 @@ export default function AesCrypto() {
         </Card>
       </Show>
 
-      <Main>
+      <Container>
         <Card
           class="h-full w-0 flex-1"
           title="输入"
@@ -249,7 +249,7 @@ export default function AesCrypto() {
         >
           <Editor value={output()} readOnly={true} />
         </Card>
-      </Main>
-    </Container>
+      </Container>
+    </Page>
   );
 }

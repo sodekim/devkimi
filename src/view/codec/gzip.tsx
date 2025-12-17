@@ -2,9 +2,9 @@ import { decodeGZip, encodeGZip } from "@/command/codec/gzip";
 import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Config from "@/component/Config";
-import Container from "@/component/Container";
+import Page from "@/component/Page";
 import Editor from "@/component/Editor";
-import Main from "@/component/Main";
+import Container from "@/component/Container";
 import { ArrowLeftRight, AudioWaveform, Blend } from "lucide-solid";
 import { batch, createResource, createSignal, Show } from "solid-js";
 
@@ -46,7 +46,7 @@ export default function GZipCodec() {
   );
 
   return (
-    <Container>
+    <Page>
       {/* 配置 */}
       <Config.Card>
         {/* 操作配置 */}
@@ -80,7 +80,7 @@ export default function GZipCodec() {
         </Show>
       </Config.Card>
 
-      <Main>
+      <Container>
         <Card
           class="h-full w-0 flex-1"
           title="输入"
@@ -100,7 +100,7 @@ export default function GZipCodec() {
         >
           <Editor value={output()?.value} readOnly={true} />
         </Card>
-      </Main>
+      </Container>
 
       <Card>
         <span class="flex w-full items-center justify-start gap-1 text-sm">
@@ -113,6 +113,6 @@ export default function GZipCodec() {
           </span>
         </span>
       </Card>
-    </Container>
+    </Page>
   );
 }
