@@ -8,29 +8,23 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Main from "@/component/Main";
+import { createPageStore } from "@/lib/persisted";
 import { stringify } from "@/lib/util";
 import { ArrowLeftRight } from "lucide-solid";
-import {
-  batch,
-  createResource,
-  createSignal,
-  Match,
-  Switch
-} from "solid-js";
+import { createResource, Match, Switch } from "solid-js";
 
 export default function YamlPropertiesConverter() {
-  const [encode, setEncode] = createSignal(true);
-  const [input, setInput] = createSignal("");
-  const decode = () => !encode();
-  const switchEncode = (value: boolean) => {
-    batch(() => {
-      setInput("");
-      setEncode(value);
-    });
+  const [store, setStore] = createPageStore({
+    encode: true,
+    input: "",
+  });
+  const decode = () => !store.encode;
+  const setEncode = (value: boolean) => {
+    setStore({ encode: value, input: "" });
   };
 
   const [output] = createResource(
-    () => ({ encode: encode(), input: input() }),
+    () => ({ ...store }),
     ({ encode, input }) => {
       if (input) {
         return (
@@ -54,8 +48,8 @@ export default function YamlPropertiesConverter() {
         >
           {/*转换配置*/}
           <Config.Switch
-            value={encode()}
-            onChange={switchEncode}
+            value={store.encode}
+            onChange={setEncode}
             on="YAML -> PROPERTIES"
             off="PROPERTIES -> YAML"
           />
@@ -66,21 +60,23 @@ export default function YamlPropertiesConverter() {
         <Card
           class="h-full w-0 flex-1"
           title="输入"
-          operation={<TextWriteButtons callback={setInput} />}
+          operation={
+            <TextWriteButtons callback={(value) => setStore("input", value)} />
+          }
         >
           <Switch>
-            <Match when={encode()}>
+            <Match when={store.encode}>
               <Editor
-                value={input()}
-                onChange={setInput}
+                value={store.input}
+                onChange={(value) => setStore("input", value)}
                 language="yaml"
                 placeholder="输入需要转换的 YAML 数据"
               />
             </Match>
             <Match when={decode()}>
               <Editor
-                value={input()}
-                onChange={setInput}
+                value={store.input}
+                onChange={(value) => setStore("input", value)}
                 language="properties"
                 placeholder="输入需要转换的 PROPERTIES 数据"
               />
@@ -93,7 +89,7 @@ export default function YamlPropertiesConverter() {
           operation={<TextReadButtons value={output()} />}
         >
           <Switch>
-            <Match when={encode()}>
+            <Match when={store.encode}>
               <Editor value={output()} readOnly={true} language="properties" />
             </Match>
             <Match when={decode()}>

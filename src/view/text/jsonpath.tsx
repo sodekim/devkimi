@@ -9,6 +9,7 @@ import Card from "@/component/Card";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Flex from "@/component/Flex";
+import { createPageStore } from "@/lib/persisted";
 import { stringify } from "@/lib/util";
 import { createResource, createSignal } from "solid-js";
 
@@ -120,10 +121,13 @@ const JsonPathGrammars: Array<{ expression: string; description: string }> = [
 ];
 
 export default function JSONPath() {
-  const [pattern, setPattern] = createSignal("");
-  const [text, setText] = createSignal("");
+  const [store, setStore] = createPageStore({
+    pattern: "",
+    text: "",
+  });
+
   const [output] = createResource(
-    () => ({ pattern: pattern(), text: text() }),
+    () => ({ ...store }),
     ({ pattern, text }) => {
       if (text && pattern) {
         return parseJsonPath(text, pattern).catch(stringify);
@@ -138,16 +142,16 @@ export default function JSONPath() {
         title="JSONPath"
         operation={
           <Flex>
-            <PasteButton onRead={setPattern} />
-            <ClearButton onClick={() => setPattern("")} />
+            <PasteButton onRead={(value) => setStore("pattern", value)} />
+            <ClearButton onClick={() => setStore("pattern", "")} />
           </Flex>
         }
       >
         <input
           class="input input-md w-full rounded-md font-mono font-bold outline-none"
           placeholder="输入 JSONPath 表达式"
-          value={pattern()}
-          onInput={(e) => setPattern(e.target.value)}
+          value={store.pattern}
+          onInput={(e) => setStore("pattern", e.target.value)}
         />
       </Card>
 
@@ -155,11 +159,13 @@ export default function JSONPath() {
       <Card
         class="h-0 flex-1"
         title="JSON"
-        operation={<TextWriteButtons callback={setText} />}
+        operation={
+          <TextWriteButtons callback={(value) => setStore("text", value)} />
+        }
       >
         <Editor
-          value={text()}
-          onChange={setText}
+          value={store.text}
+          onChange={(value) => setStore("text", value)}
           language="json"
           placeholder="输入需要解析的 JSON 数据"
         />

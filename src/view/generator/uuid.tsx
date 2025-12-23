@@ -5,6 +5,7 @@ import Config from "@/component/Config";
 import ConfigSwitch from "@/component/Config/Switch";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
+import { createPageStore } from "@/lib/persisted";
 import { stringify } from "@/lib/util";
 import { CaseUpper, Minus, RefreshCcw, Settings2, Sigma } from "lucide-solid";
 import { createResource, createSignal } from "solid-js";
@@ -16,18 +17,10 @@ enum Version {
 }
 
 export default function UuidGenerator() {
-  const [version, setVersion] = createSignal(Version.V4);
-  const [uppercase, setUppercase] = createSignal(false);
-  const [hyphen, setHyphen] = createSignal(true);
-  const [size, setSize] = createSignal(10);
+  const [store, setStore] = createPageStore({ version: Version.V4, uppercase: false, hyphen: true, size: 10 });
 
   const [output, { refetch }] = createResource(
-    () => ({
-      version: version(),
-      uppercase: uppercase(),
-      hyphen: hyphen(),
-      size: size(),
-    }),
+    () => ({ ...store }),
     ({ version, uppercase, hyphen, size }) =>
       generateUuid(size, version, hyphen, uppercase)
         .then((uuids) => uuids.join("\n"))
@@ -44,9 +37,9 @@ export default function UuidGenerator() {
           icon={() => <Settings2 size={16} />}
         >
           <Config.Select
-            value={version()}
+            value={store.version}
             options={Object.keys(Version)}
-            onChange={setVersion}
+            onChange={(value) => setStore("version", value)}
             class="w-20"
           />
         </Config.Option>
@@ -57,7 +50,10 @@ export default function UuidGenerator() {
           description="在UUID中添加连字符分隔"
           icon={() => <Minus size={16} />}
         >
-          <ConfigSwitch value={hyphen()} onChange={setHyphen} />
+          <ConfigSwitch
+            value={store.hyphen}
+            onChange={(value) => setStore("hyphen", value)}
+          />
         </Config.Option>
 
         {/*大写字符配置*/}
@@ -66,7 +62,10 @@ export default function UuidGenerator() {
           description="使用大写字母输出UUID"
           icon={() => <CaseUpper size={16} />}
         >
-          <ConfigSwitch value={uppercase()} onChange={setUppercase} />
+          <ConfigSwitch
+            value={store.uppercase}
+            onChange={(value) => setStore("uppercase", value)}
+          />
         </Config.Option>
 
         {/*数量配置*/}
@@ -76,8 +75,8 @@ export default function UuidGenerator() {
           icon={() => <Sigma size={16} />}
         >
           <Config.NumberInput
-            value={size()}
-            onInput={setSize}
+            value={store.size}
+            onInput={(value) => setStore("size", value)}
             min={1}
             max={10000}
             class="w-20"

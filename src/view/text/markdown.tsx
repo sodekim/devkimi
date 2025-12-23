@@ -5,20 +5,21 @@ import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Flex from "@/component/Flex";
 import Main from "@/component/Main";
+import { createPageStore } from "@/lib/persisted";
 import { stringify } from "@/lib/util";
 import hljs from "highlight.js";
-import { createEffect, createResource, createSignal } from "solid-js";
+import { createEffect, createResource } from "solid-js";
 import "./a11y-dark.css";
 
 export default function MarkdownPreview() {
-  const [markdown, setMarkdown] = createSignal("");
+  const [store, setStore] = createPageStore({ markdown: "" });
   const [html] = createResource(
-    () => markdown(),
+    () => store.markdown,
     (markdown) => {
       if (markdown) {
         return parseMarkdown(markdown).catch(stringify);
       }
-      return "";
+      return Promise.resolve("");
     },
     { initialValue: "" },
   );
@@ -39,14 +40,16 @@ export default function MarkdownPreview() {
           title="Markdown"
           operation={
             <Flex>
-              <TextReadButtons value={markdown()} />
-              <TextWriteButtons callback={setMarkdown} />
+              <TextReadButtons value={store.markdown} />
+              <TextWriteButtons
+                callback={(value) => setStore("markdown", value)}
+              />
             </Flex>
           }
         >
           <Editor
-            value={markdown()}
-            onChange={(value) => setMarkdown(value)}
+            value={store.markdown}
+            onChange={(value) => setStore("markdown", value)}
             language="markdown"
           />
         </Card>

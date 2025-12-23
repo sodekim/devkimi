@@ -5,9 +5,10 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Main from "@/component/Main";
+import { createPageStore } from "@/lib/persisted";
 import { stringify } from "@/lib/util";
 import { Space } from "lucide-solid";
-import { createResource, createSignal } from "solid-js";
+import { createResource } from "solid-js";
 
 enum Indent {
   TwoSpace = "TwoSpace",
@@ -24,10 +25,13 @@ const INDENT_OPTIONS = [
 ];
 
 export default function XmlFormatter() {
-  const [indent, setIndent] = createSignal(Indent.TwoSpace);
-  const [input, setInput] = createSignal("");
+  const [store, setStore] = createPageStore({
+    indent: Indent.TwoSpace,
+    input: "",
+  });
+
   const [output] = createResource(
-    () => ({ indent: indent(), input: input() }),
+    () => ({ ...store }),
     ({ indent, input }) => {
       if (input) {
         return formatXml(input, indent).catch(stringify);
@@ -46,9 +50,9 @@ export default function XmlFormatter() {
           icon={() => <Space size={16} />}
         >
           <Config.Select
-            value={indent()}
+            value={store.indent}
             options={INDENT_OPTIONS}
-            onChange={setIndent}
+            onChange={(value) => setStore("indent", value)}
             class="w-30"
           />
         </Config.Option>
@@ -58,11 +62,13 @@ export default function XmlFormatter() {
         <Card
           class="h-full w-0 flex-1"
           title="输入"
-          operation={<TextWriteButtons callback={setInput} />}
+          operation={
+            <TextWriteButtons callback={(value) => setStore("input", value)} />
+          }
         >
           <Editor
-            value={input()}
-            onChange={setInput}
+            value={store.input}
+            onChange={(value) => setStore("input", value)}
             language="xml"
             placeholder="输入需要格式化的 XML 数据"
           />

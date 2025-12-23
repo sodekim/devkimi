@@ -4,6 +4,7 @@ import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
+import { createPageStore } from "@/lib/persisted";
 import { stringify } from "@/lib/util";
 import {
   Binary,
@@ -15,26 +16,21 @@ import {
   Sigma,
   SquaresExclude,
 } from "lucide-solid";
-import { createResource, createSignal } from "solid-js";
+import { createResource } from "solid-js";
 
 export default function PasswordGenerator() {
-  const [length, setLength] = createSignal(16);
-  const [uppercase, setUppercase] = createSignal(true);
-  const [lowercase, setLowercase] = createSignal(true);
-  const [numeric, setNumeric] = createSignal(true);
-  const [special, setSpecial] = createSignal(false);
-  const [size, setSize] = createSignal(10);
-  const [excludes, setExcludes] = createSignal("");
+  const [store, setStore] = createPageStore({
+    length: 16,
+    uppercase: true,
+    lowercase: true,
+    numeric: true,
+    special: false,
+    size: 10,
+    excludes: "",
+  });
+
   const [output, { refetch }] = createResource(
-    () => ({
-      length: length(),
-      uppercase: uppercase(),
-      lowercase: lowercase(),
-      numeric: numeric(),
-      special: special(),
-      size: size(),
-      excludes: excludes(),
-    }),
+    () => ({ ...store }),
     ({ length, uppercase, lowercase, numeric, special, size, excludes }) =>
       generatePassword(
         size,
@@ -59,8 +55,8 @@ export default function PasswordGenerator() {
           icon={() => <Ruler size={16} />}
         >
           <Config.NumberInput
-            value={length()}
-            onInput={setLength}
+            value={store.length}
+            onInput={(value) => setStore("length", value)}
             min={1}
             max={10000}
             class="w-20"
@@ -72,7 +68,10 @@ export default function PasswordGenerator() {
           description="使用大写字符 (ABCDEFGHIJKLMNOPQRSTUVWXYZ)"
           icon={() => <CaseUpper size={16} />}
         >
-          <Config.Switch value={uppercase()} onChange={setUppercase} />
+          <Config.Switch
+            value={store.uppercase}
+            onChange={(value) => setStore("uppercase", value)}
+          />
         </Config.Option>
 
         <Config.Option
@@ -80,7 +79,10 @@ export default function PasswordGenerator() {
           description="使用小写字符 (abcdefghijklmnopqrstuvwxyz)"
           icon={() => <CaseLower size={16} />}
         >
-          <Config.Switch value={lowercase()} onChange={setLowercase} />
+          <Config.Switch
+            value={store.lowercase}
+            onChange={(value) => setStore("lowercase", value)}
+          />
         </Config.Option>
 
         <Config.Option
@@ -88,7 +90,10 @@ export default function PasswordGenerator() {
           description="使用数字字符 (0123456789)"
           icon={() => <Binary size={16} />}
         >
-          <Config.Switch value={numeric()} onChange={setNumeric} />
+          <Config.Switch
+            value={store.numeric}
+            onChange={(value) => setStore("numeric", value)}
+          />
         </Config.Option>
 
         <Config.Option
@@ -96,7 +101,10 @@ export default function PasswordGenerator() {
           description="使用特殊字符 (!#$%&')*+-,:;=>?@]^_}~)"
           icon={() => <Hash size={16} />}
         >
-          <Config.Switch value={special()} onChange={setSpecial} />
+          <Config.Switch
+            value={store.special}
+            onChange={(value) => setStore("special", value)}
+          />
         </Config.Option>
 
         <Config.Option
@@ -104,7 +112,11 @@ export default function PasswordGenerator() {
           description="设置需要排除的字符"
           icon={() => <SquaresExclude size={16} />}
         >
-          <Config.Input value={excludes()} onInput={setExcludes} class="w-40" />
+          <Config.Input
+            value={store.excludes}
+            onInput={(value) => setStore("excludes", value)}
+            class="w-40"
+          />
         </Config.Option>
 
         <Config.Option
@@ -113,8 +125,8 @@ export default function PasswordGenerator() {
           icon={() => <Sigma size={16} />}
         >
           <Config.NumberInput
-            value={size()}
-            onInput={setSize}
+            value={store.size}
+            onInput={(value) => setStore("size", value)}
             min={1}
             max={10000}
             class="w-20"

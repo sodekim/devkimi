@@ -5,17 +5,20 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Flex from "@/component/Flex";
+import { createPageStore } from "@/lib/persisted";
 import { stringify } from "@/lib/util";
 import { ALargeSmall, RefreshCcw, Sigma } from "lucide-solid";
 import { createResource, createSignal } from "solid-js";
 
 export default function CronConverter() {
-  const [cron, setCron] = createSignal("* * * * * *");
-  const [size, setSize] = createSignal(10);
-  const [pattern, setPattern] = createSignal("%Y-%m-%d %H:%M:%S");
+  const [store, setStore] = createPageStore({
+    cron: "* * * * * *",
+    size: 10,
+    pattern: "%Y-%m-%d %H:%M:%S",
+  });
 
   const [output, { refetch }] = createResource(
-    () => ({ cron: cron(), size: size(), pattern: pattern() }),
+    () => ({ ...store }),
     ({ cron, size, pattern }) => {
       return parseCron(cron, size, pattern)
         .then((times) => times.join("\n"))
@@ -32,7 +35,11 @@ export default function CronConverter() {
           description="计划执行时间的格式"
           icon={() => <ALargeSmall size={16} />}
         >
-          <Config.Input value={pattern()} onInput={setPattern} class="w-50" />
+          <Config.Input
+            value={store.pattern}
+            onInput={(value) => setStore("pattern", value)}
+            class="w-50"
+          />
         </Config.Option>
 
         <Config.Option
@@ -41,8 +48,8 @@ export default function CronConverter() {
           icon={() => <Sigma size={16} />}
         >
           <Config.NumberInput
-            value={size()}
-            onInput={setSize}
+            value={store.size}
+            onInput={(value) => setStore("size", value)}
             min={1}
             max={10000}
             placeholder="数量"
@@ -56,15 +63,15 @@ export default function CronConverter() {
         title="CRON表达式"
         operation={
           <Flex>
-            <PasteButton onRead={setCron} />
-            <ClearButton onClick={() => setCron("")} />
+            <PasteButton onRead={(value) => setStore("cron", value)} />
+            <ClearButton onClick={() => setStore("cron", "")} />
           </Flex>
         }
       >
         <input
           class="input input-md w-full rounded-md font-mono font-bold outline-none"
-          value={cron()}
-          onInput={(e) => setCron(e.target.value)}
+          value={store.cron}
+          onInput={(e) => setStore("cron", e.target.value)}
         />
       </Card>
 

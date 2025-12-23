@@ -10,6 +10,7 @@ import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
+import { createPageStore } from "@/lib/persisted";
 import { stringify } from "@/lib/util";
 import {
   CaseUpper,
@@ -18,10 +19,10 @@ import {
   Paperclip,
   Settings2,
 } from "lucide-solid";
-import { createResource, createSignal, Match, Show, Switch } from "solid-js";
+import { createResource, Match, Show, Switch } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
-enum HashAlgorithm {
+enum Algorithm {
   Fsb160 = "Fsb160",
   Fsb224 = "Fsb224",
   Fsb256 = "Fsb256",
@@ -50,16 +51,18 @@ enum Mode {
 type Input = { value: string; mode: Mode };
 
 export default function HashGenerator() {
-  const [input, setInput] = createSignal<Input>({ value: "", mode: Mode.Text });
-  const [algorithm, setAlgorithm] = createSignal(HashAlgorithm.Md5);
-  const [uppercase, setUppercase] = createSignal(false);
-  const [target, setTarget] = createSignal("");
-  const matched = () => target().toLowerCase() === output().toLowerCase();
+  const [store, setStore] = createPageStore({
+    input: { value: "", mode: Mode.Text } as Input,
+    algorithm: Algorithm.Md5,
+    uppercase: false,
+    target: "",
+  });
+
   const [output] = createResource(
     () => ({
-      input: input(),
-      algorithm: algorithm(),
-      uppercase: uppercase(),
+      input: { ...store.input },
+      algorithm: store.algorithm,
+      uppercase: store.uppercase,
     }),
     ({ input, algorithm, uppercase }) => {
       return (input.mode === Mode.Text ? generateTextHash : generateFileHash)(
@@ -70,6 +73,10 @@ export default function HashGenerator() {
     },
     { initialValue: "" },
   );
+
+  // 是否匹配
+  const matched = () => store.target.toLowerCase() === output().toLowerCase();
+
   return (
     <Container>
       {/* 配置 */}
@@ -81,9 +88,9 @@ export default function HashGenerator() {
           icon={() => <Settings2 size={16} />}
         >
           <Config.Select
-            value={algorithm()}
-            options={Object.keys(HashAlgorithm)}
-            onChange={setAlgorithm}
+            value={store.algorithm}
+            options={Object.keys(Algorithm)}
+            onChange={(value) => setStore("algorithm", value)}
             class="w-40"
           />
         </Config.Option>
@@ -94,7 +101,10 @@ export default function HashGenerator() {
           description="使用大写字母输出哈希值"
           icon={() => <CaseUpper size={16} />}
         >
-          <Config.Switch value={uppercase()} onChange={setUppercase} />
+          <Config.Switch
+            value={store.uppercase}
+            onChange={(value) => setStore("uppercase", value)}
+          />
         </Config.Option>
       </Config.Card>
 
@@ -113,15 +123,21 @@ export default function HashGenerator() {
             <div class="flex h-30 flex-col gap-2">
               <div class="flex items-center justify-end gap-2">
                 <PasteButton
-                  onRead={(value) => setInput({ value, mode: Mode.Text })}
+                  onRead={(value) =>
+                    setStore("input", { value, mode: Mode.Text })
+                  }
                 />
                 <ClearButton
-                  onClick={() => setInput({ value: "", mode: Mode.Text })}
+                  onClick={() =>
+                    setStore("input", { value: "", mode: Mode.Text })
+                  }
                 />
               </div>
               <Editor
-                value={input().mode === Mode.Text ? input().value : ""}
-                onChange={(value) => setInput({ value, mode: Mode.Text })}
+                value={store.input.mode === Mode.Text ? store.input.value : ""}
+                onChange={(value) =>
+                  setStore("input", { value, mode: Mode.Text })
+                }
                 placeholder="输入要计算哈希值的文本"
               />
             </div>
@@ -134,7 +150,7 @@ export default function HashGenerator() {
               <div class="flex items-center justify-end gap-2">
                 <PickFileButton
                   onPick={(file) =>
-                    file && setInput({ value: file, mode: Mode.File })
+                    file && setStore("input", { value: file, mode: Mode.File })
                   }
                 />
               </div>
@@ -142,13 +158,13 @@ export default function HashGenerator() {
                 <span
                   class={twMerge(
                     "flex items-center justify-center gap-1 text-sm",
-                    input().mode === Mode.File && input().value
+                    store.input.mode === Mode.File && store.input.value
                       ? "text-primary"
                       : "text-warning",
                   )}
                 >
                   <Paperclip size={14} />
-                  {(input().mode === Mode.Text ? "" : input().value) ||
+                  {(store.input.mode === Mode.Text ? "" : store.input.value) ||
                     "选择需要计算哈希值的文件"}
                 </span>
               </div>
@@ -173,9 +189,11 @@ export default function HashGenerator() {
       {/*校验哈希值*/}
       <Card
         title="校验哈希值"
-        operation={<TextWriteButtons callback={setTarget} />}
+        operation={
+          <TextWriteButtons callback={(value) => setStore("target", value)} />
+        }
         notification={
-          <Show when={target()}>
+          <Show when={store.target}>
             <Switch>
               <Match when={matched()}>
                 <span class="flex items-center justify-center gap-1 text-sm">
@@ -195,8 +213,8 @@ export default function HashGenerator() {
       >
         <input
           class="input input-md w-full font-mono font-bold outline-none"
-          value={target()}
-          onInput={(e) => setTarget(e.target.value)}
+          value={store.target}
+          onInput={(e) => setStore("target", e.target.value)}
           placeholder="输入要校验的哈希值即可与结果进行比对"
         />
       </Card>

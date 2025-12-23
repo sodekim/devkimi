@@ -5,8 +5,9 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Main from "@/component/Main";
+import { createPageStore } from "@/lib/persisted";
 import { CaseUpper, Code, Space } from "lucide-solid";
-import { createResource, createSignal } from "solid-js";
+import { createResource } from "solid-js";
 
 enum Indent {
   TwoSpace = "TwoSpace",
@@ -33,21 +34,18 @@ const DIALECT_OPTIONS = [
 ];
 
 export default function SqlFormatter() {
-  const [indent, setIndent] = createSignal(Indent.TwoSpace);
-  const [dialect, setDialect] = createSignal(Dialect.Generic);
-  const [uppercase, setUppercase] = createSignal(false);
-  const [input, setInput] = createSignal("");
+  const [store, setStore] = createPageStore({
+    indent: Indent.TwoSpace,
+    dialect: Dialect.Generic,
+    uppercase: false,
+    input: "",
+  });
 
   const [output] = createResource(
-    () => ({
-      ident: indent(),
-      dialect: dialect(),
-      uppercase: uppercase(),
-      input: input(),
-    }),
-    ({ ident, dialect, uppercase, input }) => {
+    () => ({ ...store }),
+    ({ indent, dialect, uppercase, input }) => {
       if (input) {
-        return formatSql(input, ident, dialect, uppercase).catch((e) =>
+        return formatSql(input, indent, dialect, uppercase).catch((e) =>
           e.toString(),
         );
       }
@@ -65,9 +63,9 @@ export default function SqlFormatter() {
           icon={() => <Space size={16} />}
         >
           <Config.Select
-            value={indent()}
+            value={store.indent}
             options={INDENT_OPTIONS}
-            onChange={setIndent}
+            onChange={(value) => setStore("indent", value)}
             class="w-30"
           />
         </Config.Option>
@@ -79,9 +77,9 @@ export default function SqlFormatter() {
           icon={() => <Code size={16} />}
         >
           <Config.Select
-            value={dialect()}
+            value={store.dialect}
             options={DIALECT_OPTIONS}
-            onChange={setDialect}
+            onChange={(value) => setStore("dialect", value)}
             class="w-30"
           />
         </Config.Option>
@@ -92,7 +90,10 @@ export default function SqlFormatter() {
           description="将SQL关键字转为大写格式"
           icon={() => <CaseUpper size={16} />}
         >
-          <Config.Switch value={uppercase()} onChange={setUppercase} />
+          <Config.Switch
+            value={store.uppercase}
+            onChange={(value) => setStore("uppercase", value)}
+          />
         </Config.Option>
       </Config.Card>
 
@@ -100,11 +101,13 @@ export default function SqlFormatter() {
         <Card
           class="h-full w-0 flex-1"
           title="输入"
-          operation={<TextWriteButtons callback={setInput} />}
+          operation={
+            <TextWriteButtons callback={(value) => setStore("input", value)} />
+          }
         >
           <Editor
-            value={input()}
-            onChange={(value) => setInput(value)}
+            value={store.input}
+            onChange={(value) => setStore("input", value)}
             language="sql"
             placeholder="输入需要格式化的 SQL 语句"
           />

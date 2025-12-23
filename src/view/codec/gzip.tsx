@@ -5,8 +5,9 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Main from "@/component/Main";
+import { createPageStore } from "@/lib/persisted";
 import { ArrowLeftRight, AudioWaveform, Blend } from "lucide-solid";
-import { batch, createResource, createSignal, Show } from "solid-js";
+import { createResource, Show } from "solid-js";
 
 const getLevelText = (level: number) => {
   return level === 1 ? "1 (最快)" : level === 9 ? "9 (最好)" : `${level}`;
@@ -20,21 +21,20 @@ const COMPRESS_LEVEL_OPTIONS = Array.from({ length: 9 }, (_, i) => i + 1).map(
 );
 
 export default function GZipCodec() {
-  const [level, setLevel] = createSignal(1);
-  const [input, setInput] = createSignal("");
-  const [encode, setEncode] = createSignal(true);
+  const [store, setStore] = createPageStore({
+    input: "",
+    level: 1,
+    encode: true,
+  });
 
   // 切换操作模式
-  const switchEncode = (value: boolean) => {
-    batch(() => {
-      setInput("");
-      setEncode(value);
-    });
+  const setEncode = (value: boolean) => {
+    setStore((prev) => ({ ...prev, input: "", encode: value }));
   };
 
   // 获取输出
   const [output] = createResource(
-    () => ({ encode: encode(), level: level(), input: input() }),
+    () => ({ ...store }),
     ({ encode, level, input }) => {
       if (input) {
         return (
@@ -56,24 +56,24 @@ export default function GZipCodec() {
           icon={() => <ArrowLeftRight size={16} />}
         >
           <Config.Switch
-            value={encode()}
-            onChange={switchEncode}
+            value={store.encode}
+            onChange={setEncode}
             on="压缩"
             off="解压"
           />
         </Config.Option>
 
         {/* 压缩级别配置 */}
-        <Show when={encode()}>
+        <Show when={store.encode}>
           <Config.Option
             label="压缩级别"
             description="级别越高压缩效果越好,压缩时间也会增加."
             icon={() => <Blend size={16} />}
           >
             <Config.Select
-              value={level()}
+              value={store.level}
               options={COMPRESS_LEVEL_OPTIONS}
-              onChange={setLevel}
+              onChange={(value) => setStore("level", value)}
               class="w-30"
             />
           </Config.Option>
@@ -84,12 +84,14 @@ export default function GZipCodec() {
         <Card
           class="h-full w-0 flex-1"
           title="输入"
-          operation={<TextWriteButtons callback={setInput} />}
+          operation={
+            <TextWriteButtons callback={(value) => setStore("input", value)} />
+          }
         >
           <Editor
-            value={input()}
-            onChange={setInput}
-            placeholder={encode() ? "输入要压缩的文本" : "输入要解压的文本"}
+            value={store.input}
+            onChange={(value) => setStore("input", value)}
+            placeholder={store.encode ? "输入要压缩的文本" : "输入要解压的文本"}
           />
         </Card>
         <Card

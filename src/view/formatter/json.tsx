@@ -5,9 +5,10 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Main from "@/component/Main";
+import { createPageStore } from "@/lib/persisted";
 import { stringify } from "@/lib/util";
 import { ArrowDownAZ, Space } from "lucide-solid";
-import { createResource, createSignal } from "solid-js";
+import { createResource } from "solid-js";
 
 enum Indent {
   TwoSpace = "TwoSpace",
@@ -24,16 +25,14 @@ const INDENT_OPTIONS = [
 ];
 
 export default function JsonFormatter() {
-  const [indent, setIndent] = createSignal(Indent.TwoSpace);
-  const [sortable, setSortable] = createSignal(false);
-  const [input, setInput] = createSignal("");
+  const [store, setStore] = createPageStore({
+    indent: Indent.TwoSpace,
+    sortable: false,
+    input: "",
+  });
 
   const [output] = createResource(
-    () => ({
-      indent: indent(),
-      sortable: sortable(),
-      input: input(),
-    }),
+    () => ({ ...store }),
     ({ indent, sortable, input }) => {
       if (input) {
         return formatJson(input, indent, sortable).catch(stringify);
@@ -52,9 +51,9 @@ export default function JsonFormatter() {
           icon={() => <Space size={16} />}
         >
           <Config.Select
-            value={indent()}
+            value={store.indent}
             options={INDENT_OPTIONS}
-            onChange={setIndent}
+            onChange={(value) => setStore("indent", value)}
             class="w-30"
           />
         </Config.Option>
@@ -65,7 +64,10 @@ export default function JsonFormatter() {
           description="按照字符顺序排序 JSON 属性"
           icon={() => <ArrowDownAZ size={16} />}
         >
-          <Config.Switch value={sortable()} onChange={setSortable} />
+          <Config.Switch
+            value={store.sortable}
+            onChange={(value) => setStore("sortable", value)}
+          />
         </Config.Option>
       </Config.Card>
 
@@ -73,14 +75,13 @@ export default function JsonFormatter() {
         <Card
           class="h-full w-0 flex-1"
           title="输入"
-          operation={<TextWriteButtons callback={setInput} />}
+          operation={
+            <TextWriteButtons callback={(value) => setStore("input", value)} />
+          }
         >
           <Editor
-            value={input()}
-            onChange={(value) => {
-              console.log(value);
-              setInput(value);
-            }}
+            value={store.input}
+            onChange={(value) => setStore("input", value)}
             language="json"
             placeholder="输入需要格式化的 JSON 数据"
           />

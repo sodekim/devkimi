@@ -10,26 +10,26 @@ import ConfigSwitch from "@/component/Config/Switch";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Main from "@/component/Main";
+import { createPageStore } from "@/lib/persisted";
 import { stringify } from "@/lib/util";
 import { ArrowLeftRight, Layers } from "lucide-solid";
-import { batch, createResource, createSignal } from "solid-js";
+import { createResource } from "solid-js";
 
 export default function Base64TextCodec() {
-  const [mode, setMode] = createSignal<Base64Mode>(Base64Mode.Standard);
-  const [input, setInput] = createSignal("");
-  const [encode, setEncode] = createSignal(true);
+  const [store, setStore] = createPageStore({
+    input: "",
+    mode: Base64Mode.Standard,
+    encode: true,
+  });
 
   // 切换操作模式
-  const switchEncode = (value: boolean) => {
-    batch(() => {
-      setInput("");
-      setEncode(value);
-    });
+  const setEncode = (value: boolean) => {
+    setStore((prev) => ({ ...prev, input: "", encode: value }));
   };
 
   // 获取输出
   const [output] = createResource(
-    () => ({ input: input(), mode: mode(), encode: encode() }),
+    () => ({ ...store }),
     ({ input, mode, encode }) => {
       if (input) {
         return (
@@ -51,8 +51,8 @@ export default function Base64TextCodec() {
           icon={() => <ArrowLeftRight size={16} />}
         >
           <ConfigSwitch
-            value={encode()}
-            onChange={switchEncode}
+            value={store.encode}
+            onChange={setEncode}
             on="编码"
             off="解码"
           />
@@ -65,9 +65,9 @@ export default function Base64TextCodec() {
           icon={() => <Layers size={16} />}
         >
           <Config.Select
-            value={mode()}
+            value={store.mode}
             options={Object.keys(Base64Mode)}
-            onChange={setMode}
+            onChange={(value) => setStore("mode", value)}
             class="w-35"
           />
         </Config.Option>
@@ -77,12 +77,14 @@ export default function Base64TextCodec() {
         <Card
           class="h-full w-0 flex-1"
           title="输入"
-          operation={<TextWriteButtons callback={setInput} />}
+          operation={
+            <TextWriteButtons callback={(value) => setStore("input", value)} />
+          }
         >
           <Editor
-            value={input()}
-            onChange={setInput}
-            placeholder={encode() ? "输入要编码的文本" : "输入要解码的文本"}
+            value={store.input}
+            onChange={(value) => setStore("input", value)}
+            placeholder={store.encode ? "输入要编码的文本" : "输入要解码的文本"}
           />
         </Card>
         <Card

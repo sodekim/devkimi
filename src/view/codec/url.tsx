@@ -5,24 +5,27 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Main from "@/component/Main";
+import { createPageStore } from "@/lib/persisted";
 import { ArrowLeftRight } from "lucide-solid";
-import { batch, createResource, createSignal } from "solid-js";
+import { createResource } from "solid-js";
 
 export default function UrlCodec() {
-  const [input, setInput] = createSignal("");
-  const [encode, setEncode] = createSignal(true);
+  const [store, setStore] = createPageStore({
+    input: "",
+    encode: true,
+  });
 
   // 切换操作模式
-  const switchEncode = (value: boolean) => {
-    batch(() => {
-      setInput("");
-      setEncode(value);
+  const setEncode = (value: boolean) => {
+    setStore({
+      input: "",
+      encode: value,
     });
   };
 
   // 获取输出
   const [output] = createResource(
-    () => ({ input: input(), encode: encode() }),
+    () => ({ ...store }),
     ({ input, encode }) => {
       if (input) {
         return (encode ? encodeURL(input) : decodeURL(input)).catch((e) =>
@@ -44,8 +47,8 @@ export default function UrlCodec() {
           icon={() => <ArrowLeftRight size={16} />}
         >
           <Config.Switch
-            value={encode()}
-            onChange={switchEncode}
+            value={store.encode}
+            onChange={setEncode}
             on="编码"
             off="解码"
           />
@@ -56,12 +59,14 @@ export default function UrlCodec() {
         <Card
           class="h-full w-0 flex-1"
           title="输入"
-          operation={<TextWriteButtons callback={setInput} />}
+          operation={
+            <TextWriteButtons callback={(value) => setStore("input", value)} />
+          }
         >
           <Editor
-            value={input()}
-            onChange={setInput}
-            placeholder={encode() ? "输入要编码的文本" : "输入要解码的文本"}
+            value={store.input}
+            onChange={(value) => setStore("input", value)}
+            placeholder={store.encode ? "输入要编码的文本" : "输入要解码的文本"}
           />
         </Card>
         <Card

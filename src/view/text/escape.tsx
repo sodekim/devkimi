@@ -5,21 +5,19 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Main from "@/component/Main";
+import { createPageStore } from "@/lib/persisted";
 import { ArrowLeftRight } from "lucide-solid";
-import { batch, createResource, createSignal } from "solid-js";
+import { createResource } from "solid-js";
 
 export default function TextEscape() {
-  const [encode, setEncode] = createSignal(true);
-  const [input, setInput] = createSignal("");
-  const switchEncode = (value: boolean) => {
-    batch(() => {
-      setInput("");
-      setEncode(value);
-    });
-  };
+  const [store, setStore] = createPageStore({
+    encode: true,
+    input: "",
+  });
+  const setEncode = (value: boolean) => setStore({ encode: value, input: "" });
 
   const [output] = createResource(
-    () => ({ encode: encode(), input: input() }),
+    () => ({ ...store }),
     ({ encode, input }) => {
       if (input) {
         return (encode ? escapeText(input) : unescapeText(input)).catch((e) =>
@@ -39,8 +37,8 @@ export default function TextEscape() {
           icon={() => <ArrowLeftRight size={16} />}
         >
           <Config.Switch
-            value={encode()}
-            onChange={switchEncode}
+            value={store.encode}
+            onChange={setEncode}
             on="转义"
             off="反转义"
           />
@@ -51,12 +49,16 @@ export default function TextEscape() {
         <Card
           class="h-full w-0 flex-1"
           title="输入"
-          operation={<TextWriteButtons callback={setInput} />}
+          operation={
+            <TextWriteButtons callback={(value) => setStore("input", value)} />
+          }
         >
           <Editor
-            value={input()}
-            onChange={setInput}
-            placeholder={encode() ? "输入要转义的文本" : "输入要反转义的文本"}
+            value={store.input}
+            onChange={(value) => setStore("input", value)}
+            placeholder={
+              store.encode ? "输入要转义的文本" : "输入要反转义的文本"
+            }
           />
         </Card>
         <Card

@@ -135,7 +135,7 @@ const Notice = (props: { message: string; loading?: boolean }) => {
 const Loading = () => {
   return (
     <div class="border-base-content/20 flex h-50 items-center justify-center gap-2 rounded-md border">
-      <span class="loading loading-bars loading-sm"></span>
+      <span class="loading loading-bars loading-sm text-primary"></span>
       <span class="text-sm font-bold">查询中...</span>
     </div>
   );

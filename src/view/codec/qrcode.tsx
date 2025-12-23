@@ -10,35 +10,30 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Main from "@/component/Main";
+import { createPageStore } from "@/lib/persisted";
 import { stringify } from "@/lib/util";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { ArrowLeftRight, Image } from "lucide-solid";
-import {
-  batch,
-  createResource,
-  createSignal,
-  Match,
-  Show,
-  Switch,
-} from "solid-js";
+import { createResource, Match, Show, Switch } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
 export default function QRCodeCodec() {
-  const [file, setFile] = createSignal("");
-  const [encode, setEncode] = createSignal(true);
-  const decode = () => !encode();
+  const [store, setStore] = createPageStore({
+    file: "",
+    text: "",
+    encode: true,
+  });
+  // 是否解码
+  const decode = () => !store.encode;
 
   // 切换操作模式
-  const switchEncode = (value: boolean) => {
-    batch(() => {
-      setFile("");
-      setEncode(value);
-    });
+  const setEncode = (value: boolean) => {
+    setStore((prev) => ({ ...prev, file: "", text: "", encode: value }));
   };
 
   // 解码
-  const [text, { mutate: setText }] = createResource(
-    () => (decode() ? { file: file() } : false),
+  const [decoded] = createResource(
+    () => (decode() ? { file: store.file } : false),
     ({ file }) => {
       if (file) {
         return decodeQrCode(file).catch(stringify);
@@ -48,8 +43,8 @@ export default function QRCodeCodec() {
   );
 
   // 编码
-  const [qrcode] = createResource(
-    () => (encode() ? { text: text() } : false),
+  const [encoded] = createResource(
+    () => (store.encode ? { text: store.text } : false),
     ({ text }) => {
       if (text) {
         return encodeQrCode(text).then(([base64, extension]) => ({
@@ -71,8 +66,8 @@ export default function QRCodeCodec() {
           icon={() => <ArrowLeftRight size={16} />}
         >
           <Config.Switch
-            value={encode()}
-            onChange={switchEncode}
+            value={store.encode}
+            onChange={setEncode}
             on="编码"
             off="解码"
           />
@@ -81,31 +76,36 @@ export default function QRCodeCodec() {
 
       <Main>
         <Card
-          class={twMerge("h-full w-0 flex-1", encode() ? "order-2" : "order-3")}
+          class={twMerge(
+            "h-full w-0 flex-1",
+            store.encode ? "order-2" : "order-3",
+          )}
           title="文本"
-          loading={text.loading}
+          loading={decoded.loading}
           operation={
             <Switch>
-              <Match when={encode()}>
-                <TextWriteButtons callback={setText} />
+              <Match when={store.encode}>
+                <TextWriteButtons
+                  callback={(value) => setStore("text", value)}
+                />
               </Match>
               <Match when={decode()}>
-                <TextReadButtons value={text()} />
+                <TextReadButtons value={decoded()} />
               </Match>
             </Switch>
           }
         >
           <Switch>
-            <Match when={encode()}>
+            <Match when={store.encode}>
               <Editor
-                value={text()}
+                value={store.text}
                 wordWrap="on"
-                onChange={setText}
+                onChange={(value) => setStore("text", value)}
                 placeholder="输入要编码的文本"
               />
             </Match>
             <Match when={decode()}>
-              <Editor value={text()} readOnly={true} wordWrap="on" />
+              <Editor value={decoded()} readOnly={true} />
             </Match>
           </Switch>
         </Card>
@@ -113,16 +113,20 @@ export default function QRCodeCodec() {
         <Card
           class={twMerge("h-full w-0 flex-1", decode() ? "order-2" : "order-3")}
           title="二维码"
-          loading={qrcode.loading}
+          loading={encoded.loading}
           operation={
             <Switch>
               <Match when={decode()}>
-                <PickImageFileButton onPick={(file) => file && setFile(file)} />
+                <PickImageFileButton
+                  onPick={(file) => file && setStore("file", file)}
+                />
               </Match>
-              <Match when={encode() && qrcode.state !== "errored" && qrcode()}>
+              <Match
+                when={store.encode && encoded.state !== "errored" && encoded()}
+              >
                 <Base64ImageButtons
-                  base64={qrcode()!.base64}
-                  extension={qrcode()!.extension}
+                  base64={encoded()!.base64}
+                  extension={encoded()!.extension}
                 />
               </Match>
             </Switch>
@@ -130,14 +134,14 @@ export default function QRCodeCodec() {
         >
           <div class="border-base-content/20 bg-base-100 flex flex-1 items-center justify-center overflow-hidden rounded-md border p-2">
             <Switch>
-              <Match when={encode()}>
+              <Match when={store.encode}>
                 <Switch>
-                  <Match when={qrcode.state === "errored"}>
-                    <span>{stringify(qrcode.error)}</span>
+                  <Match when={encoded.state === "errored"}>
+                    <span>{stringify(encoded.error)}</span>
                   </Match>
-                  <Match when={qrcode.state === "ready"}>
+                  <Match when={encoded.state === "ready"}>
                     <Show
-                      when={qrcode.state !== "errored" && qrcode()}
+                      when={encoded.state !== "errored" && encoded()}
                       fallback={
                         <span class="text-warning flex items-center justify-center gap-2 text-sm">
                           <Image size={16} />
@@ -146,7 +150,7 @@ export default function QRCodeCodec() {
                       }
                     >
                       <img
-                        src={`data:image/${qrcode()!.extension};base64,${qrcode()!.base64}`}
+                        src={`data:image/${encoded()!.extension};base64,${encoded()!.base64}`}
                         class="size-full object-scale-down"
                       />
                     </Show>
@@ -155,7 +159,7 @@ export default function QRCodeCodec() {
               </Match>
               <Match when={decode()}>
                 <Show
-                  when={file()}
+                  when={store.file}
                   fallback={
                     <span class="text-warning flex items-center justify-center gap-2 text-sm">
                       <Image size={16} />
@@ -164,7 +168,7 @@ export default function QRCodeCodec() {
                   }
                 >
                   <img
-                    src={convertFileSrc(file())}
+                    src={convertFileSrc(store.file)}
                     class="size-full object-scale-down"
                   />
                 </Show>

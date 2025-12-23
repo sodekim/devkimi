@@ -1,3 +1,3 @@
-export function stringify(value: any) {
+export function stringify(value: any): string {
   return value?.toString() ?? "";
 }

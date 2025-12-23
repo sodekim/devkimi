@@ -1,11 +1,8 @@
+import { Settings } from "lucide-solid";
 import Logo from "../Logo";
-import { useLocation } from "@solidjs/router";
-import { House, Settings } from "lucide-solid";
-import { createMemo } from "solid-js";
 import Menu from "./Menu";
 
 export default function Sidebar() {
-  const pathname = createMemo(() => useLocation().pathname);
   return (
     <div class="drawer-side flex w-70 flex-col overflow-visible">
       {/* Logo */}

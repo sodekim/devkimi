@@ -9,13 +9,14 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Flex from "@/component/Flex";
+import { createPageStore } from "@/lib/persisted";
 import {
   ArrowLeftFromLine,
   CaseSensitive,
   SquareAsterisk,
   Ungroup,
 } from "lucide-solid";
-import { createResource, createSignal, For, Match, Switch } from "solid-js";
+import { createResource, For, Match, Switch } from "solid-js";
 
 const RegexGrammars: Array<{ grammar: string; description: string }> = [
   // 🔹 基础字符匹配
@@ -59,21 +60,17 @@ const RegexGrammars: Array<{ grammar: string; description: string }> = [
 ];
 
 export default function RegexTest() {
-  const [global, setGlobal] = createSignal(true);
-  const [caseInsensitive, setCaseInsensitive] = createSignal(false);
-  const [multiLine, setMultiLine] = createSignal(false);
-  const [pattern, setPattern] = createSignal("");
-  const [text, setText] = createSignal("");
-  const [unicode, setUnicode] = createSignal(true);
+  const [store, setStore] = createPageStore({
+    global: true,
+    caseInsensitive: false,
+    multiLine: false,
+    pattern: "",
+    text: "",
+    unicode: true,
+  });
+
   const [captures] = createResource(
-    () => ({
-      global: global(),
-      caseInsensitive: caseInsensitive(),
-      multiLine: multiLine(),
-      pattern: pattern(),
-      text: text(),
-      unicode: unicode(),
-    }),
+    () => ({ ...store }),
     ({ global, caseInsensitive, multiLine, pattern, text, unicode }) => {
       if (text && pattern) {
         return parseRegex(
@@ -99,7 +96,10 @@ export default function RegexTest() {
           description="查找文本中所有的匹配项，或在匹配一次后停止。"
           icon={() => <SquareAsterisk size={16} />}
         >
-          <Config.Switch value={global()} onChange={setGlobal} />
+          <Config.Switch
+            value={store.global}
+            onChange={(value) => setStore("global", value)}
+          />
         </Config.Option>
 
         {/* 忽略大小写配置 */}
@@ -109,8 +109,8 @@ export default function RegexTest() {
           icon={() => <CaseSensitive size={16} />}
         >
           <Config.Switch
-            value={caseInsensitive()}
-            onChange={setCaseInsensitive}
+            value={store.caseInsensitive}
+            onChange={(value) => setStore("caseInsensitive", value)}
           />
         </Config.Option>
 
@@ -120,7 +120,10 @@ export default function RegexTest() {
           description="查找的模式从单行变为多行"
           icon={() => <ArrowLeftFromLine size={16} />}
         >
-          <Config.Switch value={multiLine()} onChange={setMultiLine} />
+          <Config.Switch
+            value={store.multiLine}
+            onChange={(value) => setStore("multiLine", value)}
+          />
         </Config.Option>
 
         {/* 多行模式配置 */}
@@ -129,7 +132,10 @@ export default function RegexTest() {
           description="启用Unicode模式"
           icon={() => <Ungroup size={16} />}
         >
-          <Config.Switch value={unicode()} onChange={setUnicode} />
+          <Config.Switch
+            value={store.unicode}
+            onChange={(value) => setStore("unicode", value)}
+          />
         </Config.Option>
       </Config.Card>
 
@@ -138,16 +144,16 @@ export default function RegexTest() {
         title="正则表达式"
         operation={
           <Flex>
-            <PasteButton onRead={setPattern} />
-            <ClearButton onClick={() => setPattern("")} />
+            <PasteButton onRead={(value) => setStore("pattern", value)} />
+            <ClearButton onClick={() => setStore("pattern", "")} />
           </Flex>
         }
       >
         <input
           class="input input-md w-full rounded-md font-mono font-bold outline-none"
           placeholder="输入正则表达式"
-          value={pattern()}
-          onInput={(e) => setPattern(e.target.value)}
+          value={store.pattern}
+          onInput={(e) => setStore("pattern", e.target.value)}
         />
       </Card>
 
@@ -155,11 +161,13 @@ export default function RegexTest() {
       <Card
         class="h-0 flex-1"
         title="文本"
-        operation={<TextWriteButtons callback={setText} />}
+        operation={
+          <TextWriteButtons callback={(value) => setStore("text", value)} />
+        }
       >
         <Editor
-          value={text()}
-          onChange={setText}
+          value={store.text}
+          onChange={(value) => setStore("text", value)}
           placeholder="输入要匹配的文本"
         />
       </Card>

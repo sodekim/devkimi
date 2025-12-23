@@ -2,8 +2,8 @@ import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
+import { createPageStore } from "@/lib/persisted";
 import { PaintRoller } from "lucide-solid";
-import { createSignal } from "solid-js";
 
 type Radix = 2 | 8 | 10 | 16;
 
@@ -47,7 +47,7 @@ function formatNumber(
  */
 function parseNumber(value: string, radix: Radix) {
   if (!value || value.trim() === "") {
-    return undefined;
+    return BigInt(0);
   }
   switch (radix) {
     case 2:
@@ -62,34 +62,39 @@ function parseNumber(value: string, radix: Radix) {
 }
 
 export default function NumberConverter() {
-  const [format, setFormat] = createSignal(true);
-  const [value, setValue] = createSignal<BigInt>();
-  // 版本号，用于触发重新计算 十六进制时替换非法数字导致数字没有变化时会触发重新计算
-  const [version, setVersion] = createSignal(0);
+  const [store, setStore] = createPageStore({
+    format: true,
+    value: "0",
+    version: 0,
+  });
+
   const hex = () => {
-    const _ = version();
-    const _value = value()?.toString(16)?.toUpperCase() ?? "";
-    return format() ? formatNumber(_value, 4, " ") : _value;
+    const _ = store.version;
+    const value = BigInt(store.value).toString(16);
+    return store.format ? formatNumber(value, 4, " ") : value;
   };
   const decimal = () => {
-    const _ = version();
-    const _value = value()?.toString(10) ?? "";
-    return format() ? formatNumber(_value, 3, ",") : _value;
+    const _ = store.version;
+    const value = BigInt(store.value).toString(10);
+    return store.format ? formatNumber(value, 3, ",") : value;
   };
   const octal = () => {
-    const _ = version();
-    const _value = value()?.toString(8) ?? "";
-    return format() ? formatNumber(_value, 3, " ") : _value;
+    const _ = store.version;
+    const value = BigInt(store.value).toString(8);
+    return store.format ? formatNumber(value, 3, " ") : value;
   };
   const binary = () => {
-    const _ = version();
-    const _value = value()?.toString(2) ?? "";
-    return format() ? formatNumber(_value, 4, " ") : _value;
+    const _ = store.version;
+    const value = BigInt(store.value).toString(2);
+    return store.format ? formatNumber(value, 4, " ") : value;
   };
 
   const update = (value: string, radix: Radix) => {
-    setValue(parseNumber(value, radix));
-    setVersion(version() + 1);
+    setStore((prev) => ({
+      ...prev,
+      value: parseNumber(value, radix).toString(),
+      version: prev.version + 1,
+    }));
   };
 
   return (
@@ -99,7 +104,12 @@ export default function NumberConverter() {
           label="格式化数字"
           icon={() => <PaintRoller size={16} />}
         >
-          <Config.Switch value={format()} onChange={setFormat} />
+          <Config.Switch
+            value={store.format}
+            onChange={(value) =>
+              setStore((prev) => ({ ...prev, format: value }))
+            }
+          />
         </Config.Option>
       </Config.Card>
 

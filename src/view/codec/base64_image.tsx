@@ -14,37 +14,37 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Main from "@/component/Main";
+import { createPageStore } from "@/lib/persisted";
 import { stringify } from "@/lib/util";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { ArrowLeftRight, Image, Layers } from "lucide-solid";
-import {
-  batch,
-  createResource,
-  createSignal,
-  Match,
-  Show,
-  Switch,
-} from "solid-js";
+import { createResource, Match, Show, Switch } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
 export default function Base64ImageCodec() {
-  const [file, setFile] = createSignal("");
-  const [mode, setMode] = createSignal<Base64Mode>(Base64Mode.Standard);
-  const [encode, setEncode] = createSignal(true);
-  const decode = () => !encode();
+  const [store, setStore] = createPageStore({
+    file: "",
+    base64: "",
+    mode: Base64Mode.Standard,
+    encode: true,
+  });
+
+  // 是否解码
+  const decode = () => !store.encode;
 
   // 切换操作模式
-  const switchEncode = (value: boolean) => {
-    batch(() => {
-      setFile("");
-      setBase64("");
-      setEncode(value);
-    });
+  const setEncode = (value: boolean) => {
+    setStore((prev) => ({
+      ...prev,
+      file: "",
+      base64: "",
+      encode: value,
+    }));
   };
 
   // 编码
-  const [base64, { mutate: setBase64 }] = createResource(
-    () => (encode() ? { file: file(), mode: mode() } : false),
+  const [encoded] = createResource(
+    () => (store.encode ? { file: store.file, mode: store.mode } : false),
     ({ file, mode }) => {
       if (file) {
         return encodeImageBase64(file, mode).catch(stringify);
@@ -53,8 +53,8 @@ export default function Base64ImageCodec() {
   );
 
   // 解码
-  const [image] = createResource(
-    () => (decode() ? { base64: base64(), mode: mode() } : false),
+  const [decoded] = createResource(
+    () => (decode() ? { base64: store.base64, mode: store.mode } : false),
     ({ base64, mode }) => {
       if (base64) {
         return decodeImageBase64(base64, mode).then(([base64, extension]) => ({
@@ -76,8 +76,8 @@ export default function Base64ImageCodec() {
           icon={() => <ArrowLeftRight size={16} />}
         >
           <Config.Switch
-            value={encode()}
-            onChange={switchEncode}
+            value={store.encode}
+            onChange={setEncode}
             on="编码"
             off="解码"
           />
@@ -91,9 +91,9 @@ export default function Base64ImageCodec() {
         >
           <Config.Select
             class="w-35"
-            value={mode()}
+            value={store.mode}
             options={Object.keys(Base64Mode)}
-            onChange={setMode}
+            onChange={(value) => setStore("mode", value)}
           />
         </Config.Option>
       </Config.Card>
@@ -101,19 +101,24 @@ export default function Base64ImageCodec() {
       {/* 操作区域 */}
       <Main>
         <Card
-          class={twMerge("h-full w-0 flex-1", encode() ? "order-2" : "order-3")}
+          class={twMerge(
+            "h-full w-0 flex-1",
+            store.encode ? "order-2" : "order-3",
+          )}
           title="图片"
-          loading={image.loading}
+          loading={decoded.loading}
           operation={
             <Switch>
-              <Match when={encode()}>
-                <PickImageFileButton onPick={(file) => file && setFile(file)} />
+              <Match when={store.encode}>
+                <PickImageFileButton
+                  onPick={(file) => file && setStore("file", file)}
+                />
               </Match>
               <Match when={decode()}>
-                <Show when={image.state !== "errored" && image()}>
+                <Show when={decoded.state !== "errored" && decoded()}>
                   <Base64ImageButtons
-                    base64={image()!.base64}
-                    extension={image()!.extension}
+                    base64={decoded()!.base64}
+                    extension={decoded()!.extension}
                   />
                 </Show>
               </Match>
@@ -122,9 +127,9 @@ export default function Base64ImageCodec() {
         >
           <div class="border-base-content/20 bg-base-100 flex flex-1 items-center justify-center overflow-hidden rounded-md border p-2">
             <Switch>
-              <Match when={encode()}>
+              <Match when={store.encode}>
                 <Show
-                  when={file()}
+                  when={store.file}
                   fallback={
                     <span class="text-warning flex items-center justify-center gap-2 text-sm">
                       <Image size={16} />
@@ -133,19 +138,19 @@ export default function Base64ImageCodec() {
                   }
                 >
                   <img
-                    src={convertFileSrc(file())}
+                    src={convertFileSrc(store.file)}
                     class="size-full object-scale-down"
                   />
                 </Show>
               </Match>
               <Match when={decode()}>
                 <Switch>
-                  <Match when={image.state === "errored"}>
-                    <span>{stringify(image.error)}</span>
+                  <Match when={decoded.state === "errored"}>
+                    <span>{stringify(decoded.error)}</span>
                   </Match>
-                  <Match when={image.state === "ready"}>
+                  <Match when={decoded.state === "ready"}>
                     <Show
-                      when={image()}
+                      when={decoded()}
                       fallback={
                         <span class="text-warning flex items-center justify-center gap-2 text-sm">
                           <Image size={16} />
@@ -154,7 +159,7 @@ export default function Base64ImageCodec() {
                       }
                     >
                       <img
-                        src={`data:image/${image()!.extension};base64,${image()!.base64}`}
+                        src={`data:image/${decoded()!.extension};base64,${decoded()!.base64}`}
                         class="size-full object-scale-down"
                       />
                     </Show>
@@ -168,27 +173,28 @@ export default function Base64ImageCodec() {
         <Card
           class={twMerge("h-full w-0 flex-1", decode() ? "order-2" : "order-3")}
           title="Base64"
-          loading={base64.loading}
+          loading={encoded.loading}
           operation={
             <Switch>
-              <Match when={encode()}>
-                <TextReadButtons value={base64()} />
+              <Match when={store.encode}>
+                <TextReadButtons value={encoded()} />
               </Match>
               <Match when={decode()}>
-                <TextWriteButtons callback={setBase64} />
+                <TextWriteButtons
+                  callback={(value) => setStore("base64", value)}
+                />
               </Match>
             </Switch>
           }
         >
           <Switch>
-            <Match when={encode()}>
-              <Editor value={base64()} readOnly={true} />
+            <Match when={store.encode}>
+              <Editor value={encoded()} readOnly={true} />
             </Match>
             <Match when={decode()}>
               <Editor
-                value={base64()}
-                wordWrap="on"
-                onChange={setBase64}
+                value={store.base64}
+                onChange={(value) => setStore("base64", value)}
                 placeholder="输入要解码的Base64文本"
               />
             </Match>
