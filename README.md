@@ -14,7 +14,7 @@ devkimi 是一个基于 Tauri 和 SolidJS 构建的多功能开发者工具集�
 
 ## 功能特性
 
-devkimi 包含以下六大功能模块：
+devkimi 包含以下七大功能模块：
 
 ### 🔄 编解码工具 (Codec)
 
@@ -43,6 +43,7 @@ devkimi 包含以下六大功能模块：
 - Markdown 预览
 - 正则表达式测试
 - JSONPath 查询
+- 转义 / 反转义
 
 ### 🔁 转换器 (Converter)
 
@@ -50,6 +51,7 @@ devkimi 包含以下六大功能模块：
 - JSON/YAML 互转
 - YAML/Properties 互转
 - 进制转换（十六进制/十进制/八进制/二进制）
+- 时间转换
 
 ### 🔐 加密 & 解密 (Crypto)
 
@@ -58,6 +60,10 @@ devkimi 包含以下六大功能模块：
 - SM4 加密/解密（支持多种分组模式）
 - AES 加密/解密（支持 128/192/256 位密钥）
 - DES/3DES 加密/解密
+
+### 🌐 网络工具 (Network)
+
+- DNS 查询
 
 ## 技术栈
 
@@ -120,6 +126,7 @@ pnpm tauri build
 │   │   ├── text/        # 文本工具
 │   │   ├── converter/   # 转换器
 │   │   ├── crypto/      # 加密解密工具
+│   │   ├── network/     # 网络工具
 │   │   └── settings.tsx # 设置页面
 │   ├── routes.tsx       # 路由配置
 │   └── App.tsx          # 应用入口
