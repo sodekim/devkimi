@@ -14,7 +14,7 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Main from "@/component/Main";
-import { createPageStore } from "@/lib/persisted";
+import { createCachableStore } from "@/lib/cache";
 import { stringify } from "@/lib/util";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { ArrowLeftRight, Image, Layers } from "lucide-solid";
@@ -22,7 +22,8 @@ import { createResource, Match, Show, Switch } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
 export default function Base64ImageCodec() {
-  const [store, setStore] = createPageStore({
+  // 页面参数
+  const [store, setStore] = createCachableStore({
     file: "",
     base64: "",
     mode: Base64Mode.Standard,

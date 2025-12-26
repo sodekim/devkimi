@@ -5,7 +5,7 @@ import Config from "@/component/Config";
 import ConfigSwitch from "@/component/Config/Switch";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import { createPageStore } from "@/lib/persisted";
+import { createCachableStore } from "@/lib/cache";
 import { stringify } from "@/lib/util";
 import { CaseUpper, Minus, RefreshCcw, Settings2, Sigma } from "lucide-solid";
 import { createResource, createSignal } from "solid-js";
@@ -17,8 +17,15 @@ enum Version {
 }
 
 export default function UuidGenerator() {
-  const [store, setStore] = createPageStore({ version: Version.V4, uppercase: false, hyphen: true, size: 10 });
+  // 页面参数
+  const [store, setStore] = createCachableStore({
+    version: Version.V4,
+    uppercase: false,
+    hyphen: true,
+    size: 10,
+  });
 
+  // 输出结果
   const [output, { refetch }] = createResource(
     () => ({ ...store }),
     ({ version, uppercase, hyphen, size }) =>

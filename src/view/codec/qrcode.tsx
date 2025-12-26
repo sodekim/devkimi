@@ -10,7 +10,7 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Main from "@/component/Main";
-import { createPageStore } from "@/lib/persisted";
+import { createCachableStore } from "@/lib/cache";
 import { stringify } from "@/lib/util";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { ArrowLeftRight, Image } from "lucide-solid";
@@ -18,11 +18,13 @@ import { createResource, Match, Show, Switch } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
 export default function QRCodeCodec() {
-  const [store, setStore] = createPageStore({
+  // 页面参数
+  const [store, setStore] = createCachableStore({
     file: "",
     text: "",
     encode: true,
   });
+
   // 是否解码
   const decode = () => !store.encode;
 

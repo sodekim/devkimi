@@ -2,7 +2,7 @@ import { TextReadButtons, TextWriteButtons } from "@/component/Buttons";
 import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
-import { createPageStore } from "@/lib/persisted";
+import { createCachableStore } from "@/lib/cache";
 import { PaintRoller } from "lucide-solid";
 
 type Radix = 2 | 8 | 10 | 16;
@@ -62,33 +62,42 @@ function parseNumber(value: string, radix: Radix) {
 }
 
 export default function NumberConverter() {
-  const [store, setStore] = createPageStore({
+  // 页面参数
+  const [store, setStore] = createCachableStore({
     format: true,
     value: "0",
     version: 0,
   });
 
+  // 十六进制
   const hex = () => {
     const _ = store.version;
     const value = BigInt(store.value).toString(16);
     return store.format ? formatNumber(value, 4, " ") : value;
   };
+
+  // 十进制
   const decimal = () => {
     const _ = store.version;
     const value = BigInt(store.value).toString(10);
     return store.format ? formatNumber(value, 3, ",") : value;
   };
+
+  // 八进制
   const octal = () => {
     const _ = store.version;
     const value = BigInt(store.value).toString(8);
     return store.format ? formatNumber(value, 3, " ") : value;
   };
+
+  // 二进制
   const binary = () => {
     const _ = store.version;
     const value = BigInt(store.value).toString(2);
     return store.format ? formatNumber(value, 4, " ") : value;
   };
 
+  // 更新值
   const update = (value: string, radix: Radix) => {
     setStore((prev) => ({
       ...prev,

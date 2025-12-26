@@ -1,13 +1,12 @@
 import {
   Algorithm,
-  BitSize,
   decodeJwt,
   encodeJwt,
   generateJwtEcdsaKeyPair,
   generateJwtRsaKeyPair,
   Header,
 } from "@/command/codec/jwt";
-import { createEncodingText, Encoding } from "@/command/crypto/type";
+import { Encoding, EncodingText, RsaBitSize } from "@/command/crypto/type";
 import { formatJson } from "@/command/formatter/json";
 import {
   CopyButton,
@@ -21,6 +20,7 @@ import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import { EncodingTextInput } from "@/component/Encoding";
 import Main from "@/component/Main";
+import { createCachableStore } from "@/lib/cache";
 import { stringify } from "@/lib/util";
 import {
   ArrowLeftRight,
@@ -30,106 +30,135 @@ import {
   Ruler,
   SquareLibrary,
 } from "lucide-solid";
-import {
-  batch,
-  createEffect,
-  createMemo,
-  createSignal,
-  Match,
-  Show,
-  Switch,
-} from "solid-js";
+import { createMemo, createResource, Match, Show, Switch } from "solid-js";
 import { twMerge } from "tailwind-merge";
+import { RSA_BIT_SIZE_OPTIONS } from "../crypto/options";
 
-const defaultHeader: Header = { alg: Algorithm.HS256, typ: "JWT" };
+type KeyPair = {
+  private: string;
+  public: string;
+  size: RsaBitSize;
+};
 
 export default function Jwt() {
-  const [algorithm, setAlgorithm] = createSignal<Algorithm>(Algorithm.HS256);
-  const [encode, setEncode] = createSignal(true);
-  const [header, setHeader] = createSignal<Header>(defaultHeader);
-  const [payload, setPayload] = createSignal("{}");
-  const [secret, setSecret] = createEncodingText();
-  const [privateKey, setPrivateKey] = createSignal("");
-  const [publicKey, setPublicKey] = createSignal("");
-  const [token, setToken] = createSignal("");
-  const [verified, setVerified] = createSignal<boolean | null>(null);
-  const prettyHeader = createMemo(() => JSON.stringify(header(), null, 2));
-  const [rsaBitSize, setRsaBitSize] = createSignal(2048);
-  const useKeyPair = createMemo(
-    () =>
-      ![Algorithm.HS256, Algorithm.HS384, Algorithm.HS512].includes(
-        algorithm(),
-      ),
-  );
-  const isRsaKeyPair = createMemo(() =>
-    [Algorithm.RS256, Algorithm.RS384, Algorithm.RS512].includes(algorithm()),
-  );
-
-  // 密钥
-  const key = createMemo(() => {
-    switch (algorithm()) {
-      case Algorithm.HS256:
-      case Algorithm.HS384:
-      case Algorithm.HS512:
-        return secret;
-      case Algorithm.RS256:
-      case Algorithm.RS384:
-      case Algorithm.RS512:
-      case Algorithm.ES256:
-      case Algorithm.ES384:
-      case Algorithm.ES512:
-        return {
-          encoding: Encoding.Utf8,
-          text: encode() ? privateKey() : publicKey(),
-        };
-    }
+  const [store, setStore] = createCachableStore({
+    encode: true,
+    header: { alg: Algorithm.HS256, typ: "JWT" } as Header,
+    payload: "{}",
+    secret: { text: "", encoding: Encoding.Utf8 } as EncodingText,
+    keyPair: { private: "", public: "", size: RsaBitSize.Bits2048 } as KeyPair,
+    token: "",
+    verified: null as boolean | null,
   });
 
   // 切换编码模式
-  const switchEncode = (value: boolean) => {
-    batch(() => {
-      setHeader({ alg: Algorithm.HS256, typ: "JWT" });
-      setPayload("{}");
-      setToken("");
-      setSecret({ text: "", encoding: Encoding.Utf8 });
-      setPrivateKey("");
-      setPublicKey("");
-      setVerified(null);
-      setAlgorithm(Algorithm.HS256);
-      setRsaBitSize(2048);
-      setEncode(value);
+  const setEncode = (value: boolean) => {
+    setStore({
+      encode: value,
+      header: { alg: Algorithm.HS256, typ: "JWT" } as Header,
+      payload: "{}",
+      secret: { text: "", encoding: Encoding.Utf8 } as EncodingText,
+      keyPair: {
+        private: "",
+        public: "",
+        size: RsaBitSize.Bits2048,
+      } as KeyPair,
+      token: "",
+      verified: null,
     });
   };
 
-  // 处理数据
-  createEffect(() => {
-    if (encode()) {
-      if ((header() || payload()) && key().text) {
-        encodeJwt(header(), payload(), key())
-          .then(setToken)
-          .catch((e) => setToken(stringify(e)));
-      } else {
-        setToken("");
-      }
+  // 判断是否使用密钥对
+  const isKeyPair = () =>
+    ![Algorithm.HS256, Algorithm.HS384, Algorithm.HS512].includes(
+      store.header.alg,
+    );
+
+  // 判断是否使用RSA密钥对
+  const isRsaKeyPair = () =>
+    [Algorithm.RS256, Algorithm.RS384, Algorithm.RS512].includes(
+      store.header.alg,
+    );
+
+  // 生成密钥对
+  const generateKeyPair = () => {
+    if (isRsaKeyPair()) {
+      generateJwtRsaKeyPair(store.keyPair.size).then(setKeyPair);
     } else {
-      if (token()) {
-        decodeJwt(token(), key())
-          .then(([header, payload, verified]) => {
-            setHeader(header);
-            setPayload(payload);
-            setVerified(verified);
-            setAlgorithm(header.alg);
-          })
-          .catch((e) => {
-            setVerified(null);
-            setPayload(stringify(e));
-          });
-      } else {
-        setHeader(defaultHeader);
-        setPayload("{}");
-      }
+      generateJwtEcdsaKeyPair(store.header.alg).then(setKeyPair);
+    }
+  };
+
+  // 设置密钥对
+  const setKeyPair = ([k1, k2]: [string, string]) => {
+    setStore("keyPair", (prev) => ({
+      ...prev,
+      private: k1,
+      public: k2,
+    }));
+  };
+
+  // 获取实际需要使用的密钥
+  const secret = createMemo(() => {
+    if (isKeyPair()) {
+      return {
+        text: store.encode ? store.keyPair.private : store.keyPair.public,
+        encoding: Encoding.Utf8,
+      };
+    } else {
+      return store.secret;
     }
   });
+
+  // 获取格式化后的JWT头
+  const getPrettryHeader = createMemo(() =>
+    JSON.stringify(store.header, null, 2),
+  );
+
+  // 设置格式化后JWT负载
+  const setPrettyPayload = () => {
+    formatJson(store.payload).then((value) => setStore("payload", value));
+  };
+
+  // 编码结果
+  const [encoded] = createResource(
+    () =>
+      store.encode
+        ? {
+            header: store.header,
+            payload: store.payload,
+            secret: secret(),
+          }
+        : false,
+    ({ header, payload, secret }) => {
+      if (payload && secret.text) {
+        return encodeJwt(header, payload, secret).catch(stringify);
+      }
+    },
+  );
+
+  // 解码结果
+  const [decoded] = createResource(
+    () => (store.encode ? false : { token: store.token, secret: secret() }),
+    ({ token, secret }) => {
+      if (token) {
+        decodeJwt(token, secret)
+          .then(([header, payload, verified]) => {
+            setStore((prev) => ({ ...prev, header, payload, verified }));
+          })
+          .catch((e) => {
+            setStore((prev) => ({ ...prev, payload: stringify(e) }));
+          });
+      } else {
+        setStore((prev) => ({
+          ...prev,
+          header: { alg: Algorithm.HS256, typ: "JWT" } as Header,
+          payload: "{}",
+          verified: null,
+        }));
+      }
+    },
+  );
 
   return (
     <Container>
@@ -142,65 +171,70 @@ export default function Jwt() {
           icon={() => <ArrowLeftRight size={16} />}
         >
           <Config.Switch
-            value={encode()}
-            onChange={switchEncode}
+            value={store.encode}
+            onChange={setEncode}
             on="编码"
             off="解码"
           />
         </Config.Option>
 
-        <Show when={encode()}>
+        <Show when={store.encode}>
           <Config.Option
             label="签名算法"
             description="选择使用的签名算法"
             icon={() => <Blend size={16} />}
           >
             <Config.Select
-              value={algorithm()}
+              value={store.header.alg}
               options={Object.keys(Algorithm)}
-              onChange={(value) => setAlgorithm(value as Algorithm)}
+              onChange={(value) => setStore("header", "alg", value)}
               class="w-40"
             />
           </Config.Option>
         </Show>
 
         {/* RSA密钥长度 */}
-        <Show when={encode() && isRsaKeyPair()}>
+        <Show when={store.encode && isRsaKeyPair()}>
           <Config.Option
             label="密钥长度"
             icon={() => <Ruler size={16} />}
             description="选择密钥的长度，单位为位，一个字节为8位。"
           >
             <Config.Select
-              value={rsaBitSize()}
-              options={Object.keys(BitSize).filter(
-                (key) => !key.includes("Bit"),
-              )}
-              onChange={(value) => setRsaBitSize(value)}
+              value={store.keyPair.size}
+              options={RSA_BIT_SIZE_OPTIONS}
+              onChange={(value) => {
+                setStore("keyPair", {
+                  size: value,
+                  public: "",
+                  private: "",
+                });
+              }}
               class="w-30"
             />
           </Config.Option>
         </Show>
       </Config.Card>
 
-      <Main class={encode() ? "order-2" : "order-4"}>
+      <Main class={store.encode ? "order-2" : "order-4"}>
         {/*头部*/}
         <Card
           class="h-full w-0 flex-1"
+          loading={decoded.loading}
           title="头部"
           operation={
             <Switch>
-              <Match when={encode()}>
-                <CopyButton value={prettyHeader()} />
+              <Match when={store.encode}>
+                <CopyButton value={getPrettryHeader()} />
               </Match>
-              <Match when={!encode()}>
-                <TextReadButtons value={prettyHeader()} />
+              <Match when={!store.encode}>
+                <TextReadButtons value={getPrettryHeader()} />
               </Match>
             </Switch>
           }
         >
           <Editor
-            value={prettyHeader()}
+            value={getPrettryHeader()}
             placeholder="JWT 头部"
             language="json"
             readOnly={true}
@@ -210,40 +244,38 @@ export default function Jwt() {
         {/*载荷*/}
         <Card
           class="h-full w-0 flex-1"
+          loading={decoded.loading}
           title="载荷"
           operation={
             <Switch>
-              <Match when={encode()}>
+              <Match when={store.encode}>
                 <TextWriteButtons
-                  callback={(value) => setPayload(value || "{}")}
+                  callback={(value) => setStore("payload", value || "{}")}
                 >
-                  <button
-                    class="btn btn-sm"
-                    onClick={() => formatJson(payload()).then(setPayload)}
-                  >
+                  <button class="btn btn-sm" onClick={setPrettyPayload}>
                     <SquareLibrary size={16} />
                     格式化
                   </button>
                 </TextWriteButtons>
               </Match>
-              <Match when={!encode()}>
-                <TextReadButtons value={payload()} />
+              <Match when={!store.encode}>
+                <TextReadButtons value={store.payload} />
               </Match>
             </Switch>
           }
         >
           <Editor
-            value={payload()}
-            onChange={setPayload}
+            value={store.payload}
+            onChange={(value) => setStore("payload", value)}
             placeholder="输入 JWT 载荷"
             language="json"
-            readOnly={!encode()}
+            readOnly={!store.encode}
           />
         </Card>
       </Main>
 
       <Switch>
-        <Match when={useKeyPair()}>
+        <Match when={isKeyPair()}>
           {/* 密钥对 */}
           <Main class="order-3">
             {/*私钥*/}
@@ -251,43 +283,23 @@ export default function Jwt() {
               class="h-full w-0 flex-1"
               title="私钥"
               operation={
-                <TextWriteButtons callback={setPrivateKey} position="before">
-                  <Show when={encode()}>
+                <TextWriteButtons
+                  callback={(value) => setStore("keyPair", "private", value)}
+                  position="before"
+                >
+                  <Show when={store.encode}>
                     <GenerateButton
-                      onGenerate={() => {
-                        switch (algorithm()) {
-                          case Algorithm.RS256:
-                          case Algorithm.RS384:
-                          case Algorithm.RS512:
-                            generateJwtRsaKeyPair(rsaBitSize()).then(
-                              ([privateKey, publicKey]) => {
-                                setPublicKey(publicKey);
-                                setPrivateKey(privateKey);
-                              },
-                            );
-                            break;
-                          case Algorithm.ES256:
-                          case Algorithm.ES384:
-                          case Algorithm.ES512:
-                            generateJwtEcdsaKeyPair(algorithm()).then(
-                              ([privateKey, publicKey]) => {
-                                setPublicKey(publicKey);
-                                setPrivateKey(privateKey);
-                              },
-                            );
-                            break;
-                        }
-                      }}
+                      onGenerate={generateKeyPair}
                       label="生成密钥对"
                     />
-                    <CopyButton value={privateKey()} />
+                    <CopyButton value={store.keyPair.private} />
                   </Show>
                 </TextWriteButtons>
               }
             >
               <Editor
-                value={privateKey()}
-                onChange={setPrivateKey}
+                value={store.keyPair.private}
+                onChange={(value) => setStore("keyPair", "private", value)}
                 placeholder="输入密钥"
               />
             </Card>
@@ -297,35 +309,42 @@ export default function Jwt() {
               class="h-full w-0 flex-1"
               title="公钥"
               operation={
-                <TextWriteButtons callback={setPublicKey} position="before">
-                  <CopyButton value={publicKey()} />
+                <TextWriteButtons
+                  callback={(value) => setStore("keyPair", "public", value)}
+                  position="before"
+                >
+                  <CopyButton value={store.keyPair.public} />
                 </TextWriteButtons>
               }
             >
               <Editor
-                value={publicKey()}
-                onChange={setPublicKey}
+                value={store.keyPair.public}
+                onChange={(value) => setStore("keyPair", "public", value)}
                 placeholder="输入公钥"
               />
             </Card>
           </Main>
         </Match>
 
-        <Match when={!useKeyPair()}>
+        <Match when={!isKeyPair()}>
           <Card
             class="order-3"
             title="签名密钥"
-            operation={<TextWriteButtons callback={setPayload} />}
+            operation={
+              <TextWriteButtons
+                callback={(value) => setStore("secret", "text", value)}
+              />
+            }
           >
             <EncodingTextInput
-              value={secret}
+              value={store.secret}
               onEncodingChange={(value) =>
-                setSecret((prev) => ({ ...prev, encoding: value }))
+                setStore("secret", "encoding", value)
               }
-              onTextChange={(value) =>
-                setSecret((prev) => ({ ...prev, text: value }))
+              onTextChange={(value) => setStore("secret", "text", value)}
+              placeholder={
+                store.encode ? "输入密钥生成令牌" : "输入密钥校验令牌"
               }
-              placeholder={encode() ? "输入密钥生成令牌" : "输入密钥校验令牌"}
             />
           </Card>
         </Match>
@@ -333,28 +352,31 @@ export default function Jwt() {
 
       {/* 令牌 */}
       <Card
-        class={twMerge("h-60", encode() ? "order-4" : "order-2")}
+        class={twMerge("h-60", store.encode ? "order-4" : "order-2")}
         title="令牌"
+        loading={encoded.loading}
         operation={
           <Switch>
-            <Match when={encode()}>
-              <TextReadButtons value={token()} />
+            <Match when={store.encode}>
+              <TextReadButtons value={encoded()} />
             </Match>
-            <Match when={!encode()}>
-              <TextWriteButtons callback={setToken} />
+            <Match when={!store.encode}>
+              <TextWriteButtons
+                callback={(value) => setStore("token", value)}
+              />
             </Match>
           </Switch>
         }
         notification={
-          <Show when={verified() !== null}>
+          <Show when={store.verified !== null}>
             <Switch>
-              <Match when={verified()}>
+              <Match when={store.verified}>
                 <span class="flex items-center justify-center gap-1 text-sm">
                   <CircleCheckBig size={16} color="var(--color-success)" />
                   校验成功
                 </span>
               </Match>
-              <Match when={!verified()}>
+              <Match when={!store.verified}>
                 <span class="flex items-center justify-center gap-1 text-sm">
                   <CircleX size={16} color="var(--color-error)" />
                   校验失败
@@ -364,7 +386,17 @@ export default function Jwt() {
           </Show>
         }
       >
-        <Editor value={token()} readOnly={encode()} onChange={setToken} />
+        <Switch>
+          <Match when={store.encode}>
+            <Editor value={encoded()} readOnly={true} />
+          </Match>
+          <Match when={!store.encode}>
+            <Editor
+              value={store.token}
+              onChange={(value) => setStore("token", value)}
+            />
+          </Match>
+        </Switch>
       </Card>
     </Container>
   );

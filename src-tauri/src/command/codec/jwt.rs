@@ -12,16 +12,30 @@ use openssl::{
     pkey::PKey,
     rsa::Rsa,
 };
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sha2::{Sha256, Sha384, Sha512};
 use std::collections::BTreeMap;
 
 type Claims = BTreeMap<String, serde_json::Value>;
 
+#[derive(Debug, Serialize, Deserialize)]
+pub enum BitSize {
+    Bits1024,
+    Bits2048,
+    Bits3072,
+    Bits4096,
+}
+
 #[tauri::command]
 #[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::ERROR))]
-pub fn generate_jwt_rsa_key_pair(bit_size: u32) -> Result<(String, String), Error> {
-    let rsa = Rsa::generate(bit_size)?;
+pub fn generate_jwt_rsa_key_pair(bit_size: BitSize) -> Result<(String, String), Error> {
+    let rsa = Rsa::generate(match bit_size {
+        BitSize::Bits1024 => 1024,
+        BitSize::Bits2048 => 2048,
+        BitSize::Bits3072 => 3072,
+        BitSize::Bits4096 => 4096,
+    })?;
     let private_key = rsa.private_key_to_pem()?;
     let public_key = rsa.public_key_to_pem()?;
     Ok((

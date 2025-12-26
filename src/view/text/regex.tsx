@@ -9,7 +9,7 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Flex from "@/component/Flex";
-import { createPageStore } from "@/lib/persisted";
+import { createCachableStore } from "@/lib/cache";
 import {
   ArrowLeftFromLine,
   CaseSensitive,
@@ -60,7 +60,8 @@ const RegexGrammars: Array<{ grammar: string; description: string }> = [
 ];
 
 export default function RegexTest() {
-  const [store, setStore] = createPageStore({
+  // 页面参数
+  const [store, setStore] = createCachableStore({
     global: true,
     caseInsensitive: false,
     multiLine: false,
@@ -69,6 +70,7 @@ export default function RegexTest() {
     unicode: true,
   });
 
+  // 匹配结果
   const [captures] = createResource(
     () => ({ ...store }),
     ({ global, caseInsensitive, multiLine, pattern, text, unicode }) => {

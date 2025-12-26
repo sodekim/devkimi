@@ -241,31 +241,31 @@ const routeMetas: RouteMeta[] = [
     children: [
       {
         label: "RSA",
-        path: "/crypto/rsa",
+        path: "/rsa",
         icon: Bubbles,
         component: lazy(() => import("./view/crypto/rsa")),
       },
       {
         label: "SM2",
-        path: "/crypto/sm2",
+        path: "/sm2",
         icon: Rainbow,
         component: lazy(() => import("./view/crypto/sm2")),
       },
       {
         label: "SM4",
-        path: "/crypto/sm4",
+        path: "/sm4",
         icon: Shell,
         component: lazy(() => import("./view/crypto/sm4")),
       },
       {
         label: "AES",
-        path: "/crypto/aes",
+        path: "/aes",
         icon: CirclePercent,
         component: lazy(() => import("./view/crypto/aes")),
       },
       {
         label: "DES",
-        path: "/crypto/des",
+        path: "/des",
         icon: LifeBuoy,
         component: lazy(() => import("./view/crypto/des")),
       },
@@ -278,7 +278,7 @@ const routeMetas: RouteMeta[] = [
     children: [
       {
         label: "DNS 查询",
-        path: "/network/dns",
+        path: "/dns",
         component: lazy(() => import("./view/network/dns")),
         icon: CirclePile,
       },

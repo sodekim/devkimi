@@ -4,6 +4,7 @@ import {
   generateSm2KeyPair,
   Sm2KeyFormat,
 } from "@/command/crypto/sm2";
+import { KeyFormat, KeyPair } from "@/command/crypto/type";
 import {
   CopyButton,
   GenerateButton,
@@ -15,55 +16,58 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Main from "@/component/Main";
+import { createCachableStore } from "@/lib/cache";
 import { stringify } from "@/lib/util";
 import { ArrowLeftRight, PanelLeftRightDashed } from "lucide-solid";
-import { batch, createResource, createSignal } from "solid-js";
+import { createResource } from "solid-js";
 
 export default function Sm2Crypto() {
-  const [encryption, setEncryption] = createSignal(true);
-  const [keyFormat, setKeyFormat] = createSignal<Sm2KeyFormat>(
-    Sm2KeyFormat.Pkcs8,
-  );
-  const [input, setInput] = createSignal("");
-  const switchEncryption = (value: boolean) => {
-    batch(() => {
-      setInput("");
-      setKeyFormat(Sm2KeyFormat.Pkcs8);
-      setEncryption(value);
+  // 页面参数
+  const [store, setStore] = createCachableStore({
+    encryption: true,
+    keyFormat: Sm2KeyFormat.Pkcs8,
+    keyPair: {
+      private: "",
+      public: "",
+    } as KeyPair,
+    input: "",
+  });
+
+  // 加密或解密
+  const setEncryption = (value: boolean) => {
+    setStore({
+      encryption: value,
+      keyFormat: Sm2KeyFormat.Pkcs8,
+      keyPair: { private: "", public: "" },
+      input: "",
     });
   };
 
   // 生成密钥对
-  const [keyPair, { refetch: refetchKeyPair, mutate: setKeyPair }] =
-    createResource(
-      () =>
-        generateSm2KeyPair(keyFormat()).then(([privateKey, publicKey]) => ({
-          privateKey,
-          publicKey,
-        })),
-      {
-        initialValue: { privateKey: "", publicKey: "" },
-      },
-    );
+  const generateKeyPair = () => {
+    generateSm2KeyPair(store.keyFormat).then(([k1, k2]) => {
+      setStore("keyPair", (prev) => ({ ...prev, private: k1, public: k2 }));
+    });
+  };
 
-  // 输出
+  // 处理结果
   const [output] = createResource(
     () => ({
-      encryption: encryption(),
-      keyFormat: keyFormat(),
-      keyPair: keyPair(),
-      input: input(),
+      encryption: store.encryption,
+      keyFormat: store.keyFormat,
+      keyPair: { ...store.keyPair },
+      input: store.input,
     }),
     ({ encryption, keyFormat, keyPair, input }) => {
-      if (input && keyPair.publicKey && keyPair.privateKey) {
-        return (
-          encryption
-            ? encryptSm2(keyFormat, keyPair.publicKey, input)
-            : decryptSm2(keyFormat, keyPair.privateKey, input)
-        ).catch(stringify);
+      if (input) {
+        if (encryption && keyPair.public) {
+          return encryptSm2(keyFormat, keyPair.public, input).catch(stringify);
+        }
+        if (!encryption && keyPair.private) {
+          return decryptSm2(keyFormat, keyPair.private, input).catch(stringify);
+        }
       }
     },
-    { initialValue: "" },
   );
 
   return (
@@ -76,8 +80,8 @@ export default function Sm2Crypto() {
           icon={() => <ArrowLeftRight size={16} />}
         >
           <Config.Switch
-            value={encryption()}
-            onChange={switchEncryption}
+            value={store.encryption}
+            onChange={setEncryption}
             on="加密"
             off="解密"
           />
@@ -90,9 +94,9 @@ export default function Sm2Crypto() {
           description="选择私钥和公钥的编码格式"
         >
           <Config.Select
-            value={keyFormat()}
-            options={Object.keys(Sm2KeyFormat)}
-            onChange={(value) => setKeyFormat(value as Sm2KeyFormat)}
+            value={store.keyFormat}
+            options={Object.keys(KeyFormat)}
+            onChange={(value) => setStore("keyFormat", value)}
             class="w-30"
           />
         </Config.Option>
@@ -104,24 +108,19 @@ export default function Sm2Crypto() {
         <Card
           class="h-full w-0 flex-1"
           title="私钥"
-          loading={keyPair.loading}
           operation={
             <TextWriteButtons
-              callback={(privateKey) =>
-                setKeyPair((prev) => ({ ...prev, privateKey }))
-              }
+              callback={(value) => setStore("keyPair", "private", value)}
               position="before"
             >
-              <GenerateButton label="生成密钥对" onGenerate={refetchKeyPair} />
-              <CopyButton value={keyPair().privateKey} />
+              <GenerateButton label="生成密钥对" onGenerate={generateKeyPair} />
+              <CopyButton value={store.keyPair.private} />
             </TextWriteButtons>
           }
         >
           <Editor
-            value={keyPair().privateKey}
-            onChange={(value) =>
-              setKeyPair((prev) => ({ ...prev, privateKey: value }))
-            }
+            value={store.keyPair.private}
+            onChange={(value) => setStore("keyPair", "private", value)}
             placeholder="输入 RSA 私钥"
           />
         </Card>
@@ -130,22 +129,17 @@ export default function Sm2Crypto() {
         <Card
           class="h-full w-0 flex-1"
           title="公钥"
-          loading={keyPair.loading}
           operation={
             <TextWriteButtons
-              callback={(publicKey) =>
-                setKeyPair((prev) => ({ ...prev, publicKey }))
-              }
+              callback={(value) => setStore("keyPair", "public", value)}
             >
-              <CopyButton value={keyPair().publicKey} />
+              <CopyButton value={store.keyPair.public} />
             </TextWriteButtons>
           }
         >
           <Editor
-            value={keyPair().publicKey}
-            onChange={(value) =>
-              setKeyPair((prev) => ({ ...prev, publicKey: value }))
-            }
+            value={store.keyPair.public}
+            onChange={(value) => setStore("keyPair", "public", value)}
             placeholder="输入 RSA 公钥"
           />
         </Card>
@@ -155,13 +149,15 @@ export default function Sm2Crypto() {
         <Card
           class="h-full w-0 flex-1"
           title="输入"
-          operation={<TextWriteButtons callback={setInput} />}
+          operation={
+            <TextWriteButtons callback={(value) => setStore("input", value)} />
+          }
         >
           <Editor
-            value={input()}
-            onChange={setInput}
+            value={store.input}
+            onChange={(value) => setStore("input", value)}
             placeholder={
-              encryption() ? "输入需要加密的数据" : "输入需要解密的数据"
+              store.encryption ? "输入需要加密的数据" : "输入需要解密的数据"
             }
           />
         </Card>

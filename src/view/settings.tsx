@@ -9,7 +9,9 @@ import { trackStore } from "@solid-primitives/deep";
 import { getTauriVersion, getVersion } from "@tauri-apps/api/app";
 import {
   AudioLines,
+  CalendarCheck,
   CaseSensitive,
+  DatabaseZap,
   ExternalLink,
   FolderOpen,
   MonitorX,
@@ -17,7 +19,7 @@ import {
   Palette,
   RectangleEllipsis,
   SquareTerminal,
-  TextWrap
+  TextWrap,
 } from "lucide-solid";
 import { createEffect, createResource } from "solid-js";
 //
@@ -96,6 +98,17 @@ export default function Settings() {
               setSettings("system", "closeBehavior", value as CloseBehavior)
             }
           ></Config.Select>
+        </Config.Option>
+
+        <Config.Option
+          label="缓存数据"
+          icon={() => <DatabaseZap size={16} />}
+          description="是否将工具的配置选项以及输入参数缓存到本地，切换工具后数据不会丢失。"
+        >
+          <Config.Switch
+            value={settings.system.cachable}
+            onChange={(value) => setSettings("system", "cachable", value)}
+          />
         </Config.Option>
       </Config.Card>
 

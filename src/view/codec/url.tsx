@@ -5,12 +5,13 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Main from "@/component/Main";
-import { createPageStore } from "@/lib/persisted";
+import { createCachableStore } from "@/lib/cache";
 import { ArrowLeftRight } from "lucide-solid";
 import { createResource } from "solid-js";
 
 export default function UrlCodec() {
-  const [store, setStore] = createPageStore({
+  // 页面参数
+  const [store, setStore] = createCachableStore({
     input: "",
     encode: true,
   });

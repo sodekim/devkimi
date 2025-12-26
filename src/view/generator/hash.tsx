@@ -10,7 +10,7 @@ import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import { createPageStore } from "@/lib/persisted";
+import { createCachableStore } from "@/lib/cache";
 import { stringify } from "@/lib/util";
 import {
   CaseUpper,
@@ -51,13 +51,15 @@ enum Mode {
 type Input = { value: string; mode: Mode };
 
 export default function HashGenerator() {
-  const [store, setStore] = createPageStore({
+  // 页面参数
+  const [store, setStore] = createCachableStore({
     input: { value: "", mode: Mode.Text } as Input,
     algorithm: Algorithm.Md5,
     uppercase: false,
     target: "",
   });
 
+  // 输出结果
   const [output] = createResource(
     () => ({
       input: { ...store.input },

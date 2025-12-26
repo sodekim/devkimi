@@ -14,15 +14,23 @@ import {
 } from "solid-js";
 
 export default function DNSQuery() {
+  // 页面参数
   const [name, setName] = createSignal("");
+
+  // 查询结果
   const [response, { refetch }] = createResource(() => {
     if (name()) {
       return queryDns(name());
     }
   });
 
+  // A记录
   const ipv4 = createMemo(() => response()?.v4 ?? []);
+
+  // AAAA记录
   const ipv6 = createMemo(() => response()?.v6 ?? []);
+
+  // CNAME记录
   const cname = createMemo(() => response()?.cname ?? []);
 
   return (
@@ -59,67 +67,35 @@ export default function DNSQuery() {
         </Match>
 
         <Match when={response.state === "ready"}>
-          <div>
-            <div class="bg-base-100 border-base-content/20 flex items-center justify-between rounded-t-md border p-2">
-              <span class="text-sm font-bold">A 记录 (IPV4)</span>
-              <CopyButton value={ipv4().join("\n")} />
-            </div>
-            <div class="border-base-content/20 flex flex-col rounded-b-md border p-2 text-sm font-bold">
-              <Show
-                when={ipv4().length > 0}
-                fallback={<span class="text-sm font-bold">无记录</span>}
-              >
-                <For each={ipv4()}>
-                  {(item) => (
-                    <span class="font-mono text-sm font-bold">{item}</span>
-                  )}
-                </For>
-              </Show>
-            </div>
-          </div>
-
-          <div>
-            <div class="bg-base-100 border-base-content/20 flex items-center justify-between rounded-t-md border p-2">
-              <span class="text-sm font-bold">AAAA 记录 (IPV6)</span>
-              <CopyButton value={ipv6().join("\n")} />
-            </div>
-            <div class="border-base-content/20 flex flex-col rounded-b-md border p-2 text-sm font-bold">
-              <Show
-                when={ipv6().length > 0}
-                fallback={<span class="text-sm font-bold">无记录</span>}
-              >
-                <For each={ipv6()}>
-                  {(item) => (
-                    <span class="font-mono text-sm font-bold">{item}</span>
-                  )}
-                </For>
-              </Show>
-            </div>
-          </div>
-
-          <div>
-            <div class="bg-base-100 border-base-content/20 flex items-center justify-between rounded-t-md border p-2">
-              <span class="text-sm font-bold">CNAME 记录</span>
-              <CopyButton value={cname().join("\n")} />
-            </div>
-            <div class="border-base-content/20 flex flex-col rounded-b-md border p-2 text-sm font-bold">
-              <Show
-                when={cname().length > 0}
-                fallback={<span class="text-sm font-bold">无记录</span>}
-              >
-                <For each={cname()}>
-                  {(item) => (
-                    <span class="font-mono text-sm font-bold">{item}</span>
-                  )}
-                </For>
-              </Show>
-            </div>
-          </div>
+          <Records label="A 记录 (IPV4)" value={ipv4()} />
+          <Records label="AAAA 记录 (IPV6)" value={ipv6()} />
+          <Records label="CNAME 记录" value={cname()} />
         </Match>
       </Switch>
     </Container>
   );
 }
+
+const Records = (props: { label: string; value: string[] }) => {
+  return (
+    <div>
+      <div class="bg-base-100 border-base-content/20 flex items-center justify-between rounded-t-md border p-2">
+        <span class="text-sm font-bold">{props.label}</span>
+        <CopyButton value={props.value.join("\n")} />
+      </div>
+      <div class="border-base-content/20 flex flex-col rounded-b-md border p-2 text-sm font-bold">
+        <Show
+          when={props.value.length > 0}
+          fallback={<span class="text-sm font-bold">无记录</span>}
+        >
+          <For each={props.value}>
+            {(item) => <span class="font-mono text-sm font-bold">{item}</span>}
+          </For>
+        </Show>
+      </div>
+    </div>
+  );
+};
 
 const Notice = (props: { message: string; loading?: boolean }) => {
   return (

@@ -9,7 +9,7 @@ import Card from "@/component/Card";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Flex from "@/component/Flex";
-import { createPageStore } from "@/lib/persisted";
+import { createCachableStore } from "@/lib/cache";
 import { stringify } from "@/lib/util";
 import { createResource, createSignal } from "solid-js";
 
@@ -121,11 +121,13 @@ const JsonPathGrammars: Array<{ expression: string; description: string }> = [
 ];
 
 export default function JSONPath() {
-  const [store, setStore] = createPageStore({
+  // 页面参数
+  const [store, setStore] = createCachableStore({
     pattern: "",
     text: "",
   });
 
+  // 输出结果
   const [output] = createResource(
     () => ({ ...store }),
     ({ pattern, text }) => {

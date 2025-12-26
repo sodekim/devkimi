@@ -5,14 +5,17 @@ import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Flex from "@/component/Flex";
 import Main from "@/component/Main";
-import { createPageStore } from "@/lib/persisted";
+import { createCachableStore } from "@/lib/cache";
 import { stringify } from "@/lib/util";
 import hljs from "highlight.js";
 import { createEffect, createResource } from "solid-js";
 import "./a11y-dark.css";
 
 export default function MarkdownPreview() {
-  const [store, setStore] = createPageStore({ markdown: "" });
+  // 页面参数
+  const [store, setStore] = createCachableStore({ markdown: "" });
+
+  // Markdown内容
   const [html] = createResource(
     () => store.markdown,
     (markdown) => {

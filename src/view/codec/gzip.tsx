@@ -5,7 +5,7 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Main from "@/component/Main";
-import { createPageStore } from "@/lib/persisted";
+import { createCachableStore } from "@/lib/cache";
 import { ArrowLeftRight, AudioWaveform, Blend } from "lucide-solid";
 import { createResource, Show } from "solid-js";
 
@@ -21,7 +21,8 @@ const COMPRESS_LEVEL_OPTIONS = Array.from({ length: 9 }, (_, i) => i + 1).map(
 );
 
 export default function GZipCodec() {
-  const [store, setStore] = createPageStore({
+  // 页面参数
+  const [store, setStore] = createCachableStore({
     input: "",
     level: 1,
     encode: true,

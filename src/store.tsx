@@ -26,6 +26,7 @@ export type WordWrap = "off" | "on" | "wordWrapColumn" | "bounded";
 export type Settings = {
   // 系统配置
   system: {
+    cachable: boolean;
     closeBehavior: CloseBehavior;
   };
   // 通用配置
@@ -49,10 +50,11 @@ export type Settings = {
 
 const defaultSettings: Settings = {
   system: {
+    cachable: true,
     closeBehavior: "quit",
   },
   common: { theme: "dark", openConfigCollapse: true },
-  editor: { wordWrap: "off", font: { family: "SansSerif", size: 14 } },
+  editor: { wordWrap: "on", font: { family: "SansSerif", size: 14 } },
   debug: { level: "info" },
 };
 
@@ -77,6 +79,13 @@ export const StoreProvider = (props: { children?: JSX.Element }) => {
         currentWindow.hide().then(() => showTray());
       }
     });
+  });
+
+  // 关闭缓存时清空所有本地缓存项
+  createEffect(() => {
+    if (!settings.system.cachable) {
+      localStorage.clear();
+    }
   });
 
   // 设置发生变动时保存设置信息

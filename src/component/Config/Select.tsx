@@ -6,6 +6,7 @@ function isStringArray(options: any): options is string[] {
     Array.isArray(options) && options.every((item) => typeof item === "string")
   );
 }
+
 export default function Select<T = number | string>(props: {
   value: T;
   options:
@@ -28,8 +29,7 @@ export default function Select<T = number | string>(props: {
     <select
       class={twMerge("select select-sm outline-none", props.class)}
       onChange={(e) =>
-        props.onChange &&
-        props.onChange(
+        props.onChange?.(
           (isNumberic ? Number(e.target.value) : e.target.value) as T,
         )
       }

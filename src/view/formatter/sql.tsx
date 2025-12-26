@@ -5,7 +5,7 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Main from "@/component/Main";
-import { createPageStore } from "@/lib/persisted";
+import { createCachableStore } from "@/lib/cache";
 import { CaseUpper, Code, Space } from "lucide-solid";
 import { createResource } from "solid-js";
 
@@ -34,13 +34,15 @@ const DIALECT_OPTIONS = [
 ];
 
 export default function SqlFormatter() {
-  const [store, setStore] = createPageStore({
+  // 页面参数
+  const [store, setStore] = createCachableStore({
     indent: Indent.TwoSpace,
     dialect: Dialect.Generic,
     uppercase: false,
     input: "",
   });
 
+  // 输出结果
   const [output] = createResource(
     () => ({ ...store }),
     ({ indent, dialect, uppercase, input }) => {

@@ -13,14 +13,30 @@ pub enum KeyFormat {
     Pkcs8,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub enum BitSize {
+    Bits1024,
+    Bits2048,
+    Bits3072,
+    Bits4096,
+}
+
 #[tauri::command(async)]
 #[tracing::instrument(level = tracing::Level::DEBUG, ret, err(level = tracing::Level::ERROR))]
 pub fn generate_rsa_key_pair(
     key_format: KeyFormat,
-    bit_size: usize,
+    bit_size: BitSize,
 ) -> Result<(String, String), Error> {
     let mut rng = thread_rng();
-    let private_key = RsaPrivateKey::new(&mut rng, bit_size)?;
+    let private_key = RsaPrivateKey::new(
+        &mut rng,
+        match bit_size {
+            BitSize::Bits1024 => 1024,
+            BitSize::Bits2048 => 2048,
+            BitSize::Bits3072 => 3072,
+            BitSize::Bits4096 => 4096,
+        },
+    )?;
     let public_key = private_key.to_public_key();
     match key_format {
         KeyFormat::Pkcs1 => {

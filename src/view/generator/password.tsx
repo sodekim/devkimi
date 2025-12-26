@@ -4,7 +4,7 @@ import Card from "@/component/Card";
 import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
-import { createPageStore } from "@/lib/persisted";
+import { createCachableStore } from "@/lib/cache";
 import { stringify } from "@/lib/util";
 import {
   Binary,
@@ -19,7 +19,8 @@ import {
 import { createResource } from "solid-js";
 
 export default function PasswordGenerator() {
-  const [store, setStore] = createPageStore({
+  // 页面参数
+  const [store, setStore] = createCachableStore({
     length: 16,
     uppercase: true,
     lowercase: true,
@@ -29,6 +30,7 @@ export default function PasswordGenerator() {
     excludes: "",
   });
 
+  // 输出结果
   const [output, { refetch }] = createResource(
     () => ({ ...store }),
     ({ length, uppercase, lowercase, numeric, special, size, excludes }) =>

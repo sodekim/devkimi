@@ -5,13 +5,11 @@ import {
   generateDesKey,
 } from "@/command/crypto/des";
 import {
-  BIT_SIZE_OPTIONS,
-  BLOCK_MODE_OPTIONS,
   BlockMode,
   DesBitSize,
   Encoding,
+  EncodingText,
   Padding,
-  PADDING_OPTIONS,
 } from "@/command/crypto/type";
 import {
   ClearButton,
@@ -27,6 +25,7 @@ import Editor from "@/component/Editor";
 import { EncodingSelect, EncodingTextInput } from "@/component/Encoding";
 import Flex from "@/component/Flex";
 import Main from "@/component/Main";
+import { createCachableStore } from "@/lib/cache";
 import { stringify } from "@/lib/util";
 import {
   ArrowLeftRight,
@@ -34,80 +33,70 @@ import {
   PanelLeftRightDashed,
   Ruler,
 } from "lucide-solid";
-import { batch, createResource, createSignal, Show } from "solid-js";
-import { createStore } from "solid-js/store";
+import { createResource, Show } from "solid-js";
+import {
+  BLOCK_MODE_OPTIONS,
+  DES_BIT_SIZE_OPTIONS,
+  PADDING_OPTIONS,
+} from "./options";
 
 export default function DesCrypto() {
-  const [encryption, setEncryption] = createSignal(true);
-  const [blockMode, setBlockMode] = createSignal(BlockMode.Cbc);
-  const [bitSize, setBitSize] = createSignal(DesBitSize.Bits64);
-  const [padding, setPadding] = createSignal(Padding.Pkcs7);
-  const [input, setInput] = createSignal("");
-  const [encodings, setEncodings] = createStore<{
-    key: Encoding;
-    iv: Encoding;
-    input: Encoding;
-    output: Encoding;
-  }>({
-    key: Encoding.Utf8,
-    iv: Encoding.Utf8,
-    input: Encoding.Utf8,
-    output: Encoding.Hex,
+  // 页面参数
+  const [store, setStore] = createCachableStore({
+    encryption: true,
+    blockMode: BlockMode.Cbc,
+    bitSize: DesBitSize.Bits64,
+    padding: Padding.Pkcs7,
+    input: { text: "", encoding: Encoding.Utf8 } as EncodingText,
+    key: { text: "", encoding: Encoding.Utf8 } as EncodingText,
+    iv: { text: "", encoding: Encoding.Utf8 } as EncodingText,
+    encoding: Encoding.Hex,
   });
 
-  // 切换加密/解密
-  const switchEncryption = (value: boolean) => {
-    batch(() => {
-      setIv("");
-      setBlockMode(BlockMode.Cbc);
-      setBitSize(DesBitSize.Bits64);
-      setPadding(Padding.Pkcs7);
-      setEncodings({
-        key: Encoding.Utf8,
-        iv: Encoding.Utf8,
-        input: value ? Encoding.Utf8 : Encoding.Hex,
-        output: value ? Encoding.Hex : Encoding.Utf8,
-      });
-      setEncryption(value);
+  // 切换模式
+  const setEncryption = (value: boolean) => {
+    setStore({
+      encryption: value,
+      blockMode: BlockMode.Cbc,
+      bitSize: DesBitSize.Bits64,
+      padding: Padding.Pkcs7,
+      input: { text: "", encoding: value ? Encoding.Utf8 : Encoding.Hex },
+      key: { text: "", encoding: Encoding.Utf8 },
+      iv: { text: "", encoding: Encoding.Utf8 },
+      encoding: value ? Encoding.Hex : Encoding.Utf8,
     });
   };
 
-  // 加密key
-  const [key, { mutate: setKey, refetch: refetchKey }] = createResource(
-    () => ({ bitSize: bitSize(), encoding: encodings.key }),
-    ({ bitSize, encoding }) =>
-      generateDesKey(bitSize, encoding).catch(stringify),
-  );
+  // 生成密钥
+  const generateKey = () => {
+    generateDesKey(store.bitSize, store.key.encoding)
+      .catch(stringify)
+      .then((value) => setStore("key", "text", value));
+  };
 
-  // 加密iv
-  const [iv, { mutate: setIv, refetch: refetchIv }] = createResource(
-    () =>
-      blockMode() !== BlockMode.Ecb
-        ? {
-            bitSize: bitSize(),
-            blockMode: blockMode(),
-            encoding: encodings.iv,
-          }
-        : false,
-    ({ bitSize, blockMode, encoding }) =>
-      generateDesIv(bitSize, blockMode, encoding).catch(stringify),
-  );
+  // 生成向量
+  const generateIv = () => {
+    generateDesIv(store.bitSize, store.blockMode, store.iv.encoding)
+      .catch(stringify)
+      .then((value) => setStore("iv", "text", value));
+  };
 
-  // 输出
+  // 输出结果
   const [output] = createResource(
     () => ({
-      bitSize: bitSize(),
-      input: { text: input(), encoding: encodings.input },
-      key: { text: key(), encoding: encodings.key },
-      iv: { text: iv(), encoding: encodings.iv },
-      blockMode: blockMode(),
-      padding: padding(),
-      encoding: encodings.output,
+      encryption: store.encryption,
+      bitSize: store.bitSize,
+      input: { ...store.input },
+      key: { ...store.key },
+      iv: { ...store.iv },
+      blockMode: store.blockMode,
+      padding: store.padding,
+      encoding: store.encoding,
     }),
-    ({ bitSize, input, key, iv, blockMode, padding, encoding }) => {
+    ({ encryption, bitSize, input, key, iv, blockMode, padding, encoding }) => {
       if (input.text && key.text && (iv.text || blockMode === BlockMode.Ecb)) {
         return (
-          encryption()
+          encryption
             ? encryptDes(bitSize, input, key, iv, blockMode, padding, encoding)
             : decryptDes(bitSize, input, key, iv, blockMode, padding, encoding)
         ).catch(stringify);
@@ -126,8 +115,8 @@ export default function DesCrypto() {
           icon={() => <ArrowLeftRight size={16} />}
         >
           <Config.Switch
-            value={encryption()}
-            onChange={switchEncryption}
+            value={store.encryption}
+            onChange={setEncryption}
             on="加密"
             off="解密"
           />
@@ -140,9 +129,9 @@ export default function DesCrypto() {
           description="选择密钥的长度，单位为位，一个字节为8位。"
         >
           <Config.Select
-            value={bitSize()}
-            onChange={(value) => setBitSize(value as DesBitSize)}
-            options={BIT_SIZE_OPTIONS}
+            value={store.bitSize}
+            onChange={(value) => setStore("bitSize", value)}
+            options={DES_BIT_SIZE_OPTIONS}
             class="w-30"
           />
         </Config.Option>
@@ -154,24 +143,29 @@ export default function DesCrypto() {
           description="ECB模式不需要输入向量(iv)，CTR和OFB模式不需要填充模式。"
         >
           <Config.Select
-            value={blockMode()}
+            value={store.blockMode}
             options={BLOCK_MODE_OPTIONS}
-            onChange={(value) => setBlockMode(value as BlockMode)}
+            onChange={(value) => setStore("blockMode", value)}
             class="w-60"
           />
         </Config.Option>
 
         {/* 填充模式 */}
-        <Show when={blockMode() !== "Ctr" && blockMode() !== "Ofb"}>
+        <Show
+          when={
+            store.blockMode !== BlockMode.Ctr &&
+            store.blockMode !== BlockMode.Ofb
+          }
+        >
           <Config.Option
             label="填充模式"
             icon={() => <PanelLeftRightDashed size={16} />}
             description="数据填充模式"
           >
             <Config.Select
-              value={padding()}
+              value={store.padding}
               options={PADDING_OPTIONS}
-              onChange={(value) => setPadding(value as Padding)}
+              onChange={(value) => setStore("padding", value)}
               class="w-40"
             />
           </Config.Option>
@@ -181,40 +175,38 @@ export default function DesCrypto() {
       {/* 密钥 */}
       <Card
         title="密钥"
-        loading={key.loading}
         operation={
           <Flex>
-            <GenerateButton onGenerate={refetchKey} />
-            <PasteButton onRead={setKey} />
-            <ClearButton onClick={() => setKey("")} />
+            <GenerateButton onGenerate={generateKey} />
+            <PasteButton onRead={(value) => setStore("key", "text", value)} />
+            <ClearButton onClick={() => setStore("key", "text", "")} />
           </Flex>
         }
       >
         <EncodingTextInput
-          value={{ text: key(), encoding: encodings.key }}
-          onTextChange={setKey}
-          onEncodingChange={(value) => setEncodings("key", value)}
+          value={store.key}
+          onTextChange={(value) => setStore("key", "text", value)}
+          onEncodingChange={(value) => setStore("key", "encoding", value)}
           placeholder="输入密钥"
         />
       </Card>
 
       {/* 向量 */}
-      <Show when={blockMode() !== BlockMode.Ecb}>
+      <Show when={store.blockMode !== BlockMode.Ecb}>
         <Card
           title="向量"
-          loading={iv.loading}
           operation={
             <Flex>
-              <GenerateButton label="生成向量" onGenerate={refetchIv} />
-              <PasteButton onRead={setIv} />
-              <ClearButton onClick={() => setIv("")} />
+              <GenerateButton label="生成向量" onGenerate={generateIv} />
+              <PasteButton onRead={(value) => setStore("iv", "text", value)} />
+              <ClearButton onClick={() => setStore("iv", "text", "")} />
             </Flex>
           }
         >
           <EncodingTextInput
-            value={{ text: iv(), encoding: encodings.iv }}
-            onTextChange={setIv}
-            onEncodingChange={(value) => setEncodings("iv", value)}
+            value={store.iv}
+            onTextChange={(value) => setStore("iv", "text", value)}
+            onEncodingChange={(value) => setStore("iv", "encoding", value)}
             placeholder="输入向量"
           />
         </Card>
@@ -225,20 +217,25 @@ export default function DesCrypto() {
           class="h-full w-0 flex-1"
           title="输入"
           operation={
-            <TextWriteButtons callback={setInput} position="before">
+            <TextWriteButtons
+              callback={(value) => setStore("input", "text", value)}
+              position="before"
+            >
               <EncodingSelect
                 label="编码"
-                value={encodings.input}
-                onChange={(value) => setEncodings("input", value)}
-                exclude={encryption() ? [] : [Encoding.Utf8]}
+                value={store.input.encoding}
+                onChange={(value) => setStore("input", "encoding", value)}
+                exclude={store.encryption ? [] : [Encoding.Utf8]}
               />
             </TextWriteButtons>
           }
         >
           <Editor
-            value={input()}
-            onChange={setInput}
-            placeholder={encryption() ? "输入要加密的数据" : "输入要解密的数据"}
+            value={store.input.text}
+            onChange={(value) => setStore("input", "text", value)}
+            placeholder={
+              store.encryption ? "输入要加密的数据" : "输入要解密的数据"
+            }
           />
         </Card>
         <Card
@@ -249,9 +246,9 @@ export default function DesCrypto() {
             <TextReadButtons value={output()} position="before">
               <EncodingSelect
                 label="编码"
-                exclude={encryption() ? [Encoding.Utf8] : []}
-                value={encodings.output}
-                onChange={(value) => setEncodings("output", value)}
+                exclude={store.encryption ? [Encoding.Utf8] : []}
+                value={store.encoding}
+                onChange={(value) => setStore("encoding", value)}
               />
             </TextReadButtons>
           }

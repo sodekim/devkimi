@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { EncodingText } from "../crypto/type";
+import { EncodingText, RsaBitSize } from "../crypto/type";
 
 export enum Algorithm {
   HS256 = "HS256",
@@ -11,12 +11,6 @@ export enum Algorithm {
   ES256 = "ES256",
   ES384 = "ES384",
   ES512 = "ES512",
-}
-
-export enum BitSize {
-  Bit2048 = 2048,
-  Bit3072 = 3072,
-  Bit4096 = 4096,
 }
 
 export type Header = {
@@ -39,6 +33,6 @@ export function generateJwtEcdsaKeyPair(algorithm: Algorithm) {
   return invoke<[string, string]>("generate_jwt_ecdsa_key_pair", { algorithm });
 }
 
-export function generateJwtRsaKeyPair(bitSize: BitSize) {
+export function generateJwtRsaKeyPair(bitSize: RsaBitSize) {
   return invoke<[string, string]>("generate_jwt_rsa_key_pair", { bitSize });
 }

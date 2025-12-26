@@ -5,25 +5,26 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Flex from "@/component/Flex";
-import { createPageStore } from "@/lib/persisted";
+import { createCachableStore } from "@/lib/cache";
 import { stringify } from "@/lib/util";
 import { ALargeSmall, RefreshCcw, Sigma } from "lucide-solid";
-import { createResource, createSignal } from "solid-js";
+import { createResource } from "solid-js";
 
 export default function CronConverter() {
-  const [store, setStore] = createPageStore({
+  // 页面参数
+  const [store, setStore] = createCachableStore({
     cron: "* * * * * *",
     size: 10,
     pattern: "%Y-%m-%d %H:%M:%S",
   });
 
+  // 输出结果
   const [output, { refetch }] = createResource(
     () => ({ ...store }),
-    ({ cron, size, pattern }) => {
-      return parseCron(cron, size, pattern)
+    ({ cron, size, pattern }) =>
+      parseCron(cron, size, pattern)
         .then((times) => times.join("\n"))
-        .catch(stringify);
-    },
+        .catch(stringify),
   );
 
   return (

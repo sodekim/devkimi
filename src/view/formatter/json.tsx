@@ -5,7 +5,7 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Main from "@/component/Main";
-import { createPageStore } from "@/lib/persisted";
+import { createCachableStore } from "@/lib/cache";
 import { stringify } from "@/lib/util";
 import { ArrowDownAZ, Space } from "lucide-solid";
 import { createResource } from "solid-js";
@@ -25,12 +25,14 @@ const INDENT_OPTIONS = [
 ];
 
 export default function JsonFormatter() {
-  const [store, setStore] = createPageStore({
+  // 页面参数
+  const [store, setStore] = createCachableStore({
     indent: Indent.TwoSpace,
     sortable: false,
     input: "",
   });
 
+  // 输出结果
   const [output] = createResource(
     () => ({ ...store }),
     ({ indent, sortable, input }) => {

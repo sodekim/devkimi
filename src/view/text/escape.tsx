@@ -5,17 +5,21 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Main from "@/component/Main";
-import { createPageStore } from "@/lib/persisted";
+import { createCachableStore } from "@/lib/cache";
 import { ArrowLeftRight } from "lucide-solid";
 import { createResource } from "solid-js";
 
 export default function TextEscape() {
-  const [store, setStore] = createPageStore({
+  // 页面参数
+  const [store, setStore] = createCachableStore({
     encode: true,
     input: "",
   });
+
+  // 是否转义
   const setEncode = (value: boolean) => setStore({ encode: value, input: "" });
 
+  // 输出结果
   const [output] = createResource(
     () => ({ ...store }),
     ({ encode, input }) => {

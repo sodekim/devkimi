@@ -8,20 +8,27 @@ import Config from "@/component/Config";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Main from "@/component/Main";
-import { createPageStore } from "@/lib/persisted";
+import { createCachableStore } from "@/lib/cache";
 import { stringify } from "@/lib/util";
 import { ArrowLeftRight } from "lucide-solid";
 import { createResource, Match, Switch } from "solid-js";
 
 export default function JsonYamlConverter() {
-  const [store, setStore] = createPageStore({
+  // 页面参数
+  const [store, setStore] = createCachableStore({
     encode: true,
     input: "",
   });
+
+  // 是否解码
   const decode = () => !store.encode;
+
+  // 切换操作模式
   const setEncode = (value: boolean) => {
     setStore({ encode: value, input: "" });
   };
+
+  // 输出结果
   const [output] = createResource(
     () => ({ ...store }),
     ({ input, encode }) => {

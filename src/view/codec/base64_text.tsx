@@ -10,13 +10,14 @@ import ConfigSwitch from "@/component/Config/Switch";
 import Container from "@/component/Container";
 import Editor from "@/component/Editor";
 import Main from "@/component/Main";
-import { createPageStore } from "@/lib/persisted";
+import { createCachableStore } from "@/lib/cache";
 import { stringify } from "@/lib/util";
 import { ArrowLeftRight, Layers } from "lucide-solid";
 import { createResource } from "solid-js";
 
 export default function Base64TextCodec() {
-  const [store, setStore] = createPageStore({
+  // 页面参数
+  const [store, setStore] = createCachableStore({
     input: "",
     mode: Base64Mode.Standard,
     encode: true,

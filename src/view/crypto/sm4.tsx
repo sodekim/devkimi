@@ -1,15 +1,15 @@
 import {
-  decryptSm4,
-  encryptSm4,
-  generateSm4Iv,
-  generateSm4Key,
-} from "@/command/crypto/sm4";
+  decryptAes,
+  encryptAes,
+  generateAesIv,
+  generateAesKey,
+} from "@/command/crypto/aes";
 import {
-  BLOCK_MODE_OPTIONS,
+  AesBitSize,
   BlockMode,
   Encoding,
+  EncodingText,
   Padding,
-  PADDING_OPTIONS,
 } from "@/command/crypto/type";
 import {
   ClearButton,
@@ -25,70 +25,81 @@ import Editor from "@/component/Editor";
 import { EncodingSelect, EncodingTextInput } from "@/component/Encoding";
 import Flex from "@/component/Flex";
 import Main from "@/component/Main";
+import { createCachableStore } from "@/lib/cache";
 import { stringify } from "@/lib/util";
-import { ArrowLeftRight, Blend, PanelLeftRightDashed } from "lucide-solid";
-import { batch, createResource, createSignal, Show } from "solid-js";
-import { createStore } from "solid-js/store";
+import {
+  ArrowLeftRight,
+  Blend,
+  PanelLeftRightDashed,
+  Ruler,
+} from "lucide-solid";
+import { createResource, Show } from "solid-js";
+import {
+  AES_BIT_SIZE_OPTIONS,
+  BLOCK_MODE_OPTIONS,
+  PADDING_OPTIONS,
+} from "./options";
+import {
+  decryptSm4,
+  encryptSm4,
+  generateSm4Iv,
+  generateSm4Key,
+} from "@/command/crypto/sm4";
 
 export default function Sm4Crypto() {
-  const [encryption, setEncryption] = createSignal(true);
-  const [blockMode, setBlockMode] = createSignal(BlockMode.Cbc);
-  const [padding, setPadding] = createSignal(Padding.Pkcs7);
-  const [input, setInput] = createSignal("");
-  const [encodings, setEncodings] = createStore<{
-    key: Encoding;
-    iv: Encoding;
-    input: Encoding;
-    output: Encoding;
-  }>({
-    key: Encoding.Utf8,
-    iv: Encoding.Utf8,
-    input: Encoding.Utf8,
-    output: Encoding.Hex,
+  // 页面参数
+  const [store, setStore] = createCachableStore({
+    encryption: true,
+    blockMode: BlockMode.Cbc,
+    padding: Padding.Pkcs7,
+    input: { text: "", encoding: Encoding.Utf8 } as EncodingText,
+    key: { text: "", encoding: Encoding.Utf8 } as EncodingText,
+    iv: { text: "", encoding: Encoding.Utf8 } as EncodingText,
+    encoding: Encoding.Hex,
   });
 
-  // 切换加密/解密
-  const switchEncryption = (value: boolean) => {
-    batch(() => {
-      setIv("");
-      setBlockMode(BlockMode.Cbc);
-      setPadding(Padding.Pkcs7);
-      setEncodings({
-        key: Encoding.Utf8,
-        iv: Encoding.Utf8,
-        input: value ? Encoding.Utf8 : Encoding.Hex,
-        output: value ? Encoding.Hex : Encoding.Utf8,
-      });
-      setEncryption(value);
+  // 切换模式
+  const setEncryption = (value: boolean) => {
+    setStore({
+      encryption: value,
+      blockMode: BlockMode.Cbc,
+      padding: Padding.Pkcs7,
+      input: { text: "", encoding: value ? Encoding.Utf8 : Encoding.Hex },
+      key: { text: "", encoding: Encoding.Utf8 },
+      iv: { text: "", encoding: Encoding.Utf8 },
+      encoding: value ? Encoding.Hex : Encoding.Utf8,
     });
   };
 
-  // 加密key
-  const [key, { mutate: setKey, refetch: refetchKey }] = createResource(() =>
-    generateSm4Key(encodings.key).catch(stringify),
-  );
+  // 生成密钥
+  const generateKey = () => {
+    generateSm4Key(store.key.encoding)
+      .catch(stringify)
+      .then((value) => setStore("key", "text", value));
+  };
 
-  // 加密iv
-  const [iv, { mutate: setIv, refetch: refetchIv }] = createResource(() => {
-    if (blockMode() !== BlockMode.Ecb) {
-      return generateSm4Iv(blockMode(), encodings.iv).catch(stringify);
-    }
-  });
+  // 生成向量
+  const generateIv = () => {
+    generateSm4Iv(store.blockMode, store.iv.encoding)
+      .catch(stringify)
+      .then((value) => setStore("iv", "text", value));
+  };
 
-  // 输出
+  // 输出结果
   const [output] = createResource(
     () => ({
-      input: { text: input(), encoding: encodings.input },
-      key: { text: key(), encoding: encodings.key },
-      iv: { text: iv(), encoding: encodings.iv },
-      blockMode: blockMode(),
-      padding: padding(),
-      encoding: encodings.output,
+      encryption: store.encryption,
+      input: { ...store.input },
+      key: { ...store.key },
+      iv: { ...store.iv },
+      blockMode: store.blockMode,
+      padding: store.padding,
+      encoding: store.encoding,
     }),
-    ({ input, key, iv, blockMode, padding, encoding }) => {
+    ({ encryption, input, key, iv, blockMode, padding, encoding }) => {
       if (input.text && key.text && (iv.text || blockMode === BlockMode.Ecb)) {
         return (
-          encryption()
+          encryption
             ? encryptSm4(input, key, iv, blockMode, padding, encoding)
             : decryptSm4(input, key, iv, blockMode, padding, encoding)
         ).catch(stringify);
@@ -107,8 +118,8 @@ export default function Sm4Crypto() {
           icon={() => <ArrowLeftRight size={16} />}
         >
           <Config.Switch
-            value={encryption()}
-            onChange={switchEncryption}
+            value={store.encryption}
+            onChange={setEncryption}
             on="加密"
             off="解密"
           />
@@ -121,24 +132,29 @@ export default function Sm4Crypto() {
           description="ECB模式不需要输入向量(iv)，CTR和OFB模式不需要填充模式。"
         >
           <Config.Select
-            value={blockMode()}
+            value={store.blockMode}
             options={BLOCK_MODE_OPTIONS}
-            onChange={(value) => setBlockMode(value as BlockMode)}
+            onChange={(value) => setStore("blockMode", value)}
             class="w-60"
           />
         </Config.Option>
 
         {/* 填充模式 */}
-        <Show when={blockMode() !== "Ctr" && blockMode() !== "Ofb"}>
+        <Show
+          when={
+            store.blockMode !== BlockMode.Ctr &&
+            store.blockMode !== BlockMode.Ofb
+          }
+        >
           <Config.Option
             label="填充模式"
             icon={() => <PanelLeftRightDashed size={16} />}
             description="数据填充模式"
           >
             <Config.Select
-              value={padding()}
+              value={store.padding}
               options={PADDING_OPTIONS}
-              onChange={(value) => setPadding(value as Padding)}
+              onChange={(value) => setStore("padding", value)}
               class="w-40"
             />
           </Config.Option>
@@ -148,40 +164,38 @@ export default function Sm4Crypto() {
       {/* 密钥 */}
       <Card
         title="密钥"
-        loading={key.loading}
         operation={
           <Flex>
-            <GenerateButton onGenerate={refetchKey} />
-            <PasteButton onRead={setKey} />
-            <ClearButton onClick={() => setKey("")} />
+            <GenerateButton onGenerate={generateKey} />
+            <PasteButton onRead={(value) => setStore("key", "text", value)} />
+            <ClearButton onClick={() => setStore("key", "text", "")} />
           </Flex>
         }
       >
         <EncodingTextInput
-          value={{ text: key(), encoding: encodings.key }}
-          onTextChange={setKey}
-          onEncodingChange={(value) => setEncodings("key", value)}
+          value={store.key}
+          onTextChange={(value) => setStore("key", "text", value)}
+          onEncodingChange={(value) => setStore("key", "encoding", value)}
           placeholder="输入密钥"
         />
       </Card>
 
       {/* 向量 */}
-      <Show when={blockMode() !== BlockMode.Ecb}>
+      <Show when={store.blockMode !== BlockMode.Ecb}>
         <Card
           title="向量"
-          loading={iv.loading}
           operation={
             <Flex>
-              <GenerateButton label="生成向量" onGenerate={refetchIv} />
-              <PasteButton onRead={setIv} />
-              <ClearButton onClick={() => setIv("")} />
+              <GenerateButton label="生成向量" onGenerate={generateIv} />
+              <PasteButton onRead={(value) => setStore("iv", "text", value)} />
+              <ClearButton onClick={() => setStore("iv", "text", "")} />
             </Flex>
           }
         >
           <EncodingTextInput
-            value={{ text: iv(), encoding: encodings.iv }}
-            onTextChange={setIv}
-            onEncodingChange={(value) => setEncodings("iv", value)}
+            value={store.iv}
+            onTextChange={(value) => setStore("iv", "text", value)}
+            onEncodingChange={(value) => setStore("iv", "encoding", value)}
             placeholder="输入向量"
           />
         </Card>
@@ -192,20 +206,25 @@ export default function Sm4Crypto() {
           class="h-full w-0 flex-1"
           title="输入"
           operation={
-            <TextWriteButtons callback={setInput} position="before">
+            <TextWriteButtons
+              callback={(value) => setStore("input", "text", value)}
+              position="before"
+            >
               <EncodingSelect
                 label="编码"
-                value={encodings.input}
-                onChange={(value) => setEncodings("input", value)}
-                exclude={encryption() ? [] : [Encoding.Utf8]}
+                value={store.input.encoding}
+                onChange={(value) => setStore("input", "encoding", value)}
+                exclude={store.encryption ? [] : [Encoding.Utf8]}
               />
             </TextWriteButtons>
           }
         >
           <Editor
-            value={input()}
-            onChange={setInput}
-            placeholder={encryption() ? "输入要加密的数据" : "输入要解密的数据"}
+            value={store.input.text}
+            onChange={(value) => setStore("input", "text", value)}
+            placeholder={
+              store.encryption ? "输入要加密的数据" : "输入要解密的数据"
+            }
           />
         </Card>
         <Card
@@ -216,9 +235,9 @@ export default function Sm4Crypto() {
             <TextReadButtons value={output()} position="before">
               <EncodingSelect
                 label="编码"
-                exclude={encryption() ? [Encoding.Utf8] : []}
-                value={encodings.output}
-                onChange={(value) => setEncodings("output", value)}
+                exclude={store.encryption ? [Encoding.Utf8] : []}
+                value={store.encoding}
+                onChange={(value) => setStore("encoding", value)}
               />
             </TextReadButtons>
           }

@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
-import { KeyFormat } from "./type";
+import { KeyFormat, RsaBitSize } from "./type";
 
-export function generateRsaKeyPair(keyFormat: KeyFormat, bitSize: number) {
+export function generateRsaKeyPair(keyFormat: KeyFormat, bitSize: RsaBitSize) {
   return invoke<[string, string]>("generate_rsa_key_pair", {
     keyFormat,
     bitSize,
